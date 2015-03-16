@@ -1,0 +1,78 @@
+Summary:   Firmware update daemon
+Name:      fwupd
+Version:   0.1.0
+Release:   1%{?dist}
+License:   GPLv2+
+URL:       https://github.com/hughsie/fwupd
+Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+BuildRequires: docbook-utils
+BuildRequires: gettext
+BuildRequires: glib2-devel
+BuildRequires: intltool
+BuildRequires: libgudev1-devel
+BuildRequires: colord-devel >= 1.0.0
+BuildRequires: polkit-devel >= 0.103
+BuildRequires: libgcab1-devel
+BuildRequires: sqlite-devel
+BuildRequires: systemd
+
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+
+# this really needs to be >= 0.3.6 (git master) to get the self-tests to pass
+# and will be added for the next upstream release of appstream-glib
+BuildRequires: libappstream-glib-devel
+
+# we'll fix this when Peter has the latest code in a Fedora package
+# BuildRequires: fwupdate-devel >= 0.1
+# Requires: efibootmgr
+
+%description
+fwupd is a daemon to allow session software to update device firmware.
+
+%prep
+%setup -q
+
+%build
+%configure \
+        --disable-static        \
+        --disable-rpath         \
+        --disable-uefi          \
+        --disable-silent-rules  \
+        --disable-dependency-tracking
+
+make %{?_smp_mflags}
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%find_lang %{name}
+
+%post
+%systemd_post fwupd.service
+
+%preun
+%systemd_preun fwupd.service
+
+%postun
+%systemd_postun_with_restart fwupd.service
+
+%files -f %{name}.lang
+%doc README.md AUTHORS NEWS
+%license COPYING
+%{_libexecdir}/fwupd
+%{_bindir}/fwupdmgr
+%{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
+%{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
+%{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
+%{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
+%{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
+%{_datadir}/man/man1/fwupdmgr.1.gz
+%{_unitdir}/fwupd.service
+%dir %{_localstatedir}/lib/fwupd
+
+%changelog
+* Mon Mar 16 2015 Richard Hughes <richard@hughsie.com> 0.1.0-1
+- First release
