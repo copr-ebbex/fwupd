@@ -16,6 +16,7 @@ BuildRequires: polkit-devel >= 0.103
 BuildRequires: libgcab1-devel
 BuildRequires: sqlite-devel
 BuildRequires: systemd
+BuildRequires: gobject-introspection-devel
 
 Requires(post): systemd
 Requires(preun): systemd
