@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.0
+Version:   0.1.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -32,6 +32,13 @@ BuildRequires: libappstream-glib-devel
 %description
 fwupd is a daemon to allow session software to update device firmware.
 
+%package devel
+Summary: Development package for %{name}
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+Files for development with %{name}.
+
 %prep
 %setup -q
 
@@ -47,16 +54,19 @@ make %{?_smp_mflags}
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
+find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %find_lang %{name}
 
 %post
+/sbin/ldconfig
 %systemd_post fwupd.service
 
 %preun
 %systemd_preun fwupd.service
 
 %postun
+/sbin/ldconfig
 %systemd_postun_with_restart fwupd.service
 
 %files -f %{name}.lang
@@ -72,7 +82,23 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %{_unitdir}/fwupd.service
 %dir %{_localstatedir}/lib/fwupd
+%{_libdir}/lib*.so.*
+%{_libdir}/girepository-1.0/*.typelib
+
+%files devel
+%{_includedir}/fwupd-1
+%{_libdir}/lib*.so
+%{_libdir}/pkgconfig/*.pc
+%{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Mon Mar 23 2015 Richard Hughes <richard@hughsie.com> 0.1.1-1
+- New upstream release
+- Add a 'get-updates' command to fwupdmgr
+- Add and document the offline-update lifecycle
+- Create a libfwupd shared library
+- Create runtime directories if they do not exist
+- Do not crash when there are no devices to return
+
 * Mon Mar 16 2015 Richard Hughes <richard@hughsie.com> 0.1.0-1
 - First release
