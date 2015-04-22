@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.1
+Version:   0.1.2
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -15,6 +15,7 @@ BuildRequires: colord-devel >= 1.0.0
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: libgcab1-devel
 BuildRequires: sqlite-devel
+BuildRequires: gpgme-devel
 BuildRequires: systemd
 BuildRequires: gobject-introspection-devel
 
@@ -75,6 +76,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %license COPYING
 %{_libexecdir}/fwupd
 %{_bindir}/fwupdmgr
+%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
@@ -93,6 +95,10 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Apr 22 2015 Richard Hughes <richard@hughsie.com> 0.1.2-1
+- New upstream release
+- Only allow signed firmware to be upgraded without a password
+
 * Mon Mar 23 2015 Richard Hughes <richard@hughsie.com> 0.1.1-1
 - New upstream release
 - Add a 'get-updates' command to fwupdmgr
