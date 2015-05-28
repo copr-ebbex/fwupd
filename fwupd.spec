@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.2
+Version:   0.1.3
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -83,7 +83,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
-%{_unitdir}/fwupd.service
+%{_unitdir}/*.service
+%{_unitdir}/system-update.target.wants/*.service
 %dir %{_localstatedir}/lib/fwupd
 %{_libdir}/lib*.so.*
 %{_libdir}/girepository-1.0/*.typelib
@@ -95,6 +96,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu May 28 2015 Richard Hughes <richard@hughsie.com> 0.1.3-1
+- New upstream release
+- Coldplug the devices before acquiring the well known name
+- Run the offline actions using systemd when required
+- Support OpenHardware devices using the fwupd vendor extensions
+
 * Wed Apr 22 2015 Richard Hughes <richard@hughsie.com> 0.1.2-1
 - New upstream release
 - Only allow signed firmware to be upgraded without a password
