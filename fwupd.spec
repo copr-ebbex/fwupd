@@ -19,12 +19,18 @@ BuildRequires: gpgme-devel
 BuildRequires: systemd
 BuildRequires: gobject-introspection-devel
 BuildRequires: libappstream-glib-devel >= 0.3.6
+
+%ifarch x86_64 %{ix86} aarch64
 BuildRequires: fwupdate-devel >= 0.4
+%endif
 
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+
+%ifarch x86_64 %{ix86} aarch64
 Requires: efibootmgr
+%endif
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -42,6 +48,9 @@ Files for development with %{name}.
 %build
 %configure \
         --disable-static        \
+%ifnarch x86_64 %{ix86} aarch64
+        --disable-uefi          \
+%endif
         --disable-rpath         \
         --disable-silent-rules  \
         --disable-dependency-tracking
