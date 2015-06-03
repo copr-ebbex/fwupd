@@ -1,7 +1,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.3
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -18,18 +18,13 @@ BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
 BuildRequires: systemd
 BuildRequires: gobject-introspection-devel
+BuildRequires: libappstream-glib-devel >= 0.3.6
+BuildRequires: fwupdate-devel >= 0.4
 
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
-
-# this really needs to be >= 0.3.6 (git master) to get the self-tests to pass
-# and will be added for the next upstream release of appstream-glib
-BuildRequires: libappstream-glib-devel
-
-# we'll fix this when Peter has the latest code in a Fedora package
-# BuildRequires: fwupdate-devel >= 0.1
-# Requires: efibootmgr
+Requires: efibootmgr
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -48,7 +43,6 @@ Files for development with %{name}.
 %configure \
         --disable-static        \
         --disable-rpath         \
-        --disable-uefi          \
         --disable-silent-rules  \
         --disable-dependency-tracking
 
@@ -96,6 +90,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Jun 03 2015 Richard Hughes <richard@hughsie.com> 0.1.3-2
+- Compile with libfwupdate for UEFI firmware support.
+
 * Thu May 28 2015 Richard Hughes <richard@hughsie.com> 0.1.3-1
 - New upstream release
 - Coldplug the devices before acquiring the well known name
