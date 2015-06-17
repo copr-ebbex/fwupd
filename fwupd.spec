@@ -1,7 +1,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.3
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -99,6 +99,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.1.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Wed Jun 03 2015 Richard Hughes <richard@hughsie.com> 0.1.3-2
 - Compile with libfwupdate for UEFI firmware support.
 
