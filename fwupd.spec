@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.4
+Version:   0.1.5
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -18,8 +18,10 @@ BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
 BuildRequires: systemd
 BuildRequires: libsoup-devel
+BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libappstream-glib-devel >= 0.3.6
+BuildRequires: libappstream-glib-devel >= 0.5.0
+BuildRequires: gcab
 
 %ifarch x86_64 %{ix86} aarch64
 BuildRequires: fwupdate-devel >= 0.4
@@ -91,6 +93,7 @@ getent passwd fwsignd >/dev/null || \
 %files -f %{name}.lang
 %doc README.md AUTHORS NEWS
 %license COPYING
+%config(noreplace)%{_sysconfdir}/fwupd.conf
 %{_libexecdir}/fwupd
 %{_bindir}/fwupdmgr
 %{_sysconfdir}/pki/fwupd
@@ -125,6 +128,13 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Aug 12 2015 Richard Hughes <richard@hughsie.com> 0.1.5-1
+- New upstream release
+- Add a Raspberry Pi firmware provider
+- Fix validation of written firmware
+- Make parsing the option ROM runtime optional
+- Use the AppStream 0.9 firmware specification by default
+
 * Sat Jul 25 2015 Richard Hughes <richard@hughsie.com> 0.1.4-1
 - New upstream release
 - Actually parse the complete PCI option ROM
