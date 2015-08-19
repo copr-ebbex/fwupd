@@ -1,10 +1,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# Backported from upstream
+Patch0:    0001-Use-the-new-secure-metadata-URI.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -53,6 +56,7 @@ You probably don't need this package unless you're implementing a LVFS clone.
 
 %prep
 %setup -q
+%patch0 -p1 -b .non-beta
 
 %build
 %configure \
@@ -128,6 +132,9 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Aug 19 2015 Richard Hughes <richard@hughsie.com> 0.1.5-2
+- Use the non-beta download URL prefix
+
 * Wed Aug 12 2015 Richard Hughes <richard@hughsie.com> 0.1.5-1
 - New upstream release
 - Add a Raspberry Pi firmware provider
