@@ -1,7 +1,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.5
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -75,6 +75,11 @@ make %{?_smp_mflags}
 make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
+# Disable the fwupd offline update service for now to avoid it running at the
+# same time as packagekit's and rebooting in the middle of transaction
+rm -rf %{buildroot}%{_unitdir}/fwupd-offline-update.service
+rm -rf %{buildroot}%{_unitdir}/system-update.target.wants/
+
 %find_lang %{name}
 
 %pre sign
@@ -108,9 +113,7 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
-%{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
-%{_unitdir}/system-update.target.wants/*.service
 %dir %{_localstatedir}/lib/fwupd
 %{_libdir}/lib*.so.*
 %{_libdir}/girepository-1.0/*.typelib
@@ -132,6 +135,9 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Fri Aug 21 2015 Kalev Lember <klember@redhat.com> 0.1.5-3
+- Disable fwupd offline update service
+
 * Wed Aug 19 2015 Richard Hughes <richard@hughsie.com> 0.1.5-2
 - Use the non-beta download URL prefix
 
