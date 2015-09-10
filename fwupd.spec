@@ -1,10 +1,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.6
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# Already upstream
+Patch1:    0001-Do-not-merge-the-existing-firmware-metadata-with-the.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -45,6 +48,7 @@ Files for development with %{name}.
 
 %prep
 %setup -q
+%patch1 -p1 -b .no-merge-fw
 
 %build
 %configure \
@@ -108,6 +112,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu Sep 10 2015 Richard Hughes <richard@hughsie.com> 0.1.6-3
+- Do not merge the existing firmware metadata with the submitted files
+
 * Thu Sep 10 2015 Kalev Lember <klember@redhat.com> 0.1.6-2
 - Own system-update.target.wants directory
 - Make fwupd-sign obsoletes versioned
