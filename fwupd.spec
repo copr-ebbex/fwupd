@@ -1,7 +1,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.1.6
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -92,7 +92,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
-%{_unitdir}/system-update.target.wants/*.service
+%{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %{_libdir}/lib*.so.*
 %{_libdir}/girepository-1.0/*.typelib
@@ -108,6 +108,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu Sep 10 2015 Kalev Lember <klember@redhat.com> 0.1.6-2
+- Own system-update.target.wants directory
+
 * Thu Sep 10 2015 Richard Hughes <richard@hughsie.com> 0.1.6-1
 - New upstream release
 - Add application metadata when getting the updates list
