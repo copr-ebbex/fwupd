@@ -1,13 +1,10 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.5
-Release:   3%{?dist}
+Version:   0.1.6
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# Backported from upstream
-Patch0:    0001-Use-the-new-secure-metadata-URI.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -34,6 +31,8 @@ Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 
+Obsoletes: fwupd-sign
+
 %description
 fwupd is a daemon to allow session software to update device firmware.
 
@@ -44,23 +43,11 @@ Requires: %{name} = %{version}-%{release}
 %description devel
 Files for development with %{name}.
 
-%package sign
-Summary: Firmware signing server
-Requires: %{name} = %{version}-%{release}
-
-%description sign
-This package provides a signing server suitable for automatically signing
-firmware in .cab archives.
-The values in /etc/fwsignd.conf file should be set before starting the daemon.
-You probably don't need this package unless you're implementing a LVFS clone.
-
 %prep
 %setup -q
-%patch0 -p1 -b .non-beta
 
 %build
 %configure \
-        --enable-fwsignd        \
         --disable-static        \
 %ifnarch x86_64 %{ix86} aarch64
         --disable-uefi          \
@@ -75,18 +62,7 @@ make %{?_smp_mflags}
 make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
-# Disable the fwupd offline update service for now to avoid it running at the
-# same time as packagekit's and rebooting in the middle of transaction
-rm -rf %{buildroot}%{_unitdir}/fwupd-offline-update.service
-rm -rf %{buildroot}%{_unitdir}/system-update.target.wants/
-
 %find_lang %{name}
-
-%pre sign
-getent group fwsignd >/dev/null || groupadd -r fwsignd
-getent passwd fwsignd >/dev/null || \
-    useradd -r -g fwsignd -d /var/lib/fwsignd -s /sbin/nologin \
-    -c "User for fwsignd" fwsignd
 
 %post
 /sbin/ldconfig
@@ -103,7 +79,8 @@ getent passwd fwsignd >/dev/null || \
 %doc README.md AUTHORS NEWS
 %license COPYING
 %config(noreplace)%{_sysconfdir}/fwupd.conf
-%{_libexecdir}/fwupd
+%dir %{_libexecdir}/fwupd
+%{_libexecdir}/fwupd/fwupd
 %{_bindir}/fwupdmgr
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
@@ -113,7 +90,9 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
+%{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
+%{_unitdir}/system-update.target.wants/*.service
 %dir %{_localstatedir}/lib/fwupd
 %{_libdir}/lib*.so.*
 %{_libdir}/girepository-1.0/*.typelib
@@ -122,12 +101,6 @@ getent passwd fwsignd >/dev/null || \
 %dir %{_localstatedir}/cache/app-info/xmls
 /usr/lib/udev/rules.d/*.rules
 
-%files sign
-%config(noreplace)%{_sysconfdir}/fwsignd.conf
-%{_unitdir}/fwsignd.service
-%{_libexecdir}/fwsignd
-%attr(755,fwsignd,fwsignd) %dir %{_localstatedir}/lib/fwsignd
-
 %files devel
 %{_includedir}/fwupd-1
 %{_libdir}/lib*.so
@@ -135,6 +108,11 @@ getent passwd fwsignd >/dev/null || \
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu Sep 10 2015 Richard Hughes <richard@hughsie.com> 0.1.6-1
+- New upstream release
+- Add application metadata when getting the updates list
+- Remove fwsignd, we have the LVFS now
+
 * Fri Aug 21 2015 Kalev Lember <klember@redhat.com> 0.1.5-3
 - Disable fwupd offline update service
 
