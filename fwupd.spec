@@ -31,7 +31,7 @@ Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 
-Obsoletes: fwupd-sign
+Obsoletes: fwupd-sign < 0.1.6
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -110,6 +110,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %changelog
 * Thu Sep 10 2015 Kalev Lember <klember@redhat.com> 0.1.6-2
 - Own system-update.target.wants directory
+- Make fwupd-sign obsoletes versioned
 
 * Thu Sep 10 2015 Richard Hughes <richard@hughsie.com> 0.1.6-1
 - New upstream release
