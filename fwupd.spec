@@ -1,17 +1,14 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.1.6
-Release:   3%{?dist}
+Version:   0.5.0
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-# Already upstream
-Patch1:    0001-Do-not-merge-the-existing-firmware-metadata-with-the.patch
-
 BuildRequires: docbook-utils
 BuildRequires: gettext
-BuildRequires: glib2-devel
+BuildRequires: glib2-devel >= 2.45.8
 BuildRequires: intltool
 BuildRequires: libgudev1-devel
 BuildRequires: colord-devel >= 1.0.0
@@ -20,7 +17,7 @@ BuildRequires: libgcab1-devel
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
 BuildRequires: systemd
-BuildRequires: libsoup-devel
+BuildRequires: libsoup-devel >= 2.51.92
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: libappstream-glib-devel >= 0.5.0
@@ -48,7 +45,6 @@ Files for development with %{name}.
 
 %prep
 %setup -q
-%patch1 -p1 -b .no-merge-fw
 
 %build
 %configure \
@@ -112,6 +108,10 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Tue Sep 15 2015 Richard Hughes <richard@hughsie.com> 0.5.0-1
+- New upstream release
+- Do not reboot if racing with the PackageKit offline update mechanism
+
 * Thu Sep 10 2015 Richard Hughes <richard@hughsie.com> 0.1.6-3
 - Do not merge the existing firmware metadata with the submitted files
 
