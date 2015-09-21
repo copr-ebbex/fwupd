@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.5.0
+Version:   0.5.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -108,6 +108,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Mon Sep 21 2015 Richard Hughes <richard@hughsie.com> 0.5.1-1
+- Update to 0.5.1 to fix a bug in the offline updater
+
 * Tue Sep 15 2015 Richard Hughes <richard@hughsie.com> 0.5.0-1
 - New upstream release
 - Do not reboot if racing with the PackageKit offline update mechanism
