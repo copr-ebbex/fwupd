@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.5.1
+Version:   0.5.2
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -20,7 +20,7 @@ BuildRequires: systemd
 BuildRequires: libsoup-devel >= 2.51.92
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libappstream-glib-devel >= 0.5.0
+BuildRequires: libappstream-glib-devel >= 0.5.2
 BuildRequires: gcab
 
 %ifarch x86_64 %{ix86} aarch64
@@ -108,6 +108,15 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Oct 28 2015 Richard Hughes <richard@hughsie.com> 0.5.2-1
+- New upstream release
+- Add the update description to the GetDetails results
+- Clear the in-memory firmware store only after parsing a valid XML file
+- Ensure D-Bus remote errors are registered at fwupdmgr startup
+- Fix verify-update to produce components with the correct provide values
+- Show the dotted-decimal representation of the UEFI version number
+- Support cabinet archives files with more than one firmware
+
 * Mon Sep 21 2015 Richard Hughes <richard@hughsie.com> 0.5.1-1
 - Update to 0.5.1 to fix a bug in the offline updater
 
