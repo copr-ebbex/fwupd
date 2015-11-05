@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.5.2
+Version:   0.5.3
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -108,6 +108,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Thu Nov 05 2015 Richard Hughes <richard@hughsie.com> 0.5.3-1
+- New upstream release
+- Avoid seeking when reading the file magic during refresh
+- Do not assume that the compressed XML data will be NUL terminated
+- Use the correct user agent string for fwupdmgr
+
 * Wed Oct 28 2015 Richard Hughes <richard@hughsie.com> 0.5.2-1
 - New upstream release
 - Add the update description to the GetDetails results
