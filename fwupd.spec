@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.5.3
+Version:   0.5.4
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -24,7 +24,7 @@ BuildRequires: libappstream-glib-devel >= 0.5.2
 BuildRequires: gcab
 
 %ifarch x86_64 %{ix86} aarch64
-BuildRequires: fwupdate-devel >= 0.4
+BuildRequires: fwupdate-devel >= 0.5
 %endif
 
 Requires(post): systemd
@@ -108,6 +108,11 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Nov 18 2015 Richard Hughes <richard@hughsie.com> 0.5.4-1
+- New upstream release
+- Use API available in fwupdate 0.5 to avoid writing temp files
+- Fix compile error against fwupdate 0.5 due to API bump
+
 * Thu Nov 05 2015 Richard Hughes <richard@hughsie.com> 0.5.3-1
 - New upstream release
 - Avoid seeking when reading the file magic during refresh
