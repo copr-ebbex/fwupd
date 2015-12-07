@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.5.4
+Version:   0.6.0
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -82,6 +82,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_bindir}/fwupdmgr
+%{_bindir}/dfu-tool
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
@@ -90,6 +91,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
+%{_datadir}/man/man1/dfu-tool.1.gz
+%{_datadir}/gtk-doc/html/libdfu
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/system-update.target.wants/
@@ -108,6 +111,13 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Wed Dec 07 2015 Richard Hughes <richard@hughsie.com> 0.6.0-1
+- New upstream release
+- Add support for automatically updating USB DFU-capable devices
+- Emit the changed signal after doing an update
+- Export the AppStream ID when returning device results
+- Use the same device identification string format as Microsoft
+
 * Wed Nov 18 2015 Richard Hughes <richard@hughsie.com> 0.5.4-1
 - New upstream release
 - Use API available in fwupdate 0.5 to avoid writing temp files
