@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.6.0
+Version:   0.6.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -111,6 +111,11 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Tue Jan 19 2016 Richard Hughes <richard@hughsie.com> 0.6.1-1
+- New upstream release
+- Do not misdetect different ColorHug devices
+- Only dump the profiling data when run with --verbose
+
 * Wed Dec 07 2015 Richard Hughes <richard@hughsie.com> 0.6.0-1
 - New upstream release
 - Add support for automatically updating USB DFU-capable devices
