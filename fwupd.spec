@@ -1,7 +1,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.6.1
-Release:   2%{?dist}
+Version:   0.6.2
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -111,6 +111,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Fri Feb 12 2016 Richard Hughes <richard@hughsie.com> 0.6.2-1
+- New upstream release
+- Add 'Created' and 'Modified' properties on managed devices
+- Fix get-results for UEFI provider
+- Support vendor-specific UEFI version encodings
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 0.6.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
