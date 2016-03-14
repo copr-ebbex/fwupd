@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.6.2
+Version:   0.6.3
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -20,7 +20,7 @@ BuildRequires: systemd
 BuildRequires: libsoup-devel >= 2.51.92
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libappstream-glib-devel >= 0.5.2
+BuildRequires: libappstream-glib-devel >= 0.5.10
 BuildRequires: gcab
 
 %ifarch x86_64 %{ix86} aarch64
@@ -86,6 +86,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
+%{_datadir}/app-info/xmls/org.freedesktop.fwupd.xml
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
@@ -103,6 +104,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %dir %{_localstatedir}/cache/app-info/icons
 %dir %{_localstatedir}/cache/app-info/xmls
 /usr/lib/udev/rules.d/*.rules
+%dir %{_libdir}/fwupd-plugins-1
+%{_libdir}/fwupd-plugins-1/*.so
 
 %files devel
 %{_includedir}/fwupd-1
@@ -111,6 +114,15 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+* Mon Mar 14 2016 Richard Hughes <richard@hughsie.com> 0.6.3-1
+- New upstream release
+- Add an unlock method for devices
+- Add ESRT enable method into UEFI provider
+- Correct the BCD version number for DFU 1.1
+- Ignore the DFU runtime on the DW1820A
+- Only read PCI OptionROM firmware when devices are manually unlocked
+- Require AC power before scheduling some types of firmware update
+
 * Fri Feb 12 2016 Richard Hughes <richard@hughsie.com> 0.6.2-1
 - New upstream release
 - Add 'Created' and 'Modified' properties on managed devices
