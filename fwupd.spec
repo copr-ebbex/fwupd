@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.6.3
+Version:   0.7.0
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -22,6 +22,7 @@ BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: libappstream-glib-devel >= 0.5.10
 BuildRequires: gcab
+BuildRequires: valgrind
 
 %ifarch x86_64 %{ix86} aarch64
 BuildRequires: fwupdate-devel >= 0.5
@@ -42,6 +43,19 @@ Requires: %{name} = %{version}-%{release}
 
 %description devel
 Files for development with %{name}.
+
+%package -n libdfu
+Summary: A library for DFU
+
+%description -n libdfu
+A library for updating USB devices using DFU.
+
+%package -n libdfu-devel
+Summary: Development package for libdfu
+Requires: libdfu = %{version}-%{release}
+
+%description -n libdfu-devel
+Files for development with libdfu.
 
 %prep
 %setup -q
@@ -64,6 +78,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 %find_lang %{name}
 
+%check
+make check VERBOSE=1
+
 %post
 /sbin/ldconfig
 %systemd_post fwupd.service
@@ -82,7 +99,6 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_bindir}/fwupdmgr
-%{_bindir}/dfu-tool
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
@@ -92,14 +108,12 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
-%{_datadir}/man/man1/dfu-tool.1.gz
-%{_datadir}/gtk-doc/html/libdfu
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
-%{_libdir}/lib*.so.*
-%{_libdir}/girepository-1.0/*.typelib
+%{_libdir}/libfwupd*.so.*
+%{_libdir}/girepository-1.0/Fwupd-1.0.typelib
 %dir %{_localstatedir}/cache/app-info
 %dir %{_localstatedir}/cache/app-info/icons
 %dir %{_localstatedir}/cache/app-info/xmls
@@ -108,12 +122,35 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_libdir}/fwupd-plugins-1/*.so
 
 %files devel
+%{_datadir}/gir-1.0/Fwupd-1.0.gir
+%{_datadir}/gtk-doc/html/libfwupd
 %{_includedir}/fwupd-1
-%{_libdir}/lib*.so
-%{_libdir}/pkgconfig/*.pc
-%{_datadir}/gir-1.0/*.gir
+%{_libdir}/libfwupd*.so
+%{_libdir}/pkgconfig/fwupd.pc
+
+%files -n libdfu
+%{_bindir}/dfu-tool
+%{_datadir}/man/man1/dfu-tool.1.gz
+%{_libdir}/girepository-1.0/Dfu-1.0.typelib
+%{_libdir}/libdfu*.so.*
+
+%files -n libdfu-devel
+%{_datadir}/gir-1.0/Dfu-1.0.gir
+%{_datadir}/gtk-doc/html/libdfu
+%dir %{_includedir}/libdfu
+%{_includedir}/dfu.h
+%{_includedir}/libdfu/*.h
+%{_libdir}/libdfu*.so
+%{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Fri Apr 01 2016 Richard Hughes <richard@hughsie.com> 0.7.0-1
+- New upstream release
+- Add Alienware to the version quirk table
+- Add a version plugin for SteelSeries hardware
+- Do not return updates that require AC when on battery
+- Return the device flags when getting firmware details
+
 * Mon Mar 14 2016 Richard Hughes <richard@hughsie.com> 0.6.3-1
 - New upstream release
 - Add an unlock method for devices
