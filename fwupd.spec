@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.0
+Version:   0.7.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -144,6 +144,17 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Fri May 13 2016 Richard Hughes <richard@hughsie.com> 0.7.1-1
+- New upstream release
+- Add device-added, device-removed and device-changed signals
+- Add for a new device field "Flashes Left"
+- Fix a critical warning when restarting the daemon
+- Fix BE issues when reading and writing DFU files
+- Make the device display name nicer
+- Match the AppStream metadata after a device has been added
+- Return all update descriptions newer than the installed version
+- Set the device description when parsing local firmware files
+
 * Fri Apr 01 2016 Richard Hughes <richard@hughsie.com> 0.7.0-1
 - New upstream release
 - Add Alienware to the version quirk table
