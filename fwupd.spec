@@ -1,6 +1,6 @@
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.1
+Version:   0.7.2
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -144,6 +144,14 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Mon Jun 13 2016 Richard Hughes <richard@hughsie.com> 0.7.2-1
+- New upstream release
+- Allow devices to have multiple assigned GUIDs
+- Allow metainfo files to match only specific revisions of devices
+- Only claim the DFU interface when required
+- Only return updatable devices from GetDevices()
+- Show the DFU protocol version in 'dfu-tool list'
+
 * Fri May 13 2016 Richard Hughes <richard@hughsie.com> 0.7.1-1
 - New upstream release
 - Add device-added, device-removed and device-changed signals
