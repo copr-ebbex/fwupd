@@ -1,3 +1,8 @@
+%global libglib2_version 2.45.8
+%global libappstream_version 0.5.10
+%global libgusb_version 0.2.9
+%global libsoup_version 2.51.92
+
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
@@ -8,19 +13,20 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
-BuildRequires: glib2-devel >= 2.45.8
+BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: intltool
+BuildRequires: libappstream-glib-devel >= %{libappstream_version}
 BuildRequires: libgudev1-devel
+BuildRequires: libgusb-devel >= %{libgusb_version}
+BuildRequires: libsoup-devel >= %{libsoup_version}
 BuildRequires: colord-devel >= 1.0.0
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: libgcab1-devel
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
 BuildRequires: systemd
-BuildRequires: libsoup-devel >= 2.51.92
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
-BuildRequires: libappstream-glib-devel >= 0.5.10
 BuildRequires: gcab
 BuildRequires: valgrind
 
@@ -31,6 +37,11 @@ BuildRequires: fwupdate-devel >= 0.5
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
+
+Requires: glib2%{?_isa} >= %{glib2_version}
+Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
+Requires: libgusb%{?_isa} >= %{libgusb_version}
+Requires: libsoup%{?_isa} >= %{libsoup_version}
 
 Obsoletes: fwupd-sign < 0.1.6
 
