@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -38,6 +38,7 @@ Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 
+Requires: libdfu%{?_isa} = %{version}-%{release}
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
@@ -50,7 +51,7 @@ fwupd is a daemon to allow session software to update device firmware.
 
 %package devel
 Summary: Development package for %{name}
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
 Files for development with %{name}.
@@ -63,7 +64,7 @@ A library for updating USB devices using DFU.
 
 %package -n libdfu-devel
 Summary: Development package for libdfu
-Requires: libdfu = %{version}-%{release}
+Requires: libdfu%{?_isa} = %{version}-%{release}
 
 %description -n libdfu-devel
 Files for development with libdfu.
@@ -155,6 +156,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Thu Jul 14 2016 Kalev Lember <klember@redhat.com> - 0.7.2-2
+- Tighten subpackage dependencies
+
 * Mon Jun 13 2016 Richard Hughes <richard@hughsie.com> 0.7.2-1
 - New upstream release
 - Allow devices to have multiple assigned GUIDs
