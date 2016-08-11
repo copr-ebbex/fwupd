@@ -1,0 +1,29 @@
+From 96e1ea6b265728aad5bf43f18009abb3befc34a0 Mon Sep 17 00:00:00 2001
+From: Richard Hughes <richard@hughsie.com>
+Date: Thu, 11 Aug 2016 18:24:14 +0100
+Subject: [PATCH] Switch to the Amazon S3 CDN for firmware metadata
+
+This is much more scalable than millions of clients hitting a single
+OpenShift instance.
+---
+ data/fwupd.conf | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/data/fwupd.conf b/data/fwupd.conf
+index 5aacd5c..3ec448b 100644
+--- a/data/fwupd.conf
++++ b/data/fwupd.conf
+@@ -3,8 +3,8 @@
+ # The download URI to use for LVFS metadata
+ #
+ # If you want to use testing firmware then change this value to:
+-#    https://secure-lvfs.rhcloud.com/downloads/firmware-testing.xml.gz
+-DownloadURI=https://secure-lvfs.rhcloud.com/downloads/firmware.xml.gz
++#    https://s3.amazonaws.com/lvfsbucket/downloads/firmware-testing.xml.gz
++DownloadURI=https://s3.amazonaws.com/lvfsbucket/downloads/firmware.xml.gz
+ 
+ # If we should verify option ROM images
+ EnableOptionROM=true
+-- 
+2.7.4
+

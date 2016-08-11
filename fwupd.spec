@@ -6,10 +6,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# backported from master, use a more scalable CDN.
+Patch0:    0001-Switch-to-the-Amazon-S3-CDN-for-firmware-metadata.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -71,6 +74,7 @@ Files for development with libdfu.
 
 %prep
 %setup -q
+%patch0 -p1 -b .new-cdn
 
 %build
 %configure \
@@ -156,6 +160,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Thu Aug 11 2016 Richard Hughes <richard@hughsie.com> 0.7.2-3
+- Use the new CDN for firmware metadata
+
 * Thu Jul 14 2016 Kalev Lember <klember@redhat.com> - 0.7.2-2
 - Tighten subpackage dependencies
 
