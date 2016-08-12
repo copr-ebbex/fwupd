@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
-Release:   3%{?dist}
+Release:   4%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -160,6 +160,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Fri Aug 12 2016 Adam Williamson <awilliam@redhat.com> - 0.7.2-4
+- rebuild against new efivar and fwupdate
+
 * Thu Aug 11 2016 Richard Hughes <richard@hughsie.com> 0.7.2-3
 - Use the new CDN for firmware metadata
 
