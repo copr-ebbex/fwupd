@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
-Release:   4%{?dist}
+Release:   5%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -34,7 +34,7 @@ BuildRequires: gcab
 BuildRequires: valgrind
 
 %ifarch x86_64 %{ix86} aarch64
-BuildRequires: fwupdate-devel >= 0.5
+BuildRequires: fwupdate-devel >= 7
 %endif
 
 Requires(post): systemd
@@ -160,6 +160,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Wed Aug 17 2016 Peter Jones <pjones@redhat.com> - 0.7.2-5
+- rebuild against new efivar and fwupdate
+
 * Fri Aug 12 2016 Adam Williamson <awilliam@redhat.com> - 0.7.2-4
 - rebuild against new efivar and fwupdate
 
