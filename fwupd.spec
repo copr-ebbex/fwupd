@@ -221,7 +221,7 @@ make check VERBOSE=1
 - Do not misdetect different ColorHug devices
 - Only dump the profiling data when run with --verbose
 
-* Wed Dec 07 2015 Richard Hughes <richard@hughsie.com> 0.6.0-1
+* Mon Dec 07 2015 Richard Hughes <richard@hughsie.com> 0.6.0-1
 - New upstream release
 - Add support for automatically updating USB DFU-capable devices
 - Emit the changed signal after doing an update
