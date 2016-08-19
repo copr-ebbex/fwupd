@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.2
-Release:   5%{?dist}
+Release:   6%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -160,6 +160,10 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Fri Aug 19 2016 Peter Jones <pjones@redhat.com> - 0.7.2-6
+- Rebuild to get libfwup.so.1 as our fwupdate dep.  This should make this the
+  last time we need to rebuild for this.
+
 * Wed Aug 17 2016 Peter Jones <pjones@redhat.com> - 0.7.2-5
 - rebuild against new efivar and fwupdate
 
