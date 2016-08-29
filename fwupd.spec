@@ -133,6 +133,12 @@ make check VERBOSE=1
 /sbin/ldconfig
 %systemd_postun_with_restart fwupd.service
 
+%post -n libdfu -p /sbin/ldconfig
+%postun -n libdfu -p /sbin/ldconfig
+
+%post -n libebitdo -p /sbin/ldconfig
+%postun -n libebitdo -p /sbin/ldconfig
+
 %files -f %{name}.lang
 %doc README.md AUTHORS NEWS
 %license COPYING
@@ -200,6 +206,7 @@ make check VERBOSE=1
 * Mon Aug 29 2016 Kalev Lember <klember@redhat.com> 0.7.3-2
 - Fix an unexpanded macro in the spec file
 - Tighten libebitdo-devel requires with the _isa macro
+- Add ldconfig scripts for libdfu and libebitdo subpackages
 
 * Mon Aug 29 2016 Richard Hughes <richard@hughsie.com> 0.7.3-1
 - New upstream release
