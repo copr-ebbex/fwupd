@@ -1,4 +1,4 @@
-%global libglib2_version 2.45.8
+%global glib2_version 2.45.8
 %global libappstream_version 0.5.10
 %global libgusb_version 0.2.9
 %global libsoup_version 2.51.92
@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.3
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -197,6 +197,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/ebitdo.pc
 
 %changelog
+* Mon Aug 29 2016 Kalev Lember <klember@redhat.com> 0.7.3-2
+- Fix an unexpanded macro in the spec file
+
 * Mon Aug 29 2016 Richard Hughes <richard@hughsie.com> 0.7.3-1
 - New upstream release
 - Add Dell TPM and TB15/WD15 support via new Dell provider
