@@ -83,7 +83,7 @@ A library for updating 8Bitdo USB devices.
 
 %package -n libebitdo-devel
 Summary: Development package for libebitdo
-Requires: libebitdo = %{version}-%{release}
+Requires: libebitdo%{?_isa} = %{version}-%{release}
 
 %description -n libebitdo-devel
 Files for development with libebitdo.
@@ -199,6 +199,7 @@ make check VERBOSE=1
 %changelog
 * Mon Aug 29 2016 Kalev Lember <klember@redhat.com> 0.7.3-2
 - Fix an unexpanded macro in the spec file
+- Tighten libebitdo-devel requires with the _isa macro
 
 * Mon Aug 29 2016 Richard Hughes <richard@hughsie.com> 0.7.3-1
 - New upstream release
