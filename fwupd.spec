@@ -5,14 +5,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.2
-Release:   6%{?dist}
+Version:   0.7.3
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# backported from master, use a more scalable CDN.
-Patch0:    0001-Switch-to-the-Amazon-S3-CDN-for-firmware-metadata.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -32,6 +29,12 @@ BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
 BuildRequires: valgrind
+BuildRequires: elfutils-libelf-devel
+BuildRequires: gtk-doc
+
+%ifarch x86_64 %{ix86}
+BuildRequires: libsmbios-devel >= 2.3.0
+%endif
 
 %ifarch x86_64 %{ix86} aarch64
 BuildRequires: fwupdate-devel >= 7
@@ -72,15 +75,36 @@ Requires: libdfu%{?_isa} = %{version}-%{release}
 %description -n libdfu-devel
 Files for development with libdfu.
 
+%package -n libebitdo
+Summary: A library for accessing 8Bitdo hardware
+
+%description -n libebitdo
+A library for updating 8Bitdo USB devices.
+
+%package -n libebitdo-devel
+Summary: Development package for libebitdo
+Requires: libebitdo = %{version}-%{release}
+
+%description -n libebitdo-devel
+Files for development with libebitdo.
+
 %prep
 %setup -q
-%patch0 -p1 -b .new-cdn
 
 %build
 %configure \
         --disable-static        \
-%ifnarch x86_64 %{ix86} aarch64
+        --enable-gtk-doc        \
+        --enable-colorhug       \
+%ifarch x86_64 %{ix86} aarch64
+        --enable-uefi           \
+%else
         --disable-uefi          \
+%endif
+%ifarch x86_64 %{ix86}
+        --enable-dell           \
+%else
+        --disable-dell          \
 %endif
         --disable-rpath         \
         --disable-silent-rules  \
@@ -91,6 +115,7 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
+mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 %find_lang %{name}
 
@@ -136,6 +161,7 @@ make check VERBOSE=1
 /usr/lib/udev/rules.d/*.rules
 %dir %{_libdir}/fwupd-plugins-1
 %{_libdir}/fwupd-plugins-1/*.so
+%ghost %{_localstatedir}/lib/fwupd/gnupg
 
 %files devel
 %{_datadir}/gir-1.0/Fwupd-1.0.gir
@@ -159,7 +185,30 @@ make check VERBOSE=1
 %{_libdir}/libdfu*.so
 %{_libdir}/pkgconfig/dfu.pc
 
+%files -n libebitdo
+%{_bindir}/ebitdo-tool
+%{_libdir}/libebitdo*.so.*
+
+%files -n libebitdo-devel
+%dir %{_includedir}/libebitdo
+%{_includedir}/ebitdo.h
+%{_includedir}/libebitdo/*.h
+%{_libdir}/libebitdo*.so
+%{_libdir}/pkgconfig/ebitdo.pc
+
 %changelog
+* Mon Aug 29 2016 Richard Hughes <richard@hughsie.com> 0.7.3-1
+- New upstream release
+- Add Dell TPM and TB15/WD15 support via new Dell provider
+- Add initial ELF reading and writing support to libdfu
+- Add support for installing multiple devices from a CAB file
+- Allow providers to export percentage completion
+- Don't fail while checking versions or locked state
+- Show a progress notification when installing firmware
+- Show the vendor flashing instructions when installing
+- Use a private gnupg key store
+- Use the correct firmware when installing a composite device
+
 * Fri Aug 19 2016 Peter Jones <pjones@redhat.com> - 0.7.2-6
 - Rebuild to get libfwup.so.1 as our fwupdate dep.  This should make this the
   last time we need to rebuild for this.
