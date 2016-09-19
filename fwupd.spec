@@ -5,8 +5,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.3
-Release:   2%{?dist}
+Version:   0.7.4
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -203,6 +203,17 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/ebitdo.pc
 
 %changelog
+* Mon Sep 19 2016 Richard Hughes <richard@hughsie.com> 0.7.4-1
+- New upstream release
+- Add a fallback for older appstream-glib releases
+- Allow the argument to 'dfu-tool set-release' be major.minor
+- Fix a possible crash when uploading firmware files using libdfu
+- Fix libfwupd self tests when a host-provided fwupd is not available
+- Load the Altos USB descriptor from ELF files
+- Show the human-readable version in the 'dfu-tool dump' output
+- Support writing the IHEX symbol table
+- Write the ELF files with the correct section type
+
 * Mon Aug 29 2016 Kalev Lember <klember@redhat.com> 0.7.3-2
 - Fix an unexpanded macro in the spec file
 - Tighten libebitdo-devel requires with the _isa macro
