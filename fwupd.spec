@@ -5,7 +5,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.4
+Version:   0.7.5
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -203,6 +203,14 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/ebitdo.pc
 
 %changelog
+* Wed Oct 19 2016 Richard Hughes <richard@hughsie.com> 0.7.5-1
+- New upstream release
+- Add quirks for HydraBus as it does not have a DFU runtime
+- Don't create the UEFI dummy device if the unlock will happen on next boot
+- Fix an assert when unlocking the dummy ESRT device
+- Fix writing firmware to devices using the ST reference bootloader
+- Match the Dell TB16 device
+
 * Mon Sep 19 2016 Richard Hughes <richard@hughsie.com> 0.7.4-1
 - New upstream release
 - Add a fallback for older appstream-glib releases
