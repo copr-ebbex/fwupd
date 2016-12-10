@@ -6,7 +6,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.7.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -203,6 +203,9 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/ebitdo.pc
 
 %changelog
+* Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 0.7.5-2
+- Rebuild for gpgme 1.18
+
 * Wed Oct 19 2016 Richard Hughes <richard@hughsie.com> 0.7.5-1
 - New upstream release
 - Add quirks for HydraBus as it does not have a DFU runtime
