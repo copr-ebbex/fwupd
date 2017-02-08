@@ -3,6 +3,15 @@
 %global libgusb_version 0.2.9
 %global libsoup_version 2.51.92
 
+%ifarch x86_64 %{ix86}
+%global have_smbios 1
+%endif
+
+# FIXME: should also be aarch64, but efivar not present there yet
+%ifarch x86_64 %{ix86}
+%global have_uefi 1
+%endif
+
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.8.0
@@ -32,11 +41,11 @@ BuildRequires: valgrind
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
 
-%ifarch x86_64 %{ix86}
+%if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
 %endif
 
-%ifarch x86_64 %{ix86} aarch64
+%if 0%{?have_uefi}
 BuildRequires: fwupdate-devel >= 7
 %endif
 
@@ -86,15 +95,17 @@ Files for development with libdfu.
         --disable-thunderbolt   \
         --enable-gtk-doc        \
         --enable-colorhug       \
-%ifarch x86_64 %{ix86} aarch64
+%if 0%{?have_uefi}
         --enable-uefi           \
 %else
         --disable-uefi          \
 %endif
-%ifarch x86_64 %{ix86}
+%if 0%{?have_smbios}
         --enable-dell           \
+        --enable-synaptics      \
 %else
         --disable-dell          \
+        --disable-synaptics     \
 %endif
         --disable-rpath         \
         --disable-silent-rules  \
@@ -155,15 +166,21 @@ make check VERBOSE=1
 %dir %{_libdir}/fwupd-plugins-2
 %{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_colorhug.so
+%if 0%{?have_smbios}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_dell.so
+%endif
 %{_libdir}/fwupd-plugins-2/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_raspberrypi.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_steelseries.so
+%if 0%{?have_smbios}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
+%endif
 %{_libdir}/fwupd-plugins-2/libfu_plugin_test.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_udev.so
+%if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
+%endif
 %{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_usb.so
@@ -192,7 +209,7 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
-* Wed Feb 18 2017 Richard Hughes <richard@hughsie.com> 0.8.0-1
+* Wed Feb 08 2017 Richard Hughes <richard@hughsie.com> 0.8.0-1
 - New upstream release
 - Add support for Intel Thunderbolt devices
 - Add support for Logitech Unifying devices
