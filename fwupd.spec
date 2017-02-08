@@ -5,8 +5,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.7.5
-Release:   2%{?dist}
+Version:   0.8.0
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -51,6 +51,7 @@ Requires: libgusb%{?_isa} >= %{libgusb_version}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
 
 Obsoletes: fwupd-sign < 0.1.6
+Obsoletes: libebitdo < 0.7.5-3
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -58,6 +59,7 @@ fwupd is a daemon to allow session software to update device firmware.
 %package devel
 Summary: Development package for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
+Obsoletes: libebitdo-devel < 0.7.5-3
 
 %description devel
 Files for development with %{name}.
@@ -75,25 +77,13 @@ Requires: libdfu%{?_isa} = %{version}-%{release}
 %description -n libdfu-devel
 Files for development with libdfu.
 
-%package -n libebitdo
-Summary: A library for accessing 8Bitdo hardware
-
-%description -n libebitdo
-A library for updating 8Bitdo USB devices.
-
-%package -n libebitdo-devel
-Summary: Development package for libebitdo
-Requires: libebitdo%{?_isa} = %{version}-%{release}
-
-%description -n libebitdo-devel
-Files for development with libebitdo.
-
 %prep
 %setup -q
 
 %build
 %configure \
         --disable-static        \
+        --disable-thunderbolt   \
         --enable-gtk-doc        \
         --enable-colorhug       \
 %ifarch x86_64 %{ix86} aarch64
@@ -136,9 +126,6 @@ make check VERBOSE=1
 %post -n libdfu -p /sbin/ldconfig
 %postun -n libdfu -p /sbin/ldconfig
 
-%post -n libebitdo -p /sbin/ldconfig
-%postun -n libebitdo -p /sbin/ldconfig
-
 %files -f %{name}.lang
 %doc README.md AUTHORS NEWS
 %license COPYING
@@ -165,8 +152,21 @@ make check VERBOSE=1
 %dir %{_localstatedir}/cache/app-info/icons
 %dir %{_localstatedir}/cache/app-info/xmls
 /usr/lib/udev/rules.d/*.rules
-%dir %{_libdir}/fwupd-plugins-1
-%{_libdir}/fwupd-plugins-1/*.so
+%dir %{_libdir}/fwupd-plugins-2
+%{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_colorhug.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_dell.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_dfu.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_raspberrypi.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_steelseries.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_test.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_udev.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_upower.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 
 %files devel
@@ -191,18 +191,18 @@ make check VERBOSE=1
 %{_libdir}/libdfu*.so
 %{_libdir}/pkgconfig/dfu.pc
 
-%files -n libebitdo
-%{_bindir}/ebitdo-tool
-%{_libdir}/libebitdo*.so.*
-
-%files -n libebitdo-devel
-%dir %{_includedir}/libebitdo
-%{_includedir}/ebitdo.h
-%{_includedir}/libebitdo/*.h
-%{_libdir}/libebitdo*.so
-%{_libdir}/pkgconfig/ebitdo.pc
-
 %changelog
+* Wed Feb 18 2017 Richard Hughes <richard@hughsie.com> 0.8.0-1
+- New upstream release
+- Add support for Intel Thunderbolt devices
+- Add support for Logitech Unifying devices
+- Add support for Synaptics MST cascades hubs
+- Add support for the Altus-Metrum ChaosKey device
+- Always close USB devices before error returns
+- Return the pending UEFI update when not on AC power
+- Use a heuristic for the start address if the firmware has no DfuSe footer
+- Use more restrictive settings when running under systemd
+
 * Sat Dec 10 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 0.7.5-2
 - Rebuild for gpgme 1.18
 
