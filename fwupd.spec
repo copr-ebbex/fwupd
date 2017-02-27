@@ -38,6 +38,7 @@ BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
 BuildRequires: valgrind
+BuildRequires: valgrind-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
 
