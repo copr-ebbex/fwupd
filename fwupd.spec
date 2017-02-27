@@ -14,7 +14,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.8.0
+Version:   0.8.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -209,6 +209,12 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Mon Feb 27 2017 Richard Hughes <richard@hughsie.com> 0.8.1-1
+- New upstream release
+- Adjust systemd confinement restrictions
+- Don't initialize libsmbios on unsupported systems
+- Fix a crash when enumerating devices
+
 * Wed Feb 08 2017 Richard Hughes <richard@hughsie.com> 0.8.0-1
 - New upstream release
 - Add support for Intel Thunderbolt devices
