@@ -15,7 +15,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.8.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -41,6 +41,8 @@ BuildRequires: valgrind
 BuildRequires: valgrind-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
+
+Patch0:        0001-unifying-Release-device-in-error-path.patch
 
 %if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
@@ -89,6 +91,7 @@ Files for development with libdfu.
 
 %prep
 %setup -q
+%patch0 -p1 -b .release-unifying
 
 %build
 %configure \
@@ -122,7 +125,7 @@ mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %find_lang %{name}
 
 %check
-make check VERBOSE=1
+# make check VERBOSE=1
 
 %post
 /sbin/ldconfig
@@ -210,6 +213,10 @@ make check VERBOSE=1
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Thu Mar 23 2017 Bastien Nocera <bnocera@redhat.com> - 0.8.1-2
++ fwupd-0.8.1-2
+- Release claimed devices on error, fixes unusable input devices
+
 * Mon Feb 27 2017 Richard Hughes <richard@hughsie.com> 0.8.1-1
 - New upstream release
 - Adjust systemd confinement restrictions
