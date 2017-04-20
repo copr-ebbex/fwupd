@@ -120,7 +120,7 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 # not ready for primetime yet
-rm -f %{buildroot}/usr/lib64/fwupd-plugins-2/libfu_plugin_unifying.so
+rm -f %{buildroot}%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 
 %find_lang %{name}
 
