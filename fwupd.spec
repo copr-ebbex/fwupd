@@ -14,8 +14,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.8.1
-Release:   2%{?dist}
+Version:   0.8.2
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -41,8 +41,6 @@ BuildRequires: valgrind
 BuildRequires: valgrind-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
-
-Patch0:        0001-unifying-Release-device-in-error-path.patch
 
 %if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
@@ -91,7 +89,6 @@ Files for development with libdfu.
 
 %prep
 %setup -q
-%patch0 -p1 -b .release-unifying
 
 %build
 %configure \
@@ -121,6 +118,9 @@ make %{?_smp_mflags}
 make install DESTDIR=$RPM_BUILD_ROOT
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
+
+# not ready for primetime yet
+rm -f %{buildroot}/usr/lib64/fwupd-plugins-2/libfu_plugin_unifying.so
 
 %find_lang %{name}
 
@@ -163,9 +163,6 @@ mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_localstatedir}/lib/fwupd
 %{_libdir}/libfwupd*.so.*
 %{_libdir}/girepository-1.0/Fwupd-1.0.typelib
-%dir %{_localstatedir}/cache/app-info
-%dir %{_localstatedir}/cache/app-info/icons
-%dir %{_localstatedir}/cache/app-info/xmls
 /usr/lib/udev/rules.d/*.rules
 %dir %{_libdir}/fwupd-plugins-2
 %{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
@@ -185,7 +182,7 @@ mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
 %endif
-%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
+#%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
@@ -213,6 +210,15 @@ mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Thu Apr 20 2017 Richard Hughes <richard@hughsie.com> 0.8.2-1
+- New upstream release
+- Add a config option to allow runtime disabling plugins by name
+- Add DFU quirk for OpenPICC and SIMtrace
+- Create directories in /var/cache as required
+- Fix the Requires lines in the dfu pkg-config file
+- Only try to mkdir the localstatedir if we have the right permissions
+- Support proxy servers in fwupdmgr
+
 * Thu Mar 23 2017 Bastien Nocera <bnocera@redhat.com> - 0.8.1-2
 + fwupd-0.8.1-2
 - Release claimed devices on error, fixes unusable input devices
