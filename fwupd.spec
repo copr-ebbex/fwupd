@@ -40,6 +40,7 @@ BuildRequires: valgrind
 BuildRequires: valgrind-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
+BuildRequires: meson
 
 %if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
