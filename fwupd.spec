@@ -14,7 +14,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.8.2
+Version:   0.9.2
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -23,7 +23,6 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 BuildRequires: docbook-utils
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
-BuildRequires: intltool
 BuildRequires: libappstream-glib-devel >= %{libappstream_version}
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
@@ -91,41 +90,32 @@ Files for development with libdfu.
 %setup -q
 
 %build
-%configure \
-        --disable-static        \
-        --disable-thunderbolt   \
-        --enable-gtk-doc        \
-        --enable-colorhug       \
+
+%meson \
+    -Denable-tests=false \
+    -Denable-thunderbolt=false \
 %if 0%{?have_uefi}
-        --enable-uefi           \
+    -Denable-uefi=true \
 %else
-        --disable-uefi          \
+    -Denable-uefi=false \
 %endif
 %if 0%{?have_smbios}
-        --enable-dell           \
-        --enable-synaptics      \
+    -Denable-dell=true \
+    -Denable-synaptics=true \
 %else
-        --disable-dell          \
-        --disable-synaptics     \
+    -Denable-packdellagekit=false \
+    -Denable-synaptics=false \
 %endif
-        --disable-rpath         \
-        --disable-silent-rules  \
-        --disable-dependency-tracking
+    -Denable-colorhug=true
 
-make %{?_smp_mflags}
+%meson_build
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
-find %{buildroot} -name '*.la' -exec rm -f {} ';'
-mkdir --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
+%meson_install
 
-# not ready for primetime yet
-rm -f %{buildroot}%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
+mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 %find_lang %{name}
-
-%check
-# make check VERBOSE=1
 
 %post
 /sbin/ldconfig
@@ -182,7 +172,7 @@ rm -f %{buildroot}%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
 %endif
-#%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
@@ -210,6 +200,13 @@ rm -f %{buildroot}%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Mon May 22 2017 Richard Hughes <richard@hughsie.com> 0.9.2-1
+- New upstream release
+- Add support for Unifying DFU features
+- Do not spew a critial warning when parsing an invalid URI
+- Ensure steelseries device is closed if it returns an invalid packet
+- Ignore spaces in the Unifying version prefix
+
 * Thu Apr 20 2017 Richard Hughes <richard@hughsie.com> 0.8.2-1
 - New upstream release
 - Add a config option to allow runtime disabling plugins by name
