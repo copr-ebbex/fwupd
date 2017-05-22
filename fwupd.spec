@@ -104,7 +104,7 @@ Files for development with libdfu.
     -Denable-dell=true \
     -Denable-synaptics=true \
 %else
-    -Denable-packdellagekit=false \
+    -Denable-dell=false \
     -Denable-synaptics=false \
 %endif
     -Denable-colorhug=true
