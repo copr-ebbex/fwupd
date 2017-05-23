@@ -15,10 +15,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.9.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# backported from master
+Patch0:    master.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -89,6 +92,8 @@ Files for development with libdfu.
 
 %prep
 %setup -q
+
+%patch0 -p1 -b .master
 
 %build
 
@@ -201,6 +206,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Tue May 23 2017 Richard Hughes <richard@hughsie.com> 0.9.2-2
+- Backport several fixes for updating Unifying devices
+
 * Mon May 22 2017 Richard Hughes <richard@hughsie.com> 0.9.2-1
 - New upstream release
 - Add support for Unifying DFU features
