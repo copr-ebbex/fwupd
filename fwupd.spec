@@ -1,7 +1,8 @@
 %global glib2_version 2.45.8
-%global libappstream_version 0.5.10
+%global libappstream_version 0.6.13
 %global libgusb_version 0.2.9
 %global libsoup_version 2.51.92
+%global systemd_version 231
 
 %ifarch x86_64 %{ix86}
 %global have_smbios 1
@@ -14,14 +15,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.9.2
-Release:   2%{?dist}
+Version:   0.9.3
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# backported from master
-Patch0:    master.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -32,10 +30,9 @@ BuildRequires: libgusb-devel >= %{libgusb_version}
 BuildRequires: libsoup-devel >= %{libsoup_version}
 BuildRequires: colord-devel >= 1.0.0
 BuildRequires: polkit-devel >= 0.103
-BuildRequires: libgcab1-devel
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
-BuildRequires: systemd
+BuildRequires: systemd >= %{systemd_version}
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
@@ -93,11 +90,11 @@ Files for development with libdfu.
 %prep
 %setup -q
 
-%patch0 -p1 -b .master
-
 %build
 
 %meson \
+    -Denable-doc=true \
+    -Denable-man=true \
     -Denable-tests=false \
     -Denable-thunderbolt=false \
 %if 0%{?have_uefi}
@@ -144,6 +141,10 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_bindir}/fwupdmgr
+%dir %{_sysconfdir}/fwupd
+%dir %{_sysconfdir}/fwupd/remotes.d
+%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
+%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
@@ -206,6 +207,19 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/pkgconfig/dfu.pc
 
 %changelog
+* Wed Jun 07 2017 Richard Hughes <richard@hughsie.com> 0.9.3-1
+- New upstream release
+- Add a 'downgrade' command to fwupdmgr
+- Add a 'get-releases' command to fwupdmgr
+- Add support for Microsoft HardwareIDs
+- Allow downloading metadata from more than just the LVFS
+- Allow multiple checksums on devices and releases
+- Correctly open Unifying devices with original factory firmware
+- Do not expect a Unifying reply when issuing a REBOOT command
+- Do not re-download firmware that exists in the cache
+- Fix a problem when testing for a Dell system
+- Fix flashing new firmware to 8bitdo controllers
+
 * Tue May 23 2017 Richard Hughes <richard@hughsie.com> 0.9.2-2
 - Backport several fixes for updating Unifying devices
 
