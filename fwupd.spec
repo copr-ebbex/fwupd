@@ -4,7 +4,7 @@
 %global libsoup_version 2.51.92
 %global systemd_version 231
 
-%global enable_tests 1
+%global enable_tests 0
 
 %ifarch x86_64 %{ix86}
 %global have_smbios 1
