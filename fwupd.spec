@@ -4,6 +4,8 @@
 %global libsoup_version 2.51.92
 %global systemd_version 231
 
+%global enable_tests 1
+
 %ifarch x86_64 %{ix86}
 %global have_smbios 1
 %endif
@@ -15,7 +17,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.9.3
+Version:   0.9.4
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -42,6 +44,15 @@ BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
 BuildRequires: meson
 
+# for the UEFI BMP images
+BuildRequires: python3 python3-cairo python3-gobject python3-pillow
+BuildRequires: pango-devel
+BuildRequires: cairo-devel cairo-gobject-devel
+BuildRequires: freetype
+BuildRequires: fontconfig
+BuildRequires: dejavu-sans-fonts
+BuildRequires: adobe-source-han-sans-cn-fonts
+
 %if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
 %endif
@@ -59,6 +70,7 @@ Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
+Requires: fwupd-labels = %{version}-%{release}
 
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
@@ -87,6 +99,20 @@ Requires: libdfu%{?_isa} = %{version}-%{release}
 %description -n libdfu-devel
 Files for development with libdfu.
 
+%package labels
+Summary: Rendered labels for display during system firmware updates.
+BuildArch: noarch
+
+%description labels
+Rendered labels for display during system firmware updates.
+
+%package tests
+Summary: Data files for installed tests
+BuildArch: noarch
+
+%description tests
+Data files for installed tests.
+
 %prep
 %setup -q
 
@@ -95,7 +121,11 @@ Files for development with libdfu.
 %meson \
     -Denable-doc=true \
     -Denable-man=true \
+%if 0%{?enable_tests}
+    -Denable-tests=true \
+%else
     -Denable-tests=false \
+%endif
     -Denable-thunderbolt=false \
 %if 0%{?have_uefi}
     -Denable-uefi=true \
@@ -112,6 +142,9 @@ Files for development with libdfu.
     -Denable-colorhug=true
 
 %meson_build
+%if 0%{?enable_tests}
+%meson_test
+%endif
 
 %install
 %meson_install
@@ -206,7 +239,26 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/libdfu*.so
 %{_libdir}/pkgconfig/dfu.pc
 
+%files labels
+%{_datadir}/locale/*/LC_IMAGES/fwupd*
+
+%files tests
+%dir %{_datadir}/installed-tests/fwupd
+%{_datadir}/installed-tests/fwupd/firmware-example.xml.gz
+%{_datadir}/installed-tests/fwupd/firmware-example.xml.gz.asc
+%{_datadir}/installed-tests/fwupd/*.test
+
 %changelog
+* Thu Jun 15 2017 Richard Hughes <richard@hughsie.com> 0.9.4-1
+- New upstream release
+- Add installed tests that use the daemon
+- Add the ability to restrict firmware to specific vendors
+- Compile with newer versions of meson
+- Fix a common crash when refreshing metadata
+- Generate a images for status messages during system firmware update
+- Show progress download when refreshing metadata
+- Use the correct type signature in the D-Bus introspection file
+
 * Wed Jun 07 2017 Richard Hughes <richard@hughsie.com> 0.9.3-1
 - New upstream release
 - Add a 'downgrade' command to fwupdmgr
