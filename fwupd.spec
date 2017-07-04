@@ -2,9 +2,10 @@
 %global libappstream_version 0.6.13
 %global libgusb_version 0.2.9
 %global libsoup_version 2.51.92
+%global colord_version 1.2.12
 %global systemd_version 231
 
-%global enable_tests 0
+%global enable_tests 1
 
 %ifarch x86_64 %{ix86}
 %global have_smbios 1
@@ -17,7 +18,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.9.4
+Version:   0.9.5
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -30,7 +31,7 @@ BuildRequires: libappstream-glib-devel >= %{libappstream_version}
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
 BuildRequires: libsoup-devel >= %{libsoup_version}
-BuildRequires: colord-devel >= 1.0.0
+BuildRequires: colord-devel >= %{colord_version}
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
@@ -42,9 +43,10 @@ BuildRequires: valgrind
 BuildRequires: valgrind-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
+BuildRequires: libuuid-devel
 BuildRequires: meson
 
-# for the UEFI BMP images
+%if 0%{?have_uefi}
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
 BuildRequires: pango-devel
 BuildRequires: cairo-devel cairo-gobject-devel
@@ -52,6 +54,7 @@ BuildRequires: freetype
 BuildRequires: fontconfig
 BuildRequires: dejavu-sans-fonts
 BuildRequires: adobe-source-han-sans-cn-fonts
+%endif
 
 %if 0%{?have_smbios}
 BuildRequires: libsmbios-devel >= 2.3.0
@@ -129,8 +132,10 @@ Data files for installed tests.
     -Denable-thunderbolt=false \
 %if 0%{?have_uefi}
     -Denable-uefi=true \
+    -Denable-uefi-labels=true \
 %else
     -Denable-uefi=false \
+    -Denable-uefi-labels=false \
 %endif
 %if 0%{?have_smbios}
     -Denable-dell=true \
@@ -187,6 +192,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/fwupdmgr.1.gz
+%{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/system-update.target.wants/
@@ -196,6 +202,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 /usr/lib/udev/rules.d/*.rules
 %dir %{_libdir}/fwupd-plugins-2
 %{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
+%{_libdir}/fwupd-plugins-2/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_colorhug.so
 %if 0%{?have_smbios}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_dell.so
@@ -207,7 +214,6 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_smbios}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
 %endif
-%{_libdir}/fwupd-plugins-2/libfu_plugin_test.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_udev.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
@@ -240,15 +246,29 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/pkgconfig/dfu.pc
 
 %files labels
+%if 0%{?have_uefi}
 %{_datadir}/locale/*/LC_IMAGES/fwupd*
+%endif
 
 %files tests
 %dir %{_datadir}/installed-tests/fwupd
 %{_datadir}/installed-tests/fwupd/firmware-example.xml.gz
 %{_datadir}/installed-tests/fwupd/firmware-example.xml.gz.asc
 %{_datadir}/installed-tests/fwupd/*.test
+%{_datadir}/installed-tests/fwupd/*.cab
+%{_datadir}/installed-tests/fwupd/*.sh
+%{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Tue Jul 04 2017 Richard Hughes <richard@hughsie.com> 0.9.5-1
+- New upstream release
+- Add a plugin to get the version of the AMT ME interface
+- Allow flashing Unifying devices in bootloader modes
+- Filter by Unifying SwId when making HID++2.0 requests
+- Fix downgrades when version_lowest is set
+- Fix the self tests when running on PPC64 big endian
+- Use the UFY DeviceID prefix for Unifying devices
+
 * Thu Jun 15 2017 Richard Hughes <richard@hughsie.com> 0.9.4-1
 - New upstream release
 - Add installed tests that use the daemon
