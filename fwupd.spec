@@ -104,7 +104,9 @@ Files for development with libdfu.
 
 %package labels
 Summary: Rendered labels for display during system firmware updates.
-BuildArch: noarch
+# BuildArch: noarch is disabled as we can get "different" .BMP files even when
+# running the build on the same architecture due to the randomness introduced
+# by the TTF files.
 
 %description labels
 Rendered labels for display during system firmware updates.
