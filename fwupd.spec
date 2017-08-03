@@ -1,11 +1,12 @@
 %global glib2_version 2.45.8
 %global libappstream_version 0.6.13
-%global libgusb_version 0.2.9
+%global libgusb_version 0.2.11
 %global libsoup_version 2.51.92
 %global colord_version 1.2.12
 %global systemd_version 231
 
 %global enable_tests 1
+%global enable_dummy 1
 
 %ifarch x86_64 %{ix86}
 %global have_smbios 1
@@ -18,8 +19,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.9.5
-Release:   3%{?dist}
+Version:   0.9.6
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -131,6 +132,11 @@ Data files for installed tests.
 %else
     -Denable-tests=false \
 %endif
+%if 0%{?enable_dummy}
+    -Denable-dummy=true \
+%else
+    -Denable-dummy=false \
+%endif
     -Denable-thunderbolt=false \
 %if 0%{?have_uefi}
     -Denable-uefi=true \
@@ -183,12 +189,15 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
 %dir %{_sysconfdir}/fwupd/remotes.d
+%{_sysconfdir}/fwupd/remotes.d/fwupd.conf
 %{_sysconfdir}/fwupd/remotes.d/lvfs.conf
 %{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
+%{_sysconfdir}/fwupd/remotes.d/vendor.conf
 %{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
-%{_datadir}/app-info/xmls/org.freedesktop.fwupd.xml
+%{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
+%{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
@@ -215,6 +224,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-2/libfu_plugin_steelseries.so
 %if 0%{?have_smbios}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
+%endif
+%if 0%{?enable_dummy}
+%{_libdir}/fwupd-plugins-2/libfu_plugin_test.so
 %endif
 %{_libdir}/fwupd-plugins-2/libfu_plugin_udev.so
 %if 0%{?have_uefi}
@@ -262,6 +274,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Aug 03 2017 Richard Hughes <richard@hughsie.com> 0.9.6-1
+- New upstream release
+- Add --version option to fwupdmgr
+- Display all errors recorded by efi_error tracing
+- Don't log a warning when an unknown unifying report is parsed
+- Fix a hang on 32 bit machines
+- Make sure the unifying percentage completion goes from 0% to 100%
+- Support embedded devices with local firmware metadata
+- Use new GUsb functionality to fix flashing Unifying devices
+
 * Wed Aug 02 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.9.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
