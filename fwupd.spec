@@ -155,7 +155,9 @@ Data files for installed tests.
     -Denable-colorhug=true
 
 %meson_build
+
 %if 0%{?enable_tests}
+%check
 %meson_test
 %endif
 
