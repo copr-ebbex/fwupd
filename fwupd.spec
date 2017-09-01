@@ -8,19 +8,20 @@
 %global enable_tests 1
 %global enable_dummy 1
 
-%ifarch x86_64 %{ix86}
-%global have_smbios 1
+# fwupdate is only available on these arches
+%ifarch x86_64 aarch64
+%global have_uefi 1
 %endif
 
-# FIXME: should also be aarch64, but efivar not present there yet
-%ifarch x86_64 %{ix86}
-%global have_uefi 1
+# libsmbios is only available on x86, and fwupdate is available on just x86_64
+%ifarch x86_64
+%global have_dell 1
 %endif
 
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   0.9.6
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -57,7 +58,8 @@ BuildRequires: dejavu-sans-fonts
 BuildRequires: adobe-source-han-sans-cn-fonts
 %endif
 
-%if 0%{?have_smbios}
+%if 0%{?have_dell}
+BuildRequires: efivar-devel
 BuildRequires: libsmbios-devel >= 2.3.0
 %endif
 
@@ -145,7 +147,7 @@ Data files for installed tests.
     -Denable-uefi=false \
     -Denable-uefi-labels=false \
 %endif
-%if 0%{?have_smbios}
+%if 0%{?have_dell}
     -Denable-dell=true \
     -Denable-synaptics=true \
 %else
@@ -217,14 +219,14 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_colorhug.so
-%if 0%{?have_smbios}
+%if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_dell.so
 %endif
 %{_libdir}/fwupd-plugins-2/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_raspberrypi.so
 %{_libdir}/fwupd-plugins-2/libfu_plugin_steelseries.so
-%if 0%{?have_smbios}
+%if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
 %endif
 %if 0%{?enable_dummy}
@@ -276,6 +278,10 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Fri Sep 01 2017 Kalev Lember <klember@redhat.com> 0.9.6-2
+- Disable i686 UEFI support now that fwupdate is no longer available there
+- Enable aarch64 UEFI support now that all the deps are available there
+
 * Thu Aug 03 2017 Richard Hughes <richard@hughsie.com> 0.9.6-1
 - New upstream release
 - Add --version option to fwupdmgr
