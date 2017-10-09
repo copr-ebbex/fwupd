@@ -5,8 +5,7 @@
 %global colord_version 1.2.12
 %global systemd_version 231
 
-# there's a XTEA endianness bug in dfu_cipher_xtea_func
-%global enable_tests 0
+%global enable_tests 1
 %global enable_dummy 1
 
 # fwupdate is only available on these arches
@@ -21,7 +20,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   0.9.7
+Version:   1.0.0
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -74,7 +73,6 @@ Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
 
-Requires: libdfu%{?_isa} = %{version}-%{release}
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
@@ -86,6 +84,7 @@ Recommends: python3
 
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
+Obsoletes: libdfu < 0.9.8-1
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -94,22 +93,10 @@ fwupd is a daemon to allow session software to update device firmware.
 Summary: Development package for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Obsoletes: libebitdo-devel < 0.7.5-3
+Obsoletes: libdfu-devel < 0.9.8-1
 
 %description devel
 Files for development with %{name}.
-
-%package -n libdfu
-Summary: A library for DFU
-
-%description -n libdfu
-A library for updating USB devices using DFU.
-
-%package -n libdfu-devel
-Summary: Development package for libdfu
-Requires: libdfu%{?_isa} = %{version}-%{release}
-
-%description -n libdfu-devel
-Files for development with libdfu.
 
 %package labels
 Summary: Rendered labels for display during system firmware updates.
@@ -187,15 +174,13 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 /sbin/ldconfig
 %systemd_postun_with_restart fwupd.service
 
-%post -n libdfu -p /sbin/ldconfig
-%postun -n libdfu -p /sbin/ldconfig
-
 %files -f %{name}.lang
 %doc README.md AUTHORS NEWS
 %license COPYING
-%config(noreplace)%{_sysconfdir}/fwupd.conf
+%config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
+%{_bindir}/dfu-tool
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
 %dir %{_sysconfdir}/fwupd/remotes.d
@@ -212,6 +197,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
+%{_datadir}/man/man1/dfu-tool.1.gz
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/fwupd/firmware-packager
@@ -221,56 +207,41 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_localstatedir}/lib/fwupd
 %{_localstatedir}/lib/fwupd/builder/README.md
 %{_libdir}/libfwupd*.so.*
-%{_libdir}/girepository-1.0/Fwupd-1.0.typelib
+%{_libdir}/girepository-1.0/Fwupd-2.0.typelib
 /usr/lib/udev/rules.d/*.rules
-%dir %{_libdir}/fwupd-plugins-2
-%{_libdir}/fwupd-plugins-2/libfu_plugin_altos.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_amt.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_colorhug.so
+%dir %{_libdir}/fwupd-plugins-3
+%{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %if 0%{?have_dell}
-%{_libdir}/fwupd-plugins-2/libfu_plugin_dell.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
 %endif
-%{_libdir}/fwupd-plugins-2/libfu_plugin_dfu.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_ebitdo.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_raspberrypi.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_steelseries.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_raspberrypi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %if 0%{?have_dell}
-%{_libdir}/fwupd-plugins-2/libfu_plugin_synapticsmst.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
 %endif
 %if 0%{?enable_dummy}
-%{_libdir}/fwupd-plugins-2/libfu_plugin_test.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
 %endif
-%{_libdir}/fwupd-plugins-2/libfu_plugin_thunderbolt.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_udev.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_udev.so
 %if 0%{?have_uefi}
-%{_libdir}/fwupd-plugins-2/libfu_plugin_uefi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %endif
-%{_libdir}/fwupd-plugins-2/libfu_plugin_unifying.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_upower.so
-%{_libdir}/fwupd-plugins-2/libfu_plugin_usb.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 
 %files devel
-%{_datadir}/gir-1.0/Fwupd-1.0.gir
+%{_datadir}/gir-1.0/Fwupd-2.0.gir
 %{_datadir}/gtk-doc/html/libfwupd
 %{_includedir}/fwupd-1
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
-
-%files -n libdfu
-%{_bindir}/dfu-tool
-%{_datadir}/man/man1/dfu-tool.1.gz
-%{_libdir}/girepository-1.0/Dfu-1.0.typelib
-%{_libdir}/libdfu*.so.*
-
-%files -n libdfu-devel
-%{_datadir}/gir-1.0/Dfu-1.0.gir
-%{_datadir}/gtk-doc/html/libdfu
-%dir %{_includedir}/libdfu
-%{_includedir}/dfu.h
-%{_includedir}/libdfu/*.h
-%{_libdir}/libdfu*.so
-%{_libdir}/pkgconfig/dfu.pc
 
 %files labels
 %if 0%{?have_uefi}
@@ -287,6 +258,22 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Mon Oct 09 2017 Richard Hughes <richard@hughsie.com> 1.0.0-1
+- New upstream release
+- This release breaks API and ABI to remove deprecated symbols
+- libdfu is now not installed as a shared library
+- Add FuDeviceLocker to simplify device open/close lifecycles
+- Add functionality to blacklist Dell HW with problems
+- Disable the fallback USB plugin
+- Do not fail to load the daemon if cached metadata is invalid
+- Do not use system-specific infomation for UEFI PCI devices
+- Fix various printing issues with the progressbar
+- Never fallback to an offline update from client code
+- Only set the Dell coldplug delay when we know we need it
+- Parse the SMBIOS v2 and v3 DMI tables directly
+- Support uploading the UEFI firmware splash image
+- Use the intel-wmi-thunderbolt kernel module to force power
+
 * Fri Sep 01 2017 Richard Hughes <richard@hughsie.com> 0.9.7-1
 - New upstream release
 - Add a FirmwareBaseURI parameter to the remote config
