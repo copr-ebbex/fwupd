@@ -20,7 +20,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.0
+Version:   1.0.1
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -49,6 +49,7 @@ BuildRequires: libuuid-devel
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
+BuildRequires: help2man
 
 %if 0%{?have_uefi}
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
@@ -205,6 +206,8 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_unitdir}/fwupd.service
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
+%dir %{_datadir}/fwupd/quirks.d
+%{_datadir}/fwupd/quirks.d/*.quirk
 %{_localstatedir}/lib/fwupd/builder/README.md
 %{_libdir}/libfwupd*.so.*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
@@ -258,6 +261,24 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Nov 09 2017 Richard Hughes <richard@hughsie.com> 1.0.1-1
+- New upstream release
+- Add support for HWID requirements
+- Add support for programming various AVR32 and XMEGA parts using DFU
+- Add the various DFU quirks for the Jabra Speak devices
+- Catch invalid Dell dock component requests
+- Correctly output Intel HEX files with > 16bit offset addresses
+- Do not try to verify the element write if upload is unsupported
+- Fix a double-unref when updating any 8Bitdo device
+- Fix uploading large firmware files over DFU
+- Format the BCD USB revision numbers correctly
+- Guess the DFU transfer size if it is not specified
+- Include the reset timeout as wValue to fix some DFU bootloaders
+- Move the database of supported devices out into runtime loaded files
+- Support devices with truncated DFU interface data
+- Use the correct wDetachTimeOut when writing DFU firmware
+- Verify devices with legacy VIDs are actually 8Bitdo controllers
+
 * Mon Oct 09 2017 Richard Hughes <richard@hughsie.com> 1.0.0-1
 - New upstream release
 - This release breaks API and ABI to remove deprecated symbols
