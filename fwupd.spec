@@ -21,7 +21,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.0.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -85,7 +85,7 @@ Recommends: python3
 
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
-Obsoletes: libdfu < 0.9.8-1
+Obsoletes: libdfu < 1.0.0
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -94,7 +94,7 @@ fwupd is a daemon to allow session software to update device firmware.
 Summary: Development package for %{name}
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Obsoletes: libebitdo-devel < 0.7.5-3
-Obsoletes: libdfu-devel < 0.9.8-1
+Obsoletes: libdfu-devel < 1.0.0
 
 %description devel
 Files for development with %{name}.
@@ -261,6 +261,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Nov 09 2017 Kalev Lember <klember@redhat.com> 1.0.1-2
+- Fix libdfu obsoletes versions
+
 * Thu Nov 09 2017 Richard Hughes <richard@hughsie.com> 1.0.1-1
 - New upstream release
 - Add support for HWID requirements
