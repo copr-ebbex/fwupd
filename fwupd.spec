@@ -1,5 +1,5 @@
 %global glib2_version 2.45.8
-%global libappstream_version 0.6.13
+%global libappstream_version 0.7.4
 %global libgusb_version 0.2.11
 %global libsoup_version 2.51.92
 %global colord_version 1.2.12
@@ -21,7 +21,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.0.1
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -261,6 +261,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Nov 09 2017 Kalev Lember <klember@redhat.com> 1.0.1-3
+- Rebuild against libappstream-glib 0.7.4
+
 * Thu Nov 09 2017 Kalev Lember <klember@redhat.com> 1.0.1-2
 - Fix libdfu obsoletes versions
 
