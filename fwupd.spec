@@ -20,8 +20,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.1
-Release:   3%{?dist}
+Version:   1.0.2
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -121,34 +121,34 @@ Data files for installed tests.
 %build
 
 %meson \
-    -Denable-doc=true \
-    -Denable-man=true \
+    -Dgtkdoc=true \
+    -Dman=true \
 %if 0%{?enable_tests}
-    -Denable-tests=true \
+    -Dtests=true \
 %else
-    -Denable-tests=false \
+    -Dtests=false \
 %endif
 %if 0%{?enable_dummy}
-    -Denable-dummy=true \
+    -Dplugin_dummy=true \
 %else
-    -Denable-dummy=false \
+    -Dplugin_dummy=false \
 %endif
-    -Denable-thunderbolt=true \
+    -Dplugin_thunderbolt=true \
 %if 0%{?have_uefi}
-    -Denable-uefi=true \
-    -Denable-uefi-labels=true \
+    -Dplugin_uefi=true \
+    -Dplugin_uefi_labels=true \
 %else
-    -Denable-uefi=false \
-    -Denable-uefi-labels=false \
+    -Dplugin_uefi=false \
+    -Dplugin_uefi_labels=false \
 %endif
 %if 0%{?have_dell}
-    -Denable-dell=true \
-    -Denable-synaptics=true \
+    -Dplugin_dell=true \
+    -Dplugin_synaptics=true \
 %else
-    -Denable-dell=false \
-    -Denable-synaptics=false \
+    -Dplugin_dell=false \
+    -Dplugin_synaptics=false \
 %endif
-    -Denable-colorhug=true
+    -Dplugin_colorhug=true
 
 %meson_build
 
@@ -221,6 +221,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_raspberrypi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %if 0%{?have_dell}
@@ -261,6 +262,20 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Nov 28 2017 Richard Hughes <richard@hughsie.com> 1.0.2-1
+- New upstream release
+- Add a plugin for the Nitrokey Storage device
+- Add quirk for AT32UC3B1256 as used in the RubberDucky
+- Add support for the original AVR DFU protocol
+- Allow different plugins to claim the same device
+- Disable the dell plugin if libsmbios fails
+- Fix critical warning when more than one remote fails to load
+- Ignore useless Thunderbolt device types
+- Set environment variables to allow easy per-plugin debugging
+- Show a nicer error message if the requirement fails
+- Sort the output of GetUpgrades correctly
+- Use a SHA1 hash for the internal DeviceID
+
 * Thu Nov 09 2017 Kalev Lember <klember@redhat.com> 1.0.1-3
 - Rebuild against libappstream-glib 0.7.4
 
