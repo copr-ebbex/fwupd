@@ -262,7 +262,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
-* Thu Nov 28 2017 Richard Hughes <richard@hughsie.com> 1.0.2-1
+* Tue Nov 28 2017 Richard Hughes <richard@hughsie.com> 1.0.2-1
 - New upstream release
 - Add a plugin for the Nitrokey Storage device
 - Add quirk for AT32UC3B1256 as used in the RubberDucky
