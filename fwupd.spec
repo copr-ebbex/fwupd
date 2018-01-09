@@ -20,7 +20,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.2
+Version:   1.0.3
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -216,6 +216,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
 %endif
@@ -262,6 +263,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Tue Jan 09 2018 Richard Hughes <richard@hughsie.com> 1.0.3-1
+- New upstream release
+- Add a new plugin to add support for CSR "Driverless DFU"
+- Add initial SF30/SN30 Pro support
+- Block owned Dell TPM updates
+- Choose the correct component from provides matches using requirements
+- Do not try to parse huge compressed archive files
+- Handle Thunderbolt "native" mode
+- Use the new functionality in libgcab >= 1.0 to avoid writing temp files
+
 * Tue Nov 28 2017 Richard Hughes <richard@hughsie.com> 1.0.2-1
 - New upstream release
 - Add a plugin for the Nitrokey Storage device
