@@ -21,10 +21,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.0.3
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# already upstream
+Patch0:    0001-Fix-firmware-downloading-using-gnome-software-compil.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -117,6 +120,7 @@ Data files for installed tests.
 
 %prep
 %setup -q
+%patch0 -p1 -b .fix-gnome-software
 
 %build
 
@@ -263,6 +267,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Fri Jan 12 2018 Richard Hughes <richard@hughsie.com> 1.0.3-2
+- Backport a patch that fixes applying firmware updates using gnome-software.
+
 * Tue Jan 09 2018 Richard Hughes <richard@hughsie.com> 1.0.3-1
 - New upstream release
 - Add a new plugin to add support for CSR "Driverless DFU"
