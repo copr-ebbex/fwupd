@@ -20,14 +20,14 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.3
-Release:   2%{?dist}
+Version:   1.0.4
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-# already upstream
-Patch0:    0001-Fix-firmware-downloading-using-gnome-software-compil.patch
+# lets test this with rawhide and see how the server copes
+Patch0:    0001-Do-not-use-the-CDN-when-getting-metadata.patch
 
 BuildRequires: docbook-utils
 BuildRequires: gettext
@@ -53,6 +53,7 @@ BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
 BuildRequires: help2man
+BuildRequires: json-glib-devel >= %{json_glib_version}
 
 %if 0%{?have_uefi}
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
@@ -120,7 +121,7 @@ Data files for installed tests.
 
 %prep
 %setup -q
-%patch0 -p1 -b .fix-gnome-software
+%patch0 -p1 -b .no-cdn
 
 %build
 
@@ -189,11 +190,11 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
 %dir %{_sysconfdir}/fwupd/remotes.d
-%{_sysconfdir}/fwupd/remotes.d/fwupd.conf
-%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
-%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
-%{_sysconfdir}/fwupd/remotes.d/vendor.conf
-%{_sysconfdir}/pki/fwupd
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd.conf
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor.conf
+%config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
@@ -267,6 +268,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Jan 25 2018 Richard Hughes <richard@hughsie.com> 1.0.4-1
+- New upstream release
+- Add a device name for locked UEFI devices
+- Add D-Bus methods to get and modify the history information
+- Allow the user to share firmware update success or failure
+- Ask the user to refresh metadata when it is very old
+- Never add two devices to the daemon with the same ID
+- Rescan supported flags when refreshing metadata
+- Store firmware update success and failure to a local database
+
 * Fri Jan 12 2018 Richard Hughes <richard@hughsie.com> 1.0.3-2
 - Backport a patch that fixes applying firmware updates using gnome-software.
 
