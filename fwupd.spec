@@ -30,6 +30,9 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 # lets test this with rawhide and see how the server copes
 Patch0:    0001-Do-not-use-the-CDN-when-getting-metadata.patch
 
+# backport from master
+Patch1:    0001-Fix-linking-with-Wl-z-defs.patch
+
 BuildRequires: docbook-utils
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -123,6 +126,7 @@ Data files for installed tests.
 %prep
 %setup -q
 %patch0 -p1 -b .no-cdn
+%patch1 -p1 -b .wl-z-defs
 
 %build
 
