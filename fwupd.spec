@@ -4,6 +4,7 @@
 %global libsoup_version 2.51.92
 %global colord_version 1.2.12
 %global systemd_version 231
+%global json_glib_version 1.1.1
 
 %global enable_tests 1
 %global enable_dummy 1
