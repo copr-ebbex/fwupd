@@ -24,8 +24,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.4
-Release:   2%{?dist}
+Version:   1.0.5
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -33,7 +33,6 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 # lets test this with rawhide and see how the server copes
 Patch0:    0001-Do-not-use-the-CDN-when-getting-metadata.patch
 
-BuildRequires: docbook-utils
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libappstream-glib-devel >= %{libappstream_version}
@@ -272,6 +271,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Wed Feb 14 2018 Richard Hughes <richard@hughsie.com> 1.0.5-1
+- New upstream release
+- Be more careful deleting and modifying device history
+- Fix crasher with MST flashing
+- Fix DFU detach with newer releases of libusb
+- Offer to reboot when processing an offline update
+- Show the user a URL when they report a known problem
+- Stop matching 8bitdo DS4 controller VID/PID
+- Support split cabinet archives as produced by Windows Update
+
 * Wed Feb 07 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
