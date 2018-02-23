@@ -25,13 +25,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.0.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-# lets test this with rawhide and see how the server copes
-Patch0:    0001-Do-not-use-the-CDN-when-getting-metadata.patch
+# backport from master
+Patch0:    0001-Use-a-CNAME-to-redirect-to-the-correct-CDN-for-metad.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -271,6 +271,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Fri Feb 23 2018 Richard Hughes <richard@hughsie.com> 1.0.5-2
+- Use the new CDN for metadata.
+
 * Wed Feb 14 2018 Richard Hughes <richard@hughsie.com> 1.0.5-1
 - New upstream release
 - Be more careful deleting and modifying device history
