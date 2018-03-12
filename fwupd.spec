@@ -19,19 +19,13 @@
 %global have_dell 1
 %endif
 
-# -Wl,-z,defs is broken
-%undefine _strict_symbol_defs_build
-
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.5
-Release:   2%{?dist}
+Version:   1.0.6
+Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# backport from master
-Patch0:    0001-Use-a-CNAME-to-redirect-to-the-correct-CDN-for-metad.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -57,6 +51,7 @@ BuildRequires: gnutls-utils
 BuildRequires: meson
 BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
+BuildRequires: vala
 
 %if 0%{?have_uefi}
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
@@ -124,7 +119,6 @@ Data files for installed tests.
 
 %prep
 %setup -q
-%patch0 -p1 -b .no-cdn
 
 %build
 
@@ -187,6 +181,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %doc README.md AUTHORS NEWS
 %license COPYING
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
+%config(noreplace)%{_sysconfdir}/fwupd/uefi.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_bindir}/dfu-tool
@@ -200,6 +195,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
+%{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
@@ -231,7 +227,6 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_raspberrypi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
@@ -252,6 +247,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
 %{_datadir}/gtk-doc/html/libfwupd
+%{_datadir}/vala/vapi
 %{_includedir}/fwupd-1
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
@@ -271,6 +267,19 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Mon Mar 12 2018 Richard Hughes <richard@hughsie.com> 1.0.6-1
+- New upstream release
+- Add bash completion for fwupdmgr
+- Add support for newest Thunderbolt chips
+- Allow devices to use the runtime version when in bootloader mode
+- Allow overriding ESP mount point via conf file
+- Correct handling of unknown Thunderbolt devices
+- Correctly detect new remotes that are manually copied
+- Delete any old fwupdate capsules and efivars when launching fwupd
+- Fix a crash related to when passing device to downgrade in CLI
+- Fix Unifying signature writing and parsing for Texas bootloader
+- Generate Vala bindings
+
 * Fri Feb 23 2018 Richard Hughes <richard@hughsie.com> 1.0.5-2
 - Use the new CDN for metadata.
 
