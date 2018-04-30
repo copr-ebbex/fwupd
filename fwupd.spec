@@ -21,7 +21,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.6
+Version:   1.0.7
 Release:   1%{?dist}
 License:   GPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -206,7 +206,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/dfu-tool.1.gz
 %{_datadir}/man/man1/fwupdmgr.1.gz
-%{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
+%{_datadir}/metainfo/org.freedesktop.fwupd*.metainfo.xml
 %{_datadir}/fwupd/firmware-packager
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
@@ -269,6 +269,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Mon Apr 30 2018 Richard Hughes <richard@hughsie.com> 1.0.7-1
+- New upstream release
+- Add enable-remote and disable-remote commands to fwupdmgr
+- Allow requiring specific versions of libraries for firmware updates
+- Don't recoldplug thunderbolt to fix a flashing failure
+- Fix SQL error when running 'fwupdmgr clear-offline'
+- Only enumerate Dell Docks if the type is known
+- Reboot after scheduling using logind not systemd
+- Show a warning with interactive prompt when enabling a remote
+
 * Mon Mar 12 2018 Richard Hughes <richard@hughsie.com> 1.0.6-1
 - New upstream release
 - Add bash completion for fwupdmgr
