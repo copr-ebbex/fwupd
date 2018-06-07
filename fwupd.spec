@@ -2,7 +2,6 @@
 %global libappstream_version 0.7.4
 %global libgusb_version 0.2.11
 %global libsoup_version 2.51.92
-%global colord_version 1.2.12
 %global systemd_version 231
 %global json_glib_version 1.1.1
 
@@ -21,9 +20,9 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.7
+Version:   1.0.8
 Release:   1%{?dist}
-License:   GPLv2+
+License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
@@ -33,7 +32,6 @@ BuildRequires: libappstream-glib-devel >= %{libappstream_version}
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
 BuildRequires: libsoup-devel >= %{libsoup_version}
-BuildRequires: colord-devel >= %{colord_version}
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
@@ -52,6 +50,7 @@ BuildRequires: meson
 BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
+BuildRequires: bash-completion
 
 %if 0%{?have_uefi}
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
@@ -124,7 +123,6 @@ Data files for installed tests.
 
 %meson \
     -Dgtkdoc=true \
-    -Dman=true \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
@@ -150,7 +148,7 @@ Data files for installed tests.
     -Dplugin_dell=false \
     -Dplugin_synaptics=false \
 %endif
-    -Dplugin_colorhug=true
+    -Dman=true
 
 %meson_build
 
@@ -186,6 +184,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
+%{_libexecdir}/fwupd/fwupdtool
 %{_bindir}/dfu-tool
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
@@ -198,6 +197,8 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
+%{_datadir}/bash-completion/completions/fwupdtool
+%{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
 %{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
@@ -206,7 +207,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
 %{_datadir}/man/man1/dfu-tool.1.gz
 %{_datadir}/man/man1/fwupdmgr.1.gz
-%{_datadir}/metainfo/org.freedesktop.fwupd*.metainfo.xml
+%{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/fwupd/firmware-packager
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
@@ -244,6 +245,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_wacomhid.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 
 %files devel
@@ -269,6 +271,20 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Jun 07 2018 Richard Hughes <richard@hughsie.com> 1.0.8-1
+- New upstream release
+- Adjust all licensing to be 100% LGPL 2.1+
+- Add a firmware diagnostic tool called fwupdtool
+- Add an plugin to update some future Wacom tablets
+- Add support for Motorola S-record files
+- Add the Linux Foundation public GPG keys for firmware and metadata
+- Allow installing more than one firmware using 'fwupdmgr install'
+- Allow specifying hwids with OR relationships
+- Fix a potential DoS in libdfu by limiting holes to 1MiB
+- Fix Hardware-ID{0,1,2,12} compatibility with Microsoft
+- Hide devices that aren't updatable by default in fwupdmgr
+- Stop matching Nintendo Switch Pro in the 8bitdo plugin
+
 * Mon Apr 30 2018 Richard Hughes <richard@hughsie.com> 1.0.7-1
 - New upstream release
 - Add enable-remote and disable-remote commands to fwupdmgr
