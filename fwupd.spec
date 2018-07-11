@@ -8,19 +8,24 @@
 %global enable_tests 1
 %global enable_dummy 1
 
-# fwupdate is only available on these arches
+# fwupd.efi is only available on these arches
 %ifarch x86_64 aarch64
 %global have_uefi 1
 %endif
 
-# libsmbios is only available on x86, and fwupdate is available on just x86_64
+# redfish is only available on this arch
+%ifarch x86_64
+%global have_redfish 1
+%endif
+
+# libsmbios is only available on x86
 %ifarch x86_64
 %global have_dell 1
 %endif
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.0.8
+Version:   1.1.0
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -52,7 +57,12 @@ BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
 
+%if 0%{?have_redfish}
+BuildRequires: efivar-devel >= 33
+%endif
+
 %if 0%{?have_uefi}
+BuildRequires: efivar-devel >= 33
 BuildRequires: python3 python3-cairo python3-gobject python3-pillow
 BuildRequires: pango-devel
 BuildRequires: cairo-devel cairo-gobject-devel
@@ -60,15 +70,13 @@ BuildRequires: freetype
 BuildRequires: fontconfig
 BuildRequires: dejavu-sans-fonts
 BuildRequires: adobe-source-han-sans-cn-fonts
+BuildRequires: gnu-efi-devel
+BuildRequires: pesign
 %endif
 
 %if 0%{?have_dell}
-BuildRequires: efivar-devel
+BuildRequires: efivar-devel >= 33
 BuildRequires: libsmbios-devel >= 2.3.0
-%endif
-
-%if 0%{?have_uefi}
-BuildRequires: fwupdate-devel >= 7
 %endif
 
 Requires(post): systemd
@@ -79,7 +87,6 @@ Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
-Requires: fwupd-labels = %{version}-%{release}
 Requires: bubblewrap
 
 Recommends: python3
@@ -87,6 +94,7 @@ Recommends: python3
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
 Obsoletes: libdfu < 1.0.0
+Obsoletes: fwupd-labels < 1.1.0-1
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -99,15 +107,6 @@ Obsoletes: libdfu-devel < 1.0.0
 
 %description devel
 Files for development with %{name}.
-
-%package labels
-Summary: Rendered labels for display during system firmware updates.
-# BuildArch: noarch is disabled as we can get "different" .BMP files even when
-# running the build on the same architecture due to the randomness introduced
-# by the TTF files.
-
-%description labels
-Rendered labels for display during system firmware updates.
 
 %package tests
 Summary: Data files for installed tests
@@ -134,12 +133,15 @@ Data files for installed tests.
     -Dplugin_dummy=false \
 %endif
     -Dplugin_thunderbolt=true \
+%if 0%{?have_redfish}
+    -Dplugin_redfish=true \
+%else
+    -Dplugin_redfish=false \
+%endif
 %if 0%{?have_uefi}
     -Dplugin_uefi=true \
-    -Dplugin_uefi_labels=true \
 %else
     -Dplugin_uefi=false \
-    -Dplugin_uefi_labels=false \
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
@@ -160,6 +162,18 @@ Data files for installed tests.
 %install
 %meson_install
 
+# sign fwupd.efi loader
+%if 0%{?have_uefi}
+%ifarch x86_64
+%global efiarch x64
+%endif
+%ifarch aarch64
+%global efiarch aa64
+%endif
+%global fwup_efi_fn $RPM_BUILD_ROOT%{_libexecdir}/fwupd/efi/fwupd%{efiarch}.efi
+%pesign -s -i %{fwup_efi_fn} -o %{fwup_efi_fn}.signed
+%endif
+
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 %find_lang %{name}
@@ -174,6 +188,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart fwupd.service
+%systemd_postun_with_restart pesign.service
 
 %files -f %{name}.lang
 %doc README.md AUTHORS NEWS
@@ -185,6 +200,11 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_libexecdir}/fwupd/fwupdtool
+%if 0%{?have_uefi}
+%{_libexecdir}/fwupd/efi/*.efi
+%{_libexecdir}/fwupd/efi/*.efi.signed
+%{_libexecdir}/fwupd/fwupdate
+%endif
 %{_bindir}/dfu-tool
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
@@ -226,10 +246,14 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_dell_esrt.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
+%if 0%{?have_redfish}
+%{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
+%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
@@ -247,6 +271,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacomhid.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
+%if 0%{?have_uefi}
+%{_datadir}/locale/*/LC_IMAGES/fwupd*
+%endif
 
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
@@ -255,11 +282,6 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_includedir}/fwupd-1
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
-
-%files labels
-%if 0%{?have_uefi}
-%{_datadir}/locale/*/LC_IMAGES/fwupd*
-%endif
 
 %files tests
 %dir %{_datadir}/installed-tests/fwupd
@@ -271,6 +293,19 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Wed Jul 11 2018 Richard Hughes <richard@hughsie.com> 1.1.0-1
+- New upstream release
+- Add a initial Redfish support
+- Allow devices to assign a plugin from the quirk subsystem
+- Detect the EFI system partition location at runtime
+- Do not use 8bitdo bootloader commands after a successful flash
+- Fix a potential buffer overflow when applying a DFU patch
+- Fix downgrading older releases to devices
+- Fix flashing devices that require a manual replug
+- Fix unifying failure to detach when using a slow host controller
+- Merge fwupdate functionality into fwupd
+- Support more Wacom tablets
+
 * Thu Jun 07 2018 Richard Hughes <richard@hughsie.com> 1.0.8-1
 - New upstream release
 - Adjust all licensing to be 100% LGPL 2.1+
