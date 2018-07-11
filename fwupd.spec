@@ -34,6 +34,7 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libappstream-glib-devel >= %{libappstream_version}
+BuildRequires: libgcab1-devel
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
 BuildRequires: libsoup-devel >= %{libsoup_version}
