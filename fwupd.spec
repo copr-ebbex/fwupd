@@ -26,7 +26,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.1.0
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -294,6 +294,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Thu Jul 12 2018 Richard Hughes <richard@hughsie.com> 1.1.0-2
+- Rebuild to get the EFI executable signed with the Red Hat key
+
 * Wed Jul 11 2018 Richard Hughes <richard@hughsie.com> 1.1.0-1
 - New upstream release
 - Add a initial Redfish support
