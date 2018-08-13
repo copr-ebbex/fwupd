@@ -25,8 +25,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.1.0
-Release:   3%{?dist}
+Version:   1.1.1
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -45,8 +45,10 @@ BuildRequires: systemd >= %{systemd_version}
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
+%ifarch %{valgrind_arches}
 BuildRequires: valgrind
 BuildRequires: valgrind-devel
+%endif
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
 BuildRequires: libuuid-devel
@@ -198,6 +200,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/fwupd/uefi.conf
 %endif
+%if 0%{?have_redfish}
+%config(noreplace)%{_sysconfdir}/fwupd/redfish.conf
+%endif
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_libexecdir}/fwupd/fwupdtool
@@ -294,6 +299,21 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Mon Aug 13 2018 Richard Hughes <richard@hughsie.com> 1.1.1-1
+- New upstream release
+- Add support for the Synaptics Panamera hardware
+- Add validation for Alpine and Titan Ridge
+- Allow flashing unifying devices in recovery mode
+- Allow running synapticsmst on non-Dell hardware
+- Check the ESP for sanity at at startup
+- Do not hold hidraw devices open forever
+- Fix a potential segfault in smbios data parsing
+- Fix encoding the GUID into the capsule EFI variable
+- Fix various bugs when reading the thunderbolt version number
+- Improve the Redfish plugin to actually work with real hardware
+- Reboot synapticsmst devices at the end of flash cycle
+- Show the correct title when updating devices
+
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.1.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
