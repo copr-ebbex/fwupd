@@ -259,7 +259,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
+%if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
+%endif
 %if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %endif
