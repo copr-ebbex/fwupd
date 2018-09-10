@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.1.1
+Version:   1.1.2
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -71,8 +71,7 @@ BuildRequires: pango-devel
 BuildRequires: cairo-devel cairo-gobject-devel
 BuildRequires: freetype
 BuildRequires: fontconfig
-BuildRequires: dejavu-sans-fonts
-BuildRequires: adobe-source-han-sans-cn-fonts
+BuildRequires: google-noto-sans-cjk-ttc-fonts
 BuildRequires: gnu-efi-devel
 BuildRequires: pesign
 %endif
@@ -256,11 +255,14 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
 %if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_superio.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
 %endif
@@ -299,6 +301,18 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Mon Sep 10 2018 Richard Hughes <richard@hughsie.com> 1.1.2-1
+- New upstream release
+- Add a new plugin to enumerate EC firmware
+- Add a new plugin to update NVMe hardware
+- Allow updating just one specific device from the command line
+- Always use the same HardwareIDs as Windows
+- Download firmware if the user specifies a URI
+- Implement the systemd recommendations for offline updates
+- Improve performance when reading keys from the quirk database
+- Rewrite the unifying plugin to use the new daemon-provided functionality
+- Show a time estimate on the progressbar after an update has started
+
 * Mon Aug 13 2018 Richard Hughes <richard@hughsie.com> 1.1.1-1
 - New upstream release
 - Add support for the Synaptics Panamera hardware
