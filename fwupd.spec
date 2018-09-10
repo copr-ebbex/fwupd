@@ -142,8 +142,10 @@ Data files for installed tests.
 %endif
 %if 0%{?have_uefi}
     -Dplugin_uefi=true \
+    -Dplugin_nvme=true \
 %else
     -Dplugin_uefi=false \
+    -Dplugin_nvme=false \
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
