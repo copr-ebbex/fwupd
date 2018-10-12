@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.1.2
+Version:   1.1.3
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -255,6 +255,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_esrt.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
@@ -265,6 +266,8 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_superio.so
 %if 0%{?have_dell}
@@ -305,6 +308,21 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Fri Oct 12 2018 Richard Hughes <richard@hughsie.com> 1.1.3-1
+- New upstream release
+- Add a plugin for an upcoming Dell USB-C dock
+- Add support for devices to show an estimated flash time
+- Add support for Realtek USB devices using vendor HID and HUB commands
+- Adjust panamera ESM update routine for some reported issues
+- Allow firmware files to depend on versions from other devices
+- Check the amount of free space on the ESP before upgrading
+- Don't show devices pending a reboot in GetUpgrades
+- Fix possible crash in the thunderbolt-power plugin
+- Make various parts of the daemon thread-safe
+- Redirect all debugging output to stderr instead of stdout
+- Run the Dell plugin initialization after the UEFI plugin
+- Update all sub-devices for a composite update
+
 * Mon Sep 10 2018 Richard Hughes <richard@hughsie.com> 1.1.2-1
 - New upstream release
 - Add a new plugin to enumerate EC firmware
