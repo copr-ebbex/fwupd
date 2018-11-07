@@ -1,5 +1,5 @@
 %global glib2_version 2.45.8
-%global libappstream_version 0.7.4
+%global libxmlb_version 0.1.3
 %global libgusb_version 0.2.11
 %global libsoup_version 2.51.92
 %global systemd_version 231
@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.1.3
+Version:   1.2.0
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -33,7 +33,7 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
-BuildRequires: libappstream-glib-devel >= %{libappstream_version}
+BuildRequires: libxmlb-devel >= %{libxmlb_version}
 BuildRequires: libgcab1-devel
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
@@ -86,10 +86,11 @@ Requires(preun): systemd
 Requires(postun): systemd
 
 Requires: glib2%{?_isa} >= %{glib2_version}
-Requires: libappstream-glib%{?_isa} >= %{libappstream_version}
+Requires: libxmlb%{?_isa} >= %{libxmlb_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
 Requires: bubblewrap
+Requires: shared-mime-info
 
 Recommends: python3
 
@@ -308,6 +309,19 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Wed Nov 07 2018 Richard Hughes <richard@hughsie.com> 1.2.0-1
+- New upstream release
+- Add a standalone installer creation script
+- Add version format quirks for several Lenovo machines
+- Adjust synapticsmst EVB board handling
+- Allow setting the version format from a quirk entry
+- Port from libappstream-glib to libxmlb for a large reduction in RSS
+- Set the full AMT device version including the BuildNum
+- Sort the firmware sack by component priority
+- Stop any running daemon over dbus when using fu-tool
+- Support the Intel ME version format
+- Use HTTPS_PROXY if set
+
 * Fri Oct 12 2018 Richard Hughes <richard@hughsie.com> 1.1.3-1
 - New upstream release
 - Add a plugin for an upcoming Dell USB-C dock
