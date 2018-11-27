@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.0
+Version:   1.2.1
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -196,7 +196,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %systemd_postun_with_restart pesign.service
 
 %files -f %{name}.lang
-%doc README.md AUTHORS NEWS
+%doc README.md AUTHORS
 %license COPYING
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
 %if 0%{?have_uefi}
@@ -309,6 +309,18 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/installed-tests/fwupd/*.py*
 
 %changelog
+* Tue Nov 27 2018 Richard Hughes <richard@hughsie.com> 1.2.1-1
+- New upstream release
+- Add per-release install duration values
+- Fix a use-after-free when using --immediate-exit
+- Fix flashing the 8bitdo SF30
+- Fix showing the custom remote agreements
+- Include the os-release information in the release metadata
+- Shut down the daemon after 2h of inactivity when possible
+- Speed up startup by loading less thunderbolt firmware
+- Speed up startup by using a silo index for GUID queries
+- Use less memory and fragment the heap less when starting
+
 * Wed Nov 07 2018 Richard Hughes <richard@hughsie.com> 1.2.0-1
 - New upstream release
 - Add a standalone installer creation script
