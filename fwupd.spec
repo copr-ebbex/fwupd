@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.1
+Version:   1.2.2
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -93,6 +93,7 @@ Requires: bubblewrap
 Requires: shared-mime-info
 
 Recommends: python3
+Recommends: tpm2-tools tpm2-abrmd
 
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
@@ -259,6 +260,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
 %if 0%{?have_uefi}
@@ -285,7 +287,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_wacomhid.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_uefi}
 %{_datadir}/locale/*/LC_IMAGES/fwupd*
@@ -301,14 +303,30 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 %files tests
 %dir %{_datadir}/installed-tests/fwupd
-%{_datadir}/installed-tests/fwupd/firmware-example.xml.gz
-%{_datadir}/installed-tests/fwupd/firmware-example.xml.gz.asc
+%{_datadir}/installed-tests/fwupd/fwupd-tests.xml
 %{_datadir}/installed-tests/fwupd/*.test
 %{_datadir}/installed-tests/fwupd/*.cab
 %{_datadir}/installed-tests/fwupd/*.sh
 %{_datadir}/installed-tests/fwupd/*.py*
+%dir %{_sysconfdir}/fwupd/remotes.d
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Sun Dec 30 2018 Richard Hughes <richard@hughsie.com> 1.2.2-1
+- New upstream release
+- Add support for devices that support fastboot
+- Add more standard USB identifier GUIDs
+- Add the PCR0 value as the device checksum for system firmware
+- Add Dell TB18DC to the supported devices list
+- Allow replacing the last byte in the image when using 'dfu-tool replace-data'
+- Append the UEFI capsule header in userspace rather than in the loader
+- Check the device checksum as well as the content checksum during verify
+- Correctly parse format the version numbers correctly using old metadata
+- Fix a crash if AMT returns an empty response
+- Fix a regression when doing GetReleases on unsupported hardware
+- Remove the Wacom DTH generation hardware from the whitelist
+- Sanitize the version if the version format has been specified
+
 * Tue Nov 27 2018 Richard Hughes <richard@hughsie.com> 1.2.1-1
 - New upstream release
 - Add per-release install duration values
