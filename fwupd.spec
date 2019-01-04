@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.2
+Version:   1.2.3
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -312,6 +312,10 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Jan 04 2019 Richard Hughes <richard@hughsie.com> 1.2.3-1
+- New upstream release
+- Correctly migrate the history database
+
 * Sun Dec 30 2018 Richard Hughes <richard@hughsie.com> 1.2.2-1
 - New upstream release
 - Add support for devices that support fastboot
