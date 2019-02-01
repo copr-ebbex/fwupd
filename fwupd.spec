@@ -25,8 +25,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.3
-Release:   2%{?dist}
+Version:   1.2.4
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -222,6 +222,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor.conf
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor-directory.conf
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
@@ -251,6 +252,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_libdir}/fwupd-plugins-3
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %if 0%{?have_dell}
@@ -287,6 +289,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_uefi}
@@ -312,6 +315,29 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Feb 01 2019 Richard Hughes <richard@hughsie.com> 1.2.4-1
+- New upstream release
+- Add a directory remote that generates metadata
+- Add a plugin to update Wacom embedded EMR and AES panels
+- Add a plugin to upgrade firmware on ATA-ATAPI hardware
+- Add a quirk to use the legacy bootmgr description
+- Add SuperIO IT89xx device support
+- Add support for Dell dock passive flow
+- Add the needs-shutdown quirk to Phison NVMe drives
+- Add 'update' and 'get-updates' commands to fwupdtool
+- Allow Dell dock flashing Thunderbolt over I2C
+- Check the battery percentage before flashing
+- Correct Nitrokey Storage invalid firmware version read
+- Do not check the BGRT status before uploading a UX capsule
+- Do the UEFI UX checksum calculation in fwupd
+- Fix flashing various Jabra devices
+- Fix the parser to support extended segment addresses
+- Flash the fastboot partition after downloading the file
+- Show a console warning if loading an out-of-tree plugin
+- Show a per-release source and details URL
+- Show a `UpdateMessage` and display it in tools
+- Support FGUID to get the SKU GUID for NVMe hardware
+
 * Thu Jan 31 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
