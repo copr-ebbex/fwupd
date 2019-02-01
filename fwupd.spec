@@ -31,6 +31,9 @@ License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
+# backport from master
+Patch0:    fix.patch
+
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
@@ -120,7 +123,7 @@ BuildArch: noarch
 Data files for installed tests.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 

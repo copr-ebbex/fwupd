@@ -1,0 +1,40 @@
+diff --git a/meson.build b/meson.build
+index da72f33f..73420d18 100644
+--- a/meson.build
++++ b/meson.build
+@@ -77,7 +77,7 @@ warning_flags = [
+   '-Wmissing-prototypes',
+   '-Wnested-externs',
+   '-Wno-cast-function-type',
+-  '-Wno-error=cpp',
++  '-Wno-address-of-packed-member',  # incompatable with g_autoptr()
+   '-Wno-unknown-pragmas',
+   '-Wno-discarded-qualifiers',
+   '-Wno-missing-field-initializers',
+diff --git a/plugins/uefi/efi/meson.build b/plugins/uefi/efi/meson.build
+index dbccda03..5be2ffea 100644
+--- a/plugins/uefi/efi/meson.build
++++ b/plugins/uefi/efi/meson.build
+@@ -53,7 +53,6 @@ compile_args = ['-Og',
+                 '--param=ssp-buffer-size=4',
+                 '-fexceptions',
+                 '-Wall',
+-                '-Werror',
+                 '-Wextra',
+                 '-Wvla',
+                 '-std=gnu11',
+@@ -66,10 +65,14 @@ compile_args = ['-Og',
+                 '-fno-merge-constants',
+                 '-Wsign-compare',
+                 '-Wno-missing-field-initializers',
++                '-Wno-address-of-packed-member',
+                 '-grecord-gcc-switches',
+                 '-DDEBUGDIR="@0@"'.format(debugdir),
+                 '-isystem', efi_incdir,
+                 '-isystem', join_paths(efi_incdir, gnu_efi_path_arch)]
++if get_option('werror')
++    compile_args += '-Werror'
++endif
+ if efi_arch == 'x86_64'
+   compile_args += ['-mno-red-zone',
+                    '-mno-sse',
