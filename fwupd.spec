@@ -35,6 +35,7 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 Patch0:    fix.patch
 
 BuildRequires: gettext
+BuildRequires: glibc-langpack-en
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
 BuildRequires: libgcab1-devel
