@@ -26,7 +26,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.2.4
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -189,14 +189,12 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %find_lang %{name}
 
 %post
-/sbin/ldconfig
 %systemd_post fwupd.service
 
 %preun
 %systemd_preun fwupd.service
 
 %postun
-/sbin/ldconfig
 %systemd_postun_with_restart fwupd.service
 %systemd_postun_with_restart pesign.service
 
@@ -319,6 +317,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Feb 12 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.2.4-2
+- Remove obsolete scriptlets
+
 * Fri Feb 01 2019 Richard Hughes <richard@hughsie.com> 1.2.4-1
 - New upstream release
 - Add a directory remote that generates metadata
