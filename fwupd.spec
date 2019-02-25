@@ -25,17 +25,13 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.4
-Release:   2%{?dist}
+Version:   1.2.5
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-# backport from master
-Patch0:    fix.patch
-
 BuildRequires: gettext
-BuildRequires: glibc-langpack-en
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
 BuildRequires: libgcab1-devel
@@ -55,7 +51,6 @@ BuildRequires: valgrind-devel
 %endif
 BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
-BuildRequires: libuuid-devel
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
@@ -240,6 +235,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/man/man1/dfu-tool.1.gz
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
+%{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
 %{_datadir}/fwupd/firmware-packager
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
@@ -317,6 +313,16 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Mon Feb 25 2019 Richard Hughes <richard@hughsie.com> 1.2.5-1
+- New upstream release
+- Allow a device to be updated using more than one plugin
+- Call composite prepare and cleanup using fwupdtool
+- Detect and special case Dell ATA hardware
+- Fix flashing failure with latest Intuos Pro tablet
+- Fix potential segfault when applying UEFI updates
+- Fix unifying regression when recovering from failed flash
+- Report the DeviceInstanceIDs from fwupdmgr when run as root
+
 * Tue Feb 12 2019 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 1.2.4-2
 - Remove obsolete scriptlets
 
