@@ -25,7 +25,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.5
+Version:   1.2.6
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -206,6 +206,8 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_libexecdir}/fwupd/fwupdtool
+%{_libexecdir}/fwupd/fwupdagent
+%{_libexecdir}/fwupd/fwupdoffline
 %if 0%{?have_uefi}
 %{_libexecdir}/fwupd/efi/*.efi
 %{_libexecdir}/fwupd/efi/*.efi.signed
@@ -225,6 +227,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
+%{_datadir}/bash-completion/completions/fwupdagent
 %{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
 %{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
@@ -247,6 +250,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/libfwupd*.so.*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
 /usr/lib/udev/rules.d/*.rules
+/usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-plugins-3
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
@@ -313,6 +317,24 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Mar 26 2019 Richard Hughes <richard@hughsie.com> 1.2.6-1
+- New upstream release
+- Add support for delayed activation of docks and ATA devices
+- Add support for reading the SuperIO device checksum and writing to e-flash
+- Add the fwupdagent binary for use in shell scripts
+- Allow restricting firmware updates for enterprise use
+- Allow running offline updates when in system-update.target
+- Allow signing the fwupd report with a client certificate
+- Ask to reboot after scheduling an offline firmware update
+- Correctly check the new version for devices that replug
+- Do not fail to start the daemon if tpm2_pcrlist hangs
+- Do not fail when scheduling more than one update to be run offline
+- Do not schedule an update on battery power if it requires AC power
+- Include all device checksums in the LVFS report
+- Rename the shimx64.efi binary for known broken firmware
+- Upload the UPDATE_INFO entry for the UEFI UX capsule
+- Use Plymouth when updating offline firmware
+
 * Mon Feb 25 2019 Richard Hughes <richard@hughsie.com> 1.2.5-1
 - New upstream release
 - Allow a device to be updated using more than one plugin
