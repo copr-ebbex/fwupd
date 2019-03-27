@@ -23,10 +23,15 @@
 %global have_dell 1
 %endif
 
+# only available recently
+%if 0%{?fedora} >= 30
+%global have_modem_manager 1
+%endif
+
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.2.6
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -58,6 +63,11 @@ BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
+
+%if 0%{?have_modem_manager}
+BuildRequires: ModemManager-glib-devel >= 1.10.0
+BuildRequires: libqmi-devel >= 1.22.0
+%endif
 
 %if 0%{?have_redfish}
 BuildRequires: efivar-devel >= 33
@@ -154,6 +164,11 @@ Data files for installed tests.
 %else
     -Dplugin_dell=false \
     -Dplugin_synaptics=false \
+%endif
+%if 0%{?have_modem_manager}
+    -Dplugin_modem_manager=true \
+%else
+    -Dplugin_modem_manager=false \
 %endif
     -Dman=true
 
@@ -266,6 +281,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
+%if 0%{?have_modem_manager}
+%{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
+%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
@@ -317,6 +335,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Wed Mar 27 2019 Richard Hughes <richard@hughsie.com> 1.2.6-2
+- Enable the ModemManager plugin
+
 * Tue Mar 26 2019 Richard Hughes <richard@hughsie.com> 1.2.6-1
 - New upstream release
 - Add support for delayed activation of docks and ATA devices
