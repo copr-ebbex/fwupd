@@ -30,8 +30,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.6
-Release:   2%{?dist}
+Version:   1.2.7
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -232,7 +232,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_bindir}/fwupdmgr
 %dir %{_sysconfdir}/fwupd
 %dir %{_sysconfdir}/fwupd/remotes.d
-%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd.conf
+%config(noreplace)%{_sysconfdir}/fwupd/remotes.d/dell-esrt.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/lvfs-testing.conf
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor.conf
@@ -244,7 +244,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/bash-completion/completions/fwupdtool
 %{_datadir}/bash-completion/completions/fwupdagent
 %{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
-%{_datadir}/fwupd/remotes.d/fwupd/metadata.xml
+%{_datadir}/fwupd/remotes.d/dell-esrt/metadata.xml
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
@@ -335,6 +335,22 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Thu Apr 11 2019 Richard Hughes <richard@hughsie.com> 1.2.7-1
+- New upstream release
+- Add a component categories to express the firmware type
+- Add support for 8BitDo M30
+- Add support for the not-child extension from Logitech
+- Blacklist the synapticsmst plugin when using amdgpu
+- Correct ATA activation functionality to work for all vendors
+- Implement QMI PDC active config selection for modems
+- Make an error message clearer when there are no updates available
+- Match the old or new version number when setting NEEDS_REBOOT
+- More carefully check the output from tpm2_pcrlist
+- Recreate the history database if migration failed
+- Require AC power when updating Thunderbolt devices
+- Require --force to install a release with a different version format
+- Shut down the daemon if the on-disk binary is replaced
+
 * Wed Mar 27 2019 Richard Hughes <richard@hughsie.com> 1.2.6-2
 - Enable the ModemManager plugin
 
