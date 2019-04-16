@@ -31,7 +31,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.2.7
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -339,6 +339,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Apr 16 2019 Adam Williamson <awilliam@redhat.com> - 1.2.7-2
+- Rebuild with Meson fix for #1699099
+
 * Thu Apr 11 2019 Richard Hughes <richard@hughsie.com> 1.2.7-1
 - New upstream release
 - Add a component categories to express the firmware type
