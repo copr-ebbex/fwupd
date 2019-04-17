@@ -31,10 +31,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.2.7
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# revert broken functionality
+Patch0:    0001-Revert-Require-force-to-install-a-release-with-a-dif.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -339,6 +342,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Wed Apr 17 2019 Richard Hughes <richard@hughsie.com> 1.2.7-3
+- Revert a patch from upstream that was causing problems with Dell hardware
+
 * Tue Apr 16 2019 Adam Williamson <awilliam@redhat.com> - 1.2.7-2
 - Rebuild with Meson fix for #1699099
 
