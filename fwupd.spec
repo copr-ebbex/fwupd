@@ -30,14 +30,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.7
-Release:   3%{?dist}
+Version:   1.2.8
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# revert broken functionality
-Patch0:    0001-Revert-Require-force-to-install-a-release-with-a-dif.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -342,6 +339,13 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Apr 23 2019 Richard Hughes <richard@hughsie.com> 1.2.8-1
+- New upstream release
+- Allow the fwupdmgr tool to modify the daemon config
+- Correctly parse DFU interfaces with extra vendor-specific data
+- Do not report transient or invalid system failures
+- Fix problems with the version format checking for some updates
+
 * Wed Apr 17 2019 Richard Hughes <richard@hughsie.com> 1.2.7-3
 - Revert a patch from upstream that was causing problems with Dell hardware
 
