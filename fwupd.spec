@@ -30,7 +30,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.8
+Version:   1.2.9
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -302,6 +302,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
 %endif
@@ -339,6 +340,20 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Mon May 20 2019 Richard Hughes <richard@hughsie.com> 1.2.9-1
+- New upstream release
+- Add support for Synaptics Prometheus fingerprint readers
+- Check the daemon version is at least the client version
+- Correctly identify DFU firmware that starts at offset zero
+- Display the remote warning on the console in an easy-to-read way
+- Export the version-format used by devices to clients
+- Fix a libasan failure when reading a UEFI variable
+- Never guess the version format from the version string
+- Only use class-based instance IDs for quirk matching
+- Prompt the user to shutdown if required when installing by ID
+- Reset the forced version during DFU attach and detach
+- Set the version format for more device types
+
 * Tue Apr 23 2019 Richard Hughes <richard@hughsie.com> 1.2.8-1
 - New upstream release
 - Allow the fwupdmgr tool to modify the daemon config
