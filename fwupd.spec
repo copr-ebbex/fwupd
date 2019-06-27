@@ -105,7 +105,6 @@ Requires: libsoup%{?_isa} >= %{libsoup_version}
 Requires: bubblewrap
 Requires: shared-mime-info
 
-Recommends: python3
 Recommends: tpm2-tools tpm2-abrmd
 
 Obsoletes: fwupd-sign < 0.1.6
