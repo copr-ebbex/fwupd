@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.9
+Version:   1.2.10
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
@@ -149,6 +149,7 @@ Data files for installed tests.
 %else
     -Dplugin_dummy=false \
 %endif
+    -Dplugin_flashrom=false \
     -Dplugin_thunderbolt=true \
 %if 0%{?have_redfish}
     -Dplugin_redfish=true \
@@ -288,7 +289,6 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %if 0%{?have_modem_manager}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
 %endif
@@ -344,6 +344,19 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Mon Jul 15 2019 Richard Hughes <richard@hughsie.com> 1.2.10-1
+- New upstream release
+- Add a specific error code for the low battery case
+- Add support for 8bitdo USB Retro Receiver
+- Export new API to build objects from GVariant blobs
+- Fix installing synaptics-prometheus config updates
+- Prompt for reboot when unlocking on the command line if applicable
+- Show a warning when running in UEFI legacy mode
+- Show devices with an UpdateError in get-devices output
+- Support a UEFI quirk to disable the use of the UX capsule
+- Support empty proxy server strings
+- Try harder to find duplicate UEFI boot entries
+
 * Mon May 20 2019 Richard Hughes <richard@hughsie.com> 1.2.9-1
 - New upstream release
 - Add support for Synaptics Prometheus fingerprint readers
