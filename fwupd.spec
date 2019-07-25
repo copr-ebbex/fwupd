@@ -35,7 +35,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.2.10
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/hughsie/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -344,6 +344,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Mon Jul 15 2019 Richard Hughes <richard@hughsie.com> 1.2.10-1
 - New upstream release
 - Add a specific error code for the low battery case
