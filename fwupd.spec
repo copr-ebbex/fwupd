@@ -34,10 +34,10 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.2.10
-Release:   2%{?dist}
+Version:   1.3.2
+Release:   1%{?dist}
 License:   LGPLv2+
-URL:       https://github.com/hughsie/fwupd
+URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
@@ -86,6 +86,7 @@ BuildRequires: freetype
 BuildRequires: fontconfig
 BuildRequires: google-noto-sans-cjk-ttc-fonts
 BuildRequires: gnu-efi-devel
+BuildRequires: tpm2-tss-devel >= 2.2.3
 BuildRequires: pesign
 %endif
 
@@ -104,8 +105,6 @@ Requires: libgusb%{?_isa} >= %{libgusb_version}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
 Requires: bubblewrap
 Requires: shared-mime-info
-
-Recommends: tpm2-tools tpm2-abrmd
 
 Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
@@ -222,6 +221,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_redfish}
 %config(noreplace)%{_sysconfdir}/fwupd/redfish.conf
 %endif
+%config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
 %{_libexecdir}/fwupd/fwupdtool
@@ -245,7 +245,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor-directory.conf
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
-%{_sysconfdir}/dbus-1/system.d/org.freedesktop.fwupd.conf
+%{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
 %{_datadir}/bash-completion/completions/fwupdagent
@@ -265,6 +265,8 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_datadir}/fwupd/firmware-packager
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
+%{_unitdir}/fwupd-refresh.service
+%{_unitdir}/fwupd-refresh.timer
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %dir %{_datadir}/fwupd/quirks.d
@@ -300,20 +302,24 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_solokey.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_superio.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_cxaudio.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_udev.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
@@ -343,6 +349,29 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Mon Jul 15 2019 Richard Hughes <richard@hughsie.com> 1.3.2-1
+- New upstream release
+- Add aliases for get-upgrades and upgrade
+- Add support for Conexant audio devices
+- Add support for the Minnowboard Turbot
+- Add support for the SoloKey Secure
+- Add support for the Thelio IO board
+- Add support to integrate into the motd
+- Allow disabling SSL strict mode for broken corporate proxies
+- Allow filtering devices when using the command line tools
+- Allow specifying a firmware GUID to check any version exists
+- Be more accepting when trying to recover a failed database migration
+- Display more helpful historical device information
+- Do not ask the user to upload a report if ReportURI is not set
+- Do not segfault when trying to quit the downgrade selection
+- Ensure HID++ v2.0 peripheral devices get added
+- Never show AppStream markup on the console
+- Only write the new UEFI device path if different than before
+- Partially rewrite the Synapticsmst plugin to support more hardware
+- Print devices, remotes, releases using a tree
+- Support issues in AppStream metadata
+- Use tpm2-tss library to read PCR values
+
 * Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.2.10-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
