@@ -35,7 +35,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.3.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -199,6 +199,9 @@ Data files for installed tests.
 
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
+# workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1757948
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
+
 %find_lang %{name}
 
 %post
@@ -269,6 +272,7 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %{_unitdir}/fwupd-refresh.timer
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
+%dir %{_localstatedir}/cache/fwupd
 %dir %{_datadir}/fwupd/quirks.d
 %{_datadir}/fwupd/quirks.d/*.quirk
 %{_localstatedir}/lib/fwupd/builder/README.md
@@ -349,6 +353,9 @@ mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Oct 08 2019 Richard Hughes <richard@hughsie.com> 1.3.2-2
+- Manually create /var/cache/fwupd to work around #1757948
+
 * Mon Jul 15 2019 Richard Hughes <richard@hughsie.com> 1.3.2-1
 - New upstream release
 - Add aliases for get-upgrades and upgrade
