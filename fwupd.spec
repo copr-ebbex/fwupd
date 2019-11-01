@@ -34,8 +34,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.2
-Release:   2%{?dist}
+Version:   1.3.3
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -270,6 +270,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_unitdir}/fwupd.service
 %{_unitdir}/fwupd-refresh.service
 %{_unitdir}/fwupd-refresh.timer
+%{_presetdir}/fwupd-refresh.preset
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %dir %{_localstatedir}/cache/fwupd
@@ -285,6 +286,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_coreboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
@@ -293,7 +295,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
 %if 0%{?have_modem_manager}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
 %endif
@@ -301,6 +305,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
 %if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %endif
@@ -314,19 +319,20 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_cxaudio.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_rmi.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_udev.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_vli_usbhub.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
@@ -353,6 +359,30 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Nov 01 2019 Richard Hughes <richard@hughsie.com> 1.3.3-1
+- New upstream release
+- Add a plugin for systems running coreboot
+- Add a plugin to update eMMC devices
+- Add a plugin to update Synaptics RMI4 devices
+- Add a plugin to update VIA USB hub hardware
+- Add several quirks for Realtek webcams
+- Add some success messages when CLI tasks have completed
+- Add support for automatically uploading reports
+- Add support for `fwupdmgr reinstall`
+- Add support for the 8bitdo SN30Pro+
+- Add support for the ThinkPad USB-C Dock Gen2 audio device
+- Allow fwupdtool to dump details of common firmware formats
+- Always report the update-error correctly for multiple updates
+- Create a unique GUID for the Thunderbolt controller path
+- Fix a regression for Wacom EMR devices
+- Recognize new 'generation' Thunderbolt sysfs attribute for USB4
+- Rework ESP path detection and lifecycle to auto-unmount when required
+- Show a useful error for Logitech devices that cannot self-reset
+- Use correct method for stopping systemd units
+- Use device safety flags to show prompts before installing updates
+- Use will-disappear flag for 8bitdo SF30/SN30 controllers
+- Use XMLb to query quirks to reduce the RSS when running
+
 * Tue Oct 08 2019 Richard Hughes <richard@hughsie.com> 1.3.2-2
 - Manually create /var/cache/fwupd to work around #1757948
 
