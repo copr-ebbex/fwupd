@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.3
+Version:   1.3.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -265,7 +265,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
-%{_datadir}/fwupd/firmware-packager
+%{_datadir}/fwupd/firmware_packager.py
+%{_datadir}/fwupd/simple_client.py
+%{_datadir}/fwupd/add_capsule_header.py
+%{_datadir}/fwupd/install_dell_bios_exe.py
 %{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/fwupd-refresh.service
@@ -330,7 +333,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
-%{_libdir}/fwupd-plugins-3/libfu_plugin_unifying.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_logitech_hidpp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_vli_usbhub.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
@@ -359,6 +362,21 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Nov 22 2019 Richard Hughes <richard@hughsie.com> 1.3.4-1
+- New upstream release
+- Add support for Foxconn T77W968 and DW5821e eSIM
+- Add support for matching firmware requirements on device parents
+- Add support for writing VIA PD and I2C devices
+- Add versions formats for the Microsoft Surface devices
+- Correct Wacom panel HWID support
+- Fix a fastboot regression when updating modem firmware
+- Fix regression when coldplugging superio devices
+- Fix the linking of the UEFI update binary
+- Fix the vendor id of hidraw devices
+- Make loading USB device strings non-fatal
+- Reject invalid Synaptics MST chip IDs
+- Skip cleanup after device is done updating if required
+
 * Fri Nov 01 2019 Richard Hughes <richard@hughsie.com> 1.3.3-1
 - New upstream release
 - Add a plugin for systems running coreboot
