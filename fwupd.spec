@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.4
+Version:   1.3.5
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -67,6 +67,7 @@ BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
+BuildRequires: git-core
 
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
@@ -282,6 +283,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_localstatedir}/lib/fwupd/builder/README.md
 %{_libdir}/libfwupd*.so.*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
+%{_libdir}/girepository-1.0/FwupdPlugin-1.0.typelib
 /usr/lib/udev/rules.d/*.rules
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-plugins-3
@@ -345,11 +347,13 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
-%{_datadir}/gtk-doc/html/libfwupd
+%{_datadir}/gir-1.0/FwupdPlugin-1.0.gir
+%{_datadir}/gtk-doc/html/fwupd
 %{_datadir}/vala/vapi
 %{_includedir}/fwupd-1
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
+%{_libdir}/pkgconfig/fwupdplugin.pc
 
 %files tests
 %dir %{_datadir}/installed-tests/fwupd
@@ -362,6 +366,16 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Nov 29 2019 Richard Hughes <richard@hughsie.com> 1.3.5-1
+- New upstream release
+- Convert libfwupdprivate to a shared library libfwupdplugin
+- Create a REV_00 instance ID as this may be what the vendor needs to target
+- Improve coreboot version detection
+- Invert default behavior to be safer for reboot and shutdown prompts
+- Reload the Synaptics prometheus device version after update
+- Use the correct unlocker when using GRWLock
+- Whitelist VIA USB hub PD and I²C devices
+
 * Fri Nov 22 2019 Richard Hughes <richard@hughsie.com> 1.3.4-1
 - New upstream release
 - Add support for Foxconn T77W968 and DW5821e eSIM
