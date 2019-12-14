@@ -418,7 +418,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 * Tue Oct 08 2019 Richard Hughes <richard@hughsie.com> 1.3.2-2
 - Manually create /var/cache/fwupd to work around #1757948
 
-* Mon Jul 15 2019 Richard Hughes <richard@hughsie.com> 1.3.2-1
+* Thu Sep 26 2019 Richard Hughes <richard@hughsie.com> 1.3.2-1
 - New upstream release
 - Add aliases for get-upgrades and upgrade
 - Add support for Conexant audio devices
