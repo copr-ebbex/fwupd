@@ -233,11 +233,11 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libexecdir}/fwupd/fwupdtool
 %{_libexecdir}/fwupd/fwupdagent
 %{_libexecdir}/fwupd/fwupdoffline
-%{_libexecdir}/fwupd/fwupdtpmevlog
 %if 0%{?have_uefi}
 %{_libexecdir}/fwupd/efi/*.efi
 %{_libexecdir}/fwupd/efi/*.efi.signed
 %{_libexecdir}/fwupd/fwupdate
+%{_libexecdir}/fwupd/fwupdtpmevlog
 %endif
 %{_bindir}/dfu-tool
 %{_bindir}/fwupdmgr
@@ -335,9 +335,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
+%if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
-%if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
