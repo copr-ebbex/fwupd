@@ -158,9 +158,11 @@ Data files for installed tests.
 %if 0%{?have_uefi}
     -Dplugin_uefi=true \
     -Dplugin_nvme=true \
+    -Dplugin_tpm=true \
 %else
     -Dplugin_uefi=false \
     -Dplugin_nvme=false \
+    -Dplugin_tpm=false \
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
