@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.5
+Version:   1.3.6
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -231,6 +231,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libexecdir}/fwupd/fwupdtool
 %{_libexecdir}/fwupd/fwupdagent
 %{_libexecdir}/fwupd/fwupdoffline
+%{_libexecdir}/fwupd/fwupdtpmevlog
 %if 0%{?have_uefi}
 %{_libexecdir}/fwupd/efi/*.efi
 %{_libexecdir}/fwupd/efi/*.efi.signed
@@ -320,17 +321,20 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_superio.so
 %if 0%{?have_dell}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_synapticsmst.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_mst.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_cxaudio.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_rmi.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_invalid.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
@@ -366,6 +370,23 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Mon Dec 30 2019 Richard Hughes <richard@hughsie.com> 1.3.6-1
+- New upstream release
+- Add a dell-bios version format to match what is shown on the vendor website
+- Add a new plugin that exposes the TPM device
+- Allow incremental version major and minor number for Synaptics Prometheus devices
+- Clarify error messages when no upgrades are available
+- Correct the default prompt for reboot/shutdown
+- Do not expose bootloader version errors to users
+- Enforce that device protocol matches the metadata value
+- Export the device protocol and raw device version to the client --verbose output
+- Fix the quirk for the legacy VIA 813 usbhub chip
+- Only check the vendor ID if the device has one set
+- Return exit status success if there is no firmware to be updated
+- Set the correct vendor eMMC ID prefix
+- Use the baseboard vendor as the superio vendor ID
+- Use the BIOS vendor as the coreboot and flashrom vendor ID
+
 * Fri Nov 29 2019 Richard Hughes <richard@hughsie.com> 1.3.5-1
 - New upstream release
 - Convert libfwupdprivate to a shared library libfwupdplugin
