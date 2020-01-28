@@ -35,7 +35,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.3.6
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -372,6 +372,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Mon Dec 30 2019 Richard Hughes <richard@hughsie.com> 1.3.6-1
 - New upstream release
 - Add a dell-bios version format to match what is shown on the vendor website
