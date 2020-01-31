@@ -34,8 +34,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.6
-Release:   2%{?dist}
+Version:   1.3.7
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -343,7 +343,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_logitech_hidpp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_vli_usbhub.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_vli.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
@@ -372,6 +372,21 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Fri Jan 31 2020 Richard Hughes <richard@hughsie.com> 1.3.7-1
+- New upstream release
+- Add 'get-remotes' and 'refresh' to fwupdtool
+- Add support for standalone VIA PD devices
+- Allow applying all releases to get to a target version
+- Correctly delete UEFI variables
+- Correctly import PKCS-7 remote metadata
+- Discourage command line metadata refreshes more than once per day
+- Do not always get the vendor ID for udev devices using the parent
+- Get the list of updates in JSON format from fwupdagent
+- Show the device parent if there is an interesting child
+- Shut down automatically when there is system memory pressure
+- Use a different protocol ID for VIA i2c devices
+- Use the correct timeout for Logitech IO channel writes
+
 * Tue Jan 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.6-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
