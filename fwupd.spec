@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.7
+Version:   1.3.8
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -305,6 +305,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
 %if 0%{?have_modem_manager}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
@@ -372,6 +373,22 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Thu Feb 13 2020 Richard Hughes <richard@hughsie.com> 1.3.8-1
+- New upstream release
+- Add an extra instance ID to disambiguate USB hubs
+- Add a plugin to update PD controllers by Fresco Logic
+- Correctly reset VL100 PD devices
+- Do not rewrite BootOrder in the EFI helper
+- Do not use vercmp when the device version format is plain
+- Fix firmware regression in the EFI capsule helper
+- Fix updating Synaptics MST devics with no PCI parent
+- Ignore Unifying detach failures
+- Make the cxaudio version match that of the existing Windows tools
+- Replay the TPM event log to get the PCRx values
+- Set up more parent devices for various Lenovo USB hubs
+- Support the new gnuefi file locations
+- Use the correct command to get the VLI device firmware version
+
 * Fri Jan 31 2020 Richard Hughes <richard@hughsie.com> 1.3.7-1
 - New upstream release
 - Add 'get-remotes' and 'refresh' to fwupdtool
