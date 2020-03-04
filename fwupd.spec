@@ -17,6 +17,11 @@
 %global have_uefi 1
 %endif
 
+# flashrom is only available on these arches
+%ifarch i686 x86_64 armv7hl aarch64 ppc64le
+%global have_flashrom 1
+%endif
+
 # redfish is only available on this arch
 %ifarch x86_64
 %global have_redfish 1
@@ -68,7 +73,9 @@ BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
 BuildRequires: git-core
+%if 0%{?have_flashrom}
 BuildRequires: flashrom-devel >= 1.2-2
+%endif
 
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
@@ -149,7 +156,11 @@ Data files for installed tests.
 %else
     -Dplugin_dummy=false \
 %endif
+%if 0%{?have_flashrom}
     -Dplugin_flashrom=true \
+%else
+    -Dplugin_flashrom=false \
+%endif
     -Dplugin_thunderbolt=true \
 %if 0%{?have_redfish}
     -Dplugin_redfish=true \
@@ -314,7 +325,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
+%if 0%{?have_flashrom}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
+%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
 %if 0%{?have_modem_manager}
