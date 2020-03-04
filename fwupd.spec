@@ -34,7 +34,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.8
+Version:   1.3.9
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -68,6 +68,7 @@ BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
 BuildRequires: git-core
+BuildRequires: flashrom-devel >= 1.2-2
 
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
@@ -148,7 +149,7 @@ Data files for installed tests.
 %else
     -Dplugin_dummy=false \
 %endif
-    -Dplugin_flashrom=false \
+    -Dplugin_flashrom=true \
     -Dplugin_thunderbolt=true \
 %if 0%{?have_redfish}
     -Dplugin_redfish=true \
@@ -221,6 +222,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %doc README.md AUTHORS
 %license COPYING
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
+%config(noreplace)%{_sysconfdir}/fwupd/upower.conf
 %if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/fwupd/uefi.conf
 %endif
@@ -230,17 +232,17 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
-%{_libexecdir}/fwupd/fwupdtool
-%{_libexecdir}/fwupd/fwupdagent
 %{_libexecdir}/fwupd/fwupdoffline
 %if 0%{?have_uefi}
 %{_libexecdir}/fwupd/efi/*.efi
 %{_libexecdir}/fwupd/efi/*.efi.signed
-%{_libexecdir}/fwupd/fwupdate
-%{_libexecdir}/fwupd/fwupdtpmevlog
+%{_bindir}/fwupdate
+%{_bindir}/fwupdtpmevlog
 %endif
 %{_bindir}/dfu-tool
 %{_bindir}/fwupdmgr
+%{_bindir}/fwupdtool
+%{_bindir}/fwupdagent
 %dir %{_sysconfdir}/fwupd
 %dir %{_sysconfdir}/fwupd/remotes.d
 %if 0%{?have_dell}
@@ -256,6 +258,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
 %{_datadir}/bash-completion/completions/fwupdagent
+%{_datadir}/fish/vendor_completions.d/fwupdmgr.fish
 %{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
 %if 0%{?have_dell}
 %{_datadir}/fwupd/remotes.d/dell-esrt/metadata.xml
@@ -265,8 +268,14 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
+%{_datadir}/man/man1/fwupdtool.1.gz
+%{_datadir}/man/man1/fwupdagent.1.gz
 %{_datadir}/man/man1/dfu-tool.1.gz
 %{_datadir}/man/man1/fwupdmgr.1.gz
+%if 0%{?have_uefi}
+%{_datadir}/man/man1/fwupdate.1.gz
+%{_datadir}/man/man1/fwupdtpmevlog.1.gz
+%endif
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
 %{_datadir}/fwupd/firmware_packager.py
@@ -305,6 +314,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
 %if 0%{?have_modem_manager}
@@ -342,6 +352,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
+%{_libdir}/fwupd-plugins-3/libfu_plugin_logind.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_logitech_hidpp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_vli.so
@@ -373,6 +384,25 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Wed Mar 04 2020 Richard Hughes <richard@hughsie.com> 1.3.9-1
+- New upstream release
+- Added completion script for fish shell
+- Always check for PLAIN when doing vercmp() operations
+- Always return AppStream markup for remote agreements
+- Apply UEFI capsule update even with single valid capsule
+- Check the device protocol before de-duping devices
+- Copy the version and format from donor device in get-details
+- Correctly append the release to devices in `fwupdtool get-details`
+- Decrease minimum battery requirement to 10%
+- Discard the reason upgrades aren't available
+- Do not fail loading in /etc/machine-id is not available
+- Fix a critical warning when installing some firmware
+- For the `get-details` command make sure to always show devices
+- Inhibit all power management actions using logind when updating
+- Set the MSP430 version format to pair
+- Switch off the ATA verbose logging by default
+- Use unknown for version format by default on get-details
+
 * Thu Feb 13 2020 Richard Hughes <richard@hughsie.com> 1.3.8-1
 - New upstream release
 - Add an extra instance ID to disambiguate USB hubs
