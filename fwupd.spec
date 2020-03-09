@@ -1,6 +1,6 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
-%global libgusb_version 0.2.11
+%global libgusb_version 0.3.4
 %global libsoup_version 2.51.92
 %global systemd_version 231
 %global json_glib_version 1.1.1
@@ -40,7 +40,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.3.9
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -397,6 +397,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Thu Mar 05 2020 Nicolas Mailhot <nim@fedoraproject.org> 1.3.9-2
+- Rebuild against the new Gusb.
+
 * Wed Mar 04 2020 Richard Hughes <richard@hughsie.com> 1.3.9-1
 - New upstream release
 - Added completion script for fish shell
