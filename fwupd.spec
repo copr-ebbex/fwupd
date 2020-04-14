@@ -1,7 +1,8 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
-%global libgusb_version 0.3.4
+%global libgusb_version 0.2.11
 %global libsoup_version 2.51.92
+%global libjcat_version 0.1.0
 %global systemd_version 231
 %global json_glib_version 1.1.1
 
@@ -39,8 +40,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.3.9
-Release:   2%{?dist}
+Version:   1.4.0
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -52,6 +53,7 @@ BuildRequires: libgcab1-devel
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
 BuildRequires: libsoup-devel >= %{libsoup_version}
+BuildRequires: libjcat-devel >= %{libjcat_version}
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: sqlite-devel
 BuildRequires: gpgme-devel
@@ -232,6 +234,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %files -f %{name}.lang
 %doc README.md AUTHORS
 %license COPYING
+%config(noreplace)%{_sysconfdir}/fwupd/ata.conf
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
 %config(noreplace)%{_sysconfdir}/fwupd/upower.conf
 %if 0%{?have_uefi}
@@ -313,9 +316,11 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_coreboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_cpu.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_esrt.so
@@ -324,6 +329,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_ep963x.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
 %if 0%{?have_flashrom}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
@@ -392,11 +398,39 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/installed-tests/fwupd/*.test
 %{_datadir}/installed-tests/fwupd/*.cab
 %{_datadir}/installed-tests/fwupd/*.sh
-%{_datadir}/installed-tests/fwupd/*.py*
 %dir %{_sysconfdir}/fwupd/remotes.d
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 
 %changelog
+* Tue Apr 14 2020 Richard Hughes <richard@hughsie.com> 1.4.0-1
+- New upstream release
+- Actually reload the DFU device after upgrade has completed
+- Add plugin for CPU microcode
+- Add plugin for Cypress CCGX hardware
+- Add plugin for EP963x hardware
+- Add STM32F745 DfuSe version quirk
+- Allow server metadata to set the device name and version format
+- Always check for 'PLAIN' when doing vercmp() operations
+- Apply version format to releases and devices at same time
+- Check the firmware requirements before adding 'SUPPORTED'
+- Correctly attach VL103 after a firmware update
+- Do not allow devices that have no vendor ID to be 'UPDATABLE'
+- Do not use shim for non-secure boot configurations
+- Export the device state, release creation time and urgency
+- Fix a crash when removing device parents
+- Fix a difficult-to-trigger daemon hang when replugging devices
+- Fix a runtime error when detaching MSP430
+- Fix CounterpartGuid when there is more than one supported device
+- Fix reporting Synaptics cxaudio version number
+- Introduce a new VersionFormat of 'hex'
+- Load the signature to get the aliased CDN-safe version of the metadata
+- Never add USB hub devices that are not upgradable
+- Only auto-add counterpart GUIDs when required
+- Parse the CSR firmware as a DFU file
+- Set the protocol when updating logitech HID++ devices
+- Use Jcat files in firmware archives and for metadata
+- When TPM PCR0 measurements fail, query if secure boot is available and enabled
+
 * Thu Mar 05 2020 Nicolas Mailhot <nim@fedoraproject.org> 1.3.9-2
 - Rebuild against the new Gusb.
 
