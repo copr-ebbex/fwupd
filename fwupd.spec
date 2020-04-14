@@ -393,6 +393,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/pkgconfig/fwupdplugin.pc
 
 %files tests
+%if 0%{?enable_tests}
 %dir %{_datadir}/installed-tests/fwupd
 %{_datadir}/installed-tests/fwupd/fwupd-tests.xml
 %{_datadir}/installed-tests/fwupd/*.test
@@ -400,6 +401,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/installed-tests/fwupd/*.sh
 %dir %{_sysconfdir}/fwupd/remotes.d
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
+%endif
 
 %changelog
 * Tue Apr 14 2020 Richard Hughes <richard@hughsie.com> 1.4.0-1
