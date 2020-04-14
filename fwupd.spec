@@ -136,7 +136,6 @@ Files for development with %{name}.
 
 %package tests
 Summary: Data files for installed tests
-BuildArch: noarch
 
 %description tests
 Data files for installed tests.
