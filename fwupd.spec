@@ -40,7 +40,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.0
+Version:   1.4.1
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -403,6 +403,20 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Apr 27 2020 Richard Hughes <richard@hughsie.com> 1.4.1-1
+- New upstream release
+- Allow specifying the device on the command line by GUID
+- Correctly format firmware version of Dynabook X30 and X40
+- Do not show safe mode errors for USB4 host controllers
+- Do not show the USB 2 VLI recovery devices for USB 3 hubs
+- Fix the correct DeviceID set by GetDetails
+- Only update the FW2 partition of the ThinkPad USB-C Dock Gen2
+- Prefer to update the child device first if the order is unspecified
+- Refresh device name and format before setting supported flag
+- Reset the progressbar time estimate if the percentage is invalid
+- Set the CCGX device name and summary from quirk files
+- Wait for the cxaudio device to reboot after writing firmware
+
 * Tue Apr 14 2020 Richard Hughes <richard@hughsie.com> 1.4.0-1
 - New upstream release
 - Actually reload the DFU device after upgrade has completed
