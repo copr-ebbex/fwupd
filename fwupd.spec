@@ -40,7 +40,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.1
+Version:   1.4.2
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -403,6 +403,17 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon May 18 2020 Richard Hughes <richard@hughsie.com> 1.4.2-1
+- New upstream release
+- Add several more ATA OUI quirks
+- Avoid communicating with DFU devices when bitManifestationTolerant is off
+- Correct the display of final calculated PCRs
+- Delay activation for Dell Thunderbolt updates
+- Do not use synaptics-rmi on the Dell K12A
+- Fix switching wacom-raw to bootloader mode
+- Switch the default of EnumerateAllDevices to false
+- Use GPIOB to reset the VL817 found in two Lenovo products
+
 * Mon Apr 27 2020 Richard Hughes <richard@hughsie.com> 1.4.1-1
 - New upstream release
 - Allow specifying the device on the command line by GUID
