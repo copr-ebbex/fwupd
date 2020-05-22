@@ -41,10 +41,12 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.4.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+Patch1:    0001-synaptics-prometheus-Force-the-minor-version-from-0x.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -403,6 +405,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Fri May 22 2020 Richard Hughes <richard@hughsie.com> 1.4.2-2
+- Backport a patch to fix the synaptics fingerprint reader update.
+
 * Mon May 18 2020 Richard Hughes <richard@hughsie.com> 1.4.2-1
 - New upstream release
 - Add several more ATA OUI quirks
