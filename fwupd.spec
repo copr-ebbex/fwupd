@@ -40,13 +40,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.2
-Release:   2%{?dist}
+Version:   1.4.3
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-Patch1:    0001-synaptics-prometheus-Force-the-minor-version-from-0x.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -405,6 +403,14 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Tue Jun 09 2020 Richard Hughes <richard@hughsie.com> 1.4.3-1
+- New upstream release
+- Add support for HP DMC dock devices
+- Always enforce the metadata signature has a valid timestamp
+- Capture the dock SKU in metadata
+- Check the device requirements when returning from GetDetails
+- Prevent Dell dock updates to occur via synaptics-mst plugin
+
 * Fri May 22 2020 Richard Hughes <richard@hughsie.com> 1.4.2-2
 - Backport a patch to fix the synaptics fingerprint reader update.
 
