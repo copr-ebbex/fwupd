@@ -40,7 +40,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.3
+Version:   1.4.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -403,6 +403,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Wed Jun 10 2020 Richard Hughes <richard@hughsie.com> 1.4.4-1
+- New upstream release
+- Fix refreshing when checking for downgraded metadata
+
 * Tue Jun 09 2020 Richard Hughes <richard@hughsie.com> 1.4.3-1
 - New upstream release
 - Add support for HP DMC dock devices
