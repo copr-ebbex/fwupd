@@ -41,7 +41,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.4.4
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -403,6 +403,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Wed Jun 10 2020 Richard Hughes <richard@hughsie.com> 1.4.4-1
 - New upstream release
 - Fix refreshing when checking for downgraded metadata
