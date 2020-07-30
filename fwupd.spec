@@ -40,8 +40,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.4
-Release:   2%{?dist}
+Version:   1.4.5
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -56,7 +56,6 @@ BuildRequires: libsoup-devel >= %{libsoup_version}
 BuildRequires: libjcat-devel >= %{libjcat_version}
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: sqlite-devel
-BuildRequires: gpgme-devel
 BuildRequires: systemd >= %{systemd_version}
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
@@ -363,7 +362,6 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_thunderbolt_power.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
@@ -403,6 +401,25 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Thu Jul 30 2020 Richard Hughes <richard@hughsie.com> 1.4.5-1
+- New upstream release
+- Add dual-image feature for VL103 backup firmware
+- Add more CCGX hybrid dock support
+- Add support for a delayed activation flow for Thunderbolt
+- Allow firmware to require specific features from front-end clients
+- Be more defensive when remotes are missing required keys
+- Check all AppStream components when verifying
+- Check for free space after cleaning up ESP
+- Fix TPM PCR0 calculation
+- Modernize the thunderbolt plugin for future hardware
+- Only show UpdateMessage when state is success
+- Read the modem vendor ID correctly
+- Set the runtime version to 0.0.0 for pre-1.0.0 Thelio Io firmware
+- Support compiling libqmi-glib 1.26.0 and later
+- Support LVFS::UpdateImage in GUI clients
+- Use the GPIOB reset for the MiniDock VL103
+- Wait for the root device to be replugged when updating the MSP430
+
 * Mon Jul 27 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
