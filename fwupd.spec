@@ -41,7 +41,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.4.5
-Release:   2%{?dist}
+Release:   3%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -209,7 +209,10 @@ Data files for installed tests.
 %global efiarch aa64
 %endif
 %global fwup_efi_fn $RPM_BUILD_ROOT%{_libexecdir}/fwupd/efi/fwupd%{efiarch}.efi
-%pesign -s -i %{fwup_efi_fn} -o %{fwup_efi_fn}.signed
+%pesign -s -i %{fwup_efi_fn} -o %{fwup_efi_fn}.tmp
+%define __pesign_client_cert fwupd-signer
+%pesign -s -i %{fwup_efi_fn}.tmp -o %{fwup_efi_fn}.signed
+rm -vf %{fwup_efi_fn}.tmp
 %endif
 
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
@@ -401,6 +404,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Aug 03 2020 Peter Jones <pjones@redhat.com> - 1.4.5-3
+- Make dual signing happen.
+  Related: CVE-2020-10713
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.5-2
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
