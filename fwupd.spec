@@ -41,7 +41,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.4.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -401,6 +401,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 1.4.5-2
+- Second attempt - Rebuilt for
+  https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
 * Thu Jul 30 2020 Richard Hughes <richard@hughsie.com> 1.4.5-1
 - New upstream release
 - Add dual-image feature for VL103 backup firmware
