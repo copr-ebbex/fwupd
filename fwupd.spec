@@ -41,7 +41,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.4.5
-Release:   3%{?dist}
+Release:   4%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -404,6 +404,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Tue Aug 18 2020 Richard Hughes <richard@hughsie.com> 1.4.5-4
+- Rebuild for the libxmlb API bump.
+
 * Mon Aug 03 2020 Peter Jones <pjones@redhat.com> - 1.4.5-3
 - Make dual signing happen.
   Related: CVE-2020-10713
