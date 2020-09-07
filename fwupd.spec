@@ -6,6 +6,10 @@
 %global systemd_version 231
 %global json_glib_version 1.1.1
 
+# although we ship a few tiny python files these are utilities that 99.99%
+# of users do not need -- use this to avoid dragging python onto CoreOS
+%global __requires_exclude ^%{python3}$
+
 # PPC64 is too slow to complete the tests under 3 minutes...
 %ifnarch ppc64le
 %global enable_tests 1
@@ -40,8 +44,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.5
-Release:   4%{?dist}
+Version:   1.4.6
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -120,6 +124,9 @@ Obsoletes: fwupd-sign < 0.1.6
 Obsoletes: libebitdo < 0.7.5-3
 Obsoletes: libdfu < 1.0.0
 Obsoletes: fwupd-labels < 1.1.0-1
+
+Obsoletes: dbxtool < 9
+Provides: dbxtool
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -255,6 +262,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_bindir}/fwupdtpmevlog
 %endif
 %{_bindir}/dfu-tool
+%if 0%{?have_uefi}
+%{_bindir}/dbxtool
+%endif
 %{_bindir}/fwupdmgr
 %{_bindir}/fwupdtool
 %{_bindir}/fwupdagent
@@ -286,6 +296,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/man/man1/fwupdtool.1.gz
 %{_datadir}/man/man1/fwupdagent.1.gz
 %{_datadir}/man/man1/dfu-tool.1.gz
+%if 0%{?have_uefi}
+%{_datadir}/man/man1/dbxtool.1.gz
+%endif
 %{_datadir}/man/man1/fwupdmgr.1.gz
 %if 0%{?have_uefi}
 %{_datadir}/man/man1/fwupdate.1.gz
@@ -369,6 +382,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_dbx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_logind.so
@@ -404,6 +418,22 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Sep 07 2020 Richard Hughes <richard@hughsie.com> 1.4.6-1
+- New upstream release
+- Add a re-implementation of the rhboot dbxtool
+- Add missing Synaptics Prometheus GUIDs for ConfigId
+- Add support for the LabTop Mk IV
+- Add support for the Realtek RTD21XX I²C protocol
+- Allow blocking specific firmware releases by checksum
+- Allow DFU device to attach to runtime without a bus reset
+- Allow plugins to set remove delay only on the child
+- Cancel the file monitor before disposal to avoid a potential deadlock
+- Correctly label the vebdor for more NVMe devices
+- Specify a remove delay for Poly USB Cameras
+- Support download of large DFU firmware
+- Support polling the status from device in dfuManifest state
+- Use newer libxmlb features to properly display more AppStream markup
+
 * Tue Aug 18 2020 Richard Hughes <richard@hughsie.com> 1.4.5-4
 - Rebuild for the libxmlb API bump.
 
