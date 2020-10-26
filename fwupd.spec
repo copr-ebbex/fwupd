@@ -1,6 +1,6 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
-%global libgusb_version 0.2.11
+%global libgusb_version 0.3.5
 %global libsoup_version 2.51.92
 %global libjcat_version 0.1.0
 %global systemd_version 231
@@ -27,6 +27,10 @@
 %global have_flashrom 1
 %endif
 
+%ifarch i686 x86_64
+%global have_msr 1
+%endif
+
 # redfish is only available on this arch
 %ifarch x86_64
 %global have_redfish 1
@@ -44,7 +48,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.4.6
+Version:   1.5.0
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -128,6 +132,14 @@ Obsoletes: fwupd-labels < 1.1.0-1
 Obsoletes: dbxtool < 9
 Provides: dbxtool
 
+# optional, but a really good idea
+%if 0%{?have_modem_manager}
+Recommends: %{name}-plugin-modem-manager
+%endif
+%if 0%{?have_flashrom}
+Recommends: %{name}-plugin-flashrom
+%endif
+
 %description
 fwupd is a daemon to allow session software to update device firmware.
 
@@ -145,6 +157,24 @@ Summary: Data files for installed tests
 
 %description tests
 Data files for installed tests.
+
+%if 0%{?have_modem_manager}
+%package plugin-modem-manager
+Summary: fwupd plugin using ModemManger
+
+%description plugin-modem-manager
+This provides the optional package which is only required on hardware that
+might have mobile broadband hardware. It is probably not required on servers.
+%endif
+
+%if 0%{?have_flashrom}
+%package plugin-flashrom
+Summary: fwupd plugin using flashrom
+
+%description plugin-flashrom
+This provides the optional package which is only required on hardware that
+can be flashed using flashrom. It is probably not required on servers.
+%endif
 
 %prep
 %autosetup -p1
@@ -168,6 +198,11 @@ Data files for installed tests.
 %else
     -Dplugin_flashrom=false \
 %endif
+%if 0%{?have_msr}
+    -Dplugin_msr=true \
+%else
+    -Dplugin_msr=false \
+%endif
     -Dplugin_thunderbolt=true \
 %if 0%{?have_redfish}
     -Dplugin_redfish=true \
@@ -177,11 +212,11 @@ Data files for installed tests.
 %if 0%{?have_uefi}
     -Dplugin_uefi=true \
     -Dplugin_nvme=true \
-    -Dplugin_tpm=true \
+    -Dtpm=true \
 %else
     -Dplugin_uefi=false \
     -Dplugin_nvme=false \
-    -Dplugin_tpm=false \
+    -Dtpm=false \
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
@@ -254,6 +289,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
+%ifarch i686 x86_64
+%{_libexecdir}/fwupd/fwupd-detect-cet
+%endif
 %{_libexecdir}/fwupd/fwupdoffline
 %if 0%{?have_uefi}
 %{_libexecdir}/fwupd/efi/*.efi
@@ -279,6 +317,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/vendor-directory.conf
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
+%if 0%{?have_msr}
+%{_sysconfdir}/modules-load.d/fwupd-msr.conf
+%endif
+%{_sysconfdir}/modules-load.d/fwupd-platform-integrity.conf
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
@@ -327,12 +369,17 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 /usr/lib/udev/rules.d/*.rules
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-plugins-3
+%{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_dmar.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_facp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_bcm57xx.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_bios.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_coreboot.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_cros_ec.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_cpu.so
 %if 0%{?have_dell}
@@ -342,22 +389,28 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_elantp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ep963x.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
-%if 0%{?have_flashrom}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
-%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_iommu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
-%if 0%{?have_modem_manager}
-%{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_lockdown.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_sleep.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_swap.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_linux_tainted.so
+%if 0%{?have_msr}
+%{_libdir}/fwupd-plugins-3/libfu_plugin_msr.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_platform_integrity.so
 %if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %endif
@@ -391,9 +444,19 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_vli.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_raw.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_goodixmoc.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
 %if 0%{?have_uefi}
 %{_datadir}/locale/*/LC_IMAGES/fwupd*
+%endif
+
+%if 0%{?have_modem_manager}
+%files plugin-modem-manager
+%{_libdir}/fwupd-plugins-3/libfu_plugin_modem_manager.so
+%endif
+%if 0%{?have_flashrom}
+%files plugin-flashrom
+%{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
 %endif
 
 %files devel
@@ -413,11 +476,38 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/installed-tests/fwupd/*.test
 %{_datadir}/installed-tests/fwupd/*.cab
 %{_datadir}/installed-tests/fwupd/*.sh
+%{_libexecdir}/installed-tests/fwupd/*
 %dir %{_sysconfdir}/fwupd/remotes.d
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
 %endif
 
 %changelog
+* Mon Oct 26 2020 Richard Hughes <richard@hughsie.com> 1.5.0-1
+- New upstream release
+- Add async versions of the library for GUI tools
+- Add commands for interacting with the ESP to fwupdtool
+- Add plugin for Goodix fingerprint sensors
+- Add plugin that can update the BCM5719 network adapter
+- Add plugin to update Elan Touchpads using HID
+- Add support for ChromeOS Quiche and Gingerbread
+- Add support for the Host Security ID
+- Add support for ThunderBolt retimers
+- Add switch-branch command to fwupdtool and fwupdmgr
+- Allow blocking specific firmware releases by checksum
+- Allow constructing a firmware with multiple images
+- Allow firmware to require specific features from front-end clients
+- Fix setting BootNext correctly when multiple updates are scheduled
+- Fix the topology of the audio device on the Lenovo TR dock
+- Include the HSI results and attributes in the uploaded report
+- Make return code different for get-updates with no updates
+- Make specific authorizations also imply others
+- Parse the HEX version before comparing for equality
+- Prevent dell-dock updates to occur via synaptics-mst plugin
+- Record the UEFI failure in more cases
+- Support loading DMI data from DT systems
+- Support LVFS::UpdateImage for GUI clients
+- Use pkttyagent to request user passwords if running without GUI
+
 * Mon Sep 07 2020 Richard Hughes <richard@hughsie.com> 1.4.6-1
 - New upstream release
 - Add a re-implementation of the rhboot dbxtool
