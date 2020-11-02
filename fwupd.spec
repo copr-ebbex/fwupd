@@ -48,7 +48,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.0
+Version:   1.5.1
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -133,6 +133,8 @@ Obsoletes: dbxtool < 9
 Provides: dbxtool
 
 # optional, but a really good idea
+Recommends: udisks2
+
 %if 0%{?have_modem_manager}
 Recommends: %{name}-plugin-modem-manager
 %endif
@@ -482,6 +484,18 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Nov 01 2020 Richard Hughes <richard@hughsie.com> 1.5.2-1
+- New upstream release
+- Delete unused EFI variables when deploying firmware
+- Fix probe warning for the Logitech Unifying device
+- Include the amount of NVRAM size in use in the LVFS failure report
+- Make bcm57xx hotplug more reliable
+- Recognize authorized thunderbolt value of 2
+- Remove the duplicate parent-child data in FwupdDevice and FuDevice
+- Show a less scary fwupdate output for devices without info
+- Use a different Device ID for the OptionROM devices
+- Use UDisks to find out if swap devices are encrypted
+
 * Mon Oct 26 2020 Richard Hughes <richard@hughsie.com> 1.5.0-1
 - New upstream release
 - Add async versions of the library for GUI tools
