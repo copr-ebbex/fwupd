@@ -49,10 +49,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.5.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+# Backport of https://github.com/fwupd/fwupd/pull/2605
+# Fixes https://github.com/fwupd/fwupd/issues/2600
+Patch0:    0001-Fix-sync-method-when-called-from-threads-without-a-c.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -484,7 +487,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
-* Mon Nov 01 2020 Richard Hughes <richard@hughsie.com> 1.5.2-1
+* Fri Nov 20 2020 Adam Williamson <awilliam@redhat.com> - 1.5.1-2
+- Backport #2605 for #2600, seems to help RHBZ #1896540
+
+* Mon Nov 01 2020 Richard Hughes <richard@hughsie.com> 1.5.1-1
 - New upstream release
 - Delete unused EFI variables when deploying firmware
 - Fix probe warning for the Logitech Unifying device
