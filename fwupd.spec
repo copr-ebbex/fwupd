@@ -389,9 +389,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_msr.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
-%if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
-%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
