@@ -1,7 +1,7 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
 %global libgusb_version 0.3.5
-%global libsoup_version 2.51.92
+%global libcurl_version 7.62.0
 %global libjcat_version 0.1.0
 %global systemd_version 231
 %global json_glib_version 1.1.1
@@ -31,11 +31,6 @@
 %global have_msr 1
 %endif
 
-# redfish is only available on this arch
-%ifarch x86_64
-%global have_redfish 1
-%endif
-
 # libsmbios is only available on x86
 %ifarch x86_64
 %global have_dell 1
@@ -48,14 +43,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.1
-Release:   2%{?dist}
+Version:   1.5.2
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-# Backport of https://github.com/fwupd/fwupd/pull/2605
-# Fixes https://github.com/fwupd/fwupd/issues/2600
-Patch0:    0001-Fix-sync-method-when-called-from-threads-without-a-c.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -63,11 +55,12 @@ BuildRequires: libxmlb-devel >= %{libxmlb_version}
 BuildRequires: libgcab1-devel
 BuildRequires: libgudev1-devel
 BuildRequires: libgusb-devel >= %{libgusb_version}
-BuildRequires: libsoup-devel >= %{libsoup_version}
+BuildRequires: libcurl-devel >= %{libcurl_version}
 BuildRequires: libjcat-devel >= %{libjcat_version}
 BuildRequires: polkit-devel >= 0.103
 BuildRequires: sqlite-devel
 BuildRequires: systemd >= %{systemd_version}
+BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
@@ -92,10 +85,6 @@ BuildRequires: flashrom-devel >= 1.2-2
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
 BuildRequires: libqmi-devel >= 1.22.0
-%endif
-
-%if 0%{?have_redfish}
-BuildRequires: efivar-devel >= 33
 %endif
 
 %if 0%{?have_uefi}
@@ -123,7 +112,6 @@ Requires(postun): systemd
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libxmlb%{?_isa} >= %{libxmlb_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
-Requires: libsoup%{?_isa} >= %{libsoup_version}
 Requires: bubblewrap
 Requires: shared-mime-info
 
@@ -209,18 +197,11 @@ can be flashed using flashrom. It is probably not required on servers.
     -Dplugin_msr=false \
 %endif
     -Dplugin_thunderbolt=true \
-%if 0%{?have_redfish}
-    -Dplugin_redfish=true \
-%else
-    -Dplugin_redfish=false \
-%endif
 %if 0%{?have_uefi}
     -Dplugin_uefi=true \
-    -Dplugin_nvme=true \
     -Dtpm=true \
 %else
     -Dplugin_uefi=false \
-    -Dplugin_nvme=false \
     -Dtpm=false \
 %endif
 %if 0%{?have_dell}
@@ -235,7 +216,8 @@ can be flashed using flashrom. It is probably not required on servers.
 %else
     -Dplugin_modem_manager=false \
 %endif
-    -Dman=true
+    -Dman=true \
+    -Dsupported_build=true
 
 %meson_build
 
@@ -288,9 +270,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/fwupd/uefi.conf
 %endif
-%if 0%{?have_redfish}
 %config(noreplace)%{_sysconfdir}/fwupd/redfish.conf
-%endif
 %config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
@@ -323,9 +303,9 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %config(noreplace)%{_sysconfdir}/pki/fwupd
 %{_sysconfdir}/pki/fwupd-metadata
 %if 0%{?have_msr}
-%{_sysconfdir}/modules-load.d/fwupd-msr.conf
+/usr/lib/modules-load.d/fwupd-msr.conf
 %endif
-%{_sysconfdir}/modules-load.d/fwupd-platform-integrity.conf
+/usr/lib/modules-load.d/fwupd-platform-integrity.conf
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
@@ -340,16 +320,16 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
 %{_datadir}/polkit-1/rules.d/org.freedesktop.fwupd.rules
 %{_datadir}/dbus-1/system-services/org.freedesktop.fwupd.service
-%{_datadir}/man/man1/fwupdtool.1.gz
-%{_datadir}/man/man1/fwupdagent.1.gz
-%{_datadir}/man/man1/dfu-tool.1.gz
+%{_mandir}/man1/fwupdtool.1*
+%{_mandir}/man1/fwupdagent.1*
+%{_mandir}/man1/dfu-tool.1*
 %if 0%{?have_uefi}
-%{_datadir}/man/man1/dbxtool.1.gz
+%{_mandir}/man1/dbxtool.*
 %endif
-%{_datadir}/man/man1/fwupdmgr.1.gz
+%{_mandir}/man1/fwupdmgr.1*
 %if 0%{?have_uefi}
-%{_datadir}/man/man1/fwupdate.1.gz
-%{_datadir}/man/man1/fwupdtpmevlog.1.gz
+%{_mandir}/man1/fwupdate.1*
+%{_mandir}/man1/fwupdtpmevlog.1*
 %endif
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
@@ -380,7 +360,6 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_bcm57xx.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_bios.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_coreboot.so
@@ -399,6 +378,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ep963x.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fastboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_fresco_pd.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_hailuck.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_iommu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_linux_lockdown.so
@@ -416,9 +396,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_platform_integrity.so
-%if 0%{?have_redfish}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
-%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_solokey.so
@@ -439,6 +417,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_bios.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_dbx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
@@ -487,6 +466,26 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Mon Nov 23 2020 Richard Hughes <richard@hughsie.com> 1.5.2-1
+- New upstream release
+- Add a flag to indicate if packages are supported
+- Add a plugin for the Pinebook Pro laptop
+- Allow components to set the icon from the metadata
+- Fall back to FAT32 internal partitions for detecting ESP
+- Fix detection of ColorHug version on older firmware versions
+- Fix reading BCM57XX vendor and device ids from firmware
+- Fix replugging the MSP430 device
+- Fix sync method when called from threads without a context
+- Ignore an invalid vendor-id when adding releases for display
+- Improve synaptics-mst reliability when writing data
+- Install modules-load configs in the correct directory
+- Notify the service manager when idle-quitting
+- Only download the remote metadata as required
+- Remove HSI update and attestation suffixes
+- Restore recognizing GPG and PKCS7 signature types in libfwupd
+- Set the SMBIOS chassis type to portable if a DT battery exists
+- Switch from libsoup to libcurl for downloading data
+
 * Fri Nov 20 2020 Adam Williamson <awilliam@redhat.com> - 1.5.1-2
 - Backport #2605 for #2600, seems to help RHBZ #1896540
 
