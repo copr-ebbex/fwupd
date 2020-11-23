@@ -176,6 +176,7 @@ can be flashed using flashrom. It is probably not required on servers.
 
 %meson \
     -Dgtkdoc=true \
+    -Dsupported_build=true \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
