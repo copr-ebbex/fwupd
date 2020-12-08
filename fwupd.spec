@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.2
+Version:   1.5.3
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -255,6 +255,11 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %post
 %systemd_post fwupd.service
 
+# change vendor-installed remotes to use the default keyring type
+for fn in /etc/fwupd/remotes.d/*.conf;
+    do sed -i 's/Keyring=gpg/#Keyring=pkcs/g' "$fn";
+done
+
 %preun
 %systemd_preun fwupd.service
 
@@ -306,7 +311,6 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %if 0%{?have_msr}
 /usr/lib/modules-load.d/fwupd-msr.conf
 %endif
-/usr/lib/modules-load.d/fwupd-platform-integrity.conf
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
@@ -394,7 +398,6 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_platform_integrity.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
@@ -465,6 +468,20 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %endif
 
 %changelog
+* Tue Dec 08 2020 Richard Hughes <richard@hughsie.com> 1.5.3-1
+- New upstream release
+- Add a UEFI quirk for Star Labs Lite Mk III
+- Add the device firmare ID for serio class hardware
+- Allow setting the GMainContext when used for sync methods
+- Allow the client to send legacy PKCS7 and GPG signatures
+- Export the driver name from FuUdevDevice
+- Fix a possible critical warning due to missing retval
+- Fix the endianness for the CRC check in bcm57xx
+- Make sure the correct interface number is used for QMI
+- Mark more user-visible strings as translatable
+- Restrict loading component types of firmware
+- Validate ModemManager firmware update method combinations
+
 * Mon Nov 23 2020 Richard Hughes <richard@hughsie.com> 1.5.2-1
 - New upstream release
 - Add a flag to indicate if packages are supported
