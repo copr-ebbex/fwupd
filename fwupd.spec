@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.3
+Version:   1.5.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -468,6 +468,16 @@ done
 %endif
 
 %changelog
+* Wed Dec 16 2020 Richard Hughes <richard@hughsie.com> 1.5.4-1
+- New upstream release
+- Add Maple Ridge Thunderbolt firmware parsing support
+- Allow creating FMAP and Synaptics firmware using builder.xml
+- Allow using fwupdtool as non-root for firmware commands
+- Do not trust the Block.HintSystem boolean for ESP filtering
+- Fix a memory leak when parsing Synaptics firmware
+- Fix a possible crash when reading the Goodix MOC USB request
+- Fix possible crashes when parsing invalid firmware
+
 * Tue Dec 08 2020 Richard Hughes <richard@hughsie.com> 1.5.3-1
 - New upstream release
 - Add a UEFI quirk for Star Labs Lite Mk III
