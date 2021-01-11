@@ -471,7 +471,7 @@ done
 %endif
 
 %changelog
-* Mon Jan 11 2020 Richard Hughes <richard@hughsie.com> 1.5.5-1
+* Mon Jan 11 2021 Richard Hughes <richard@hughsie.com> 1.5.5-1
 - New upstream release
 - Add a plugin to update PixArt RF devices
 - Add new hardware to use the elantp and rts54hid plugins
