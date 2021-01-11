@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.4
+Version:   1.5.5
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -199,10 +199,12 @@ can be flashed using flashrom. It is probably not required on servers.
 %endif
     -Dplugin_thunderbolt=true \
 %if 0%{?have_uefi}
-    -Dplugin_uefi=true \
+    -Dplugin_uefi_capsule=true \
+    -Dplugin_uefi_pk=true \
     -Dtpm=true \
 %else
-    -Dplugin_uefi=false \
+    -Dplugin_uefi_capsule=false \
+    -Dplugin_uefi_pk=false \
     -Dtpm=false \
 %endif
 %if 0%{?have_dell}
@@ -270,11 +272,10 @@ done
 %files -f %{name}.lang
 %doc README.md AUTHORS
 %license COPYING
-%config(noreplace)%{_sysconfdir}/fwupd/ata.conf
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
 %config(noreplace)%{_sysconfdir}/fwupd/upower.conf
 %if 0%{?have_uefi}
-%config(noreplace)%{_sysconfdir}/fwupd/uefi.conf
+%config(noreplace)%{_sysconfdir}/fwupd/uefi_capsule.conf
 %endif
 %config(noreplace)%{_sysconfdir}/fwupd/redfish.conf
 %config(noreplace)%{_sysconfdir}/fwupd/thunderbolt.conf
@@ -398,6 +399,7 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_pixart_rf.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
@@ -420,8 +422,9 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_tpm_eventlog.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_bios.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_capsule.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_dbx.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_pk.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_uefi_recovery.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_logind.so
@@ -468,6 +471,19 @@ done
 %endif
 
 %changelog
+* Mon Jan 11 2020 Richard Hughes <richard@hughsie.com> 1.5.5-1
+- New upstream release
+- Add a plugin to update PixArt RF devices
+- Add new hardware to use the elantp and rts54hid plugins
+- Detect the AMD TSME encryption state for HSI-4
+- Detect the AMI PK test key is not installed for HSI-1
+- Fix flashing a fingerprint reader that is in use
+- Fix several critical warnings when parsing invalid firmware
+- Fix updating DFU devices that use DNLOAD_BUSY
+- Ignore the legacy UEFI OVMF dummy GUID
+- Make libfwupd more thread safe to fix a crash in gnome-software
+- Never show unprintable chars from invalid firmware in the logs
+
 * Wed Dec 16 2020 Richard Hughes <richard@hughsie.com> 1.5.4-1
 - New upstream release
 - Add Maple Ridge Thunderbolt firmware parsing support
