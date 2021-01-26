@@ -44,7 +44,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.5.5
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -471,6 +471,9 @@ done
 %endif
 
 %changelog
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.5.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
 * Mon Jan 11 2021 Richard Hughes <richard@hughsie.com> 1.5.5-1
 - New upstream release
 - Add a plugin to update PixArt RF devices
