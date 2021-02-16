@@ -43,8 +43,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.5
-Release:   2%{?dist}
+Version:   1.5.6
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -132,6 +132,9 @@ Recommends: %{name}-plugin-modem-manager
 %if 0%{?have_flashrom}
 Recommends: %{name}-plugin-flashrom
 %endif
+%if 0%{?have_uefi}
+Recommends: %{name}-plugin-uefi-capsule-data
+%endif
 
 %description
 fwupd is a daemon to allow session software to update device firmware.
@@ -169,6 +172,17 @@ This provides the optional package which is only required on hardware that
 can be flashed using flashrom. It is probably not required on servers.
 %endif
 
+%if 0%{?have_uefi}
+%package plugin-uefi-capsule-data
+Summary: Localized data for the UEFI UX capsule
+
+%description plugin-uefi-capsule-data
+This provides the pregenerated BMP artwork for the UX capsule, which allows the
+"Installing firmware update…" localized text to be shown during a UEFI firmware
+update operation. This subpackage is probably not required on embedded hardware
+or server machines.
+%endif
+
 %prep
 %autosetup -p1
 
@@ -176,7 +190,6 @@ can be flashed using flashrom. It is probably not required on servers.
 
 %meson \
     -Dgtkdoc=true \
-    -Dsupported_build=true \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
@@ -201,6 +214,13 @@ can be flashed using flashrom. It is probably not required on servers.
 %if 0%{?have_uefi}
     -Dplugin_uefi_capsule=true \
     -Dplugin_uefi_pk=true \
+%ifarch x86_64
+    -Defi_sbat_distro_id="fedora" \
+    -Defi_sbat_distro_summary="The Fedora Project" \
+    -Defi_sbat_distro_pkgname="%{name}" \
+    -Defi_sbat_distro_version="%{version}" \
+    -Defi_sbat_distro_url="https://src.fedoraproject.org/rpms/%{name}" \
+%endif
     -Dtpm=true \
 %else
     -Dplugin_uefi_capsule=false \
@@ -209,10 +229,10 @@ can be flashed using flashrom. It is probably not required on servers.
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
-    -Dplugin_synaptics=true \
+    -Dplugin_synaptics_mst=true \
 %else
     -Dplugin_dell=false \
-    -Dplugin_synaptics=false \
+    -Dplugin_synaptics_mst=false \
 %endif
 %if 0%{?have_modem_manager}
     -Dplugin_modem_manager=true \
@@ -258,8 +278,10 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %systemd_post fwupd.service
 
 # change vendor-installed remotes to use the default keyring type
-for fn in /etc/fwupd/remotes.d/*.conf;
-    do sed -i 's/Keyring=gpg/#Keyring=pkcs/g' "$fn";
+for fn in /etc/fwupd/remotes.d/*.conf; do
+    if grep -q "Keyring=gpg" "$fn"; then
+        sed -i 's/Keyring=gpg/#Keyring=pkcs/g' "$fn";
+    fi
 done
 
 %preun
@@ -368,7 +390,6 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_bcm57xx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_coreboot.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_cros_ec.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_cpu.so
@@ -412,6 +433,7 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_cxaudio.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_prometheus.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_synaptics_rmi.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_system76_launch.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_invalid.so
@@ -435,9 +457,6 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_wacom_usb.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_goodixmoc.so
 %ghost %{_localstatedir}/lib/fwupd/gnupg
-%if 0%{?have_uefi}
-%{_datadir}/locale/*/LC_IMAGES/fwupd*
-%endif
 
 %if 0%{?have_modem_manager}
 %files plugin-modem-manager
@@ -446,6 +465,10 @@ done
 %if 0%{?have_flashrom}
 %files plugin-flashrom
 %{_libdir}/fwupd-plugins-3/libfu_plugin_flashrom.so
+%endif
+%if 0%{?have_uefi}
+%files plugin-uefi-capsule-data
+%{_datadir}/fwupd/uefi-capsule-ux.tar.xz
 %endif
 
 %files devel
@@ -471,6 +494,28 @@ done
 %endif
 
 %changelog
+* Tue Feb 16 2021 Richard Hughes <richard@hughsie.com> 1.5.6-1
+- New upstream release
+- Add SBAT metadata to the fwupd EFI binary
+- Add support for GD32VF103 as found in the Longan Nano
+- Add support for RMI PS2 devices
+- Add support for the Starlabs LabTop L4
+- Add support for the System76 Keyboard
+- Allow downloading firmware from IPFS
+- Be more paranoid when parsing ASCII buffers and devices
+- Check if the fwupd BootXXXX entry exists on failure
+- Do not allow flashing using flashrom if BLE is enabled
+- Do not allow Lenovo hardware to install multiple capsules
+- Do not show Unknown [***] for every client connection
+- Fix dnload wBlockNum wraparound for ST devices
+- Fix OOM when using large ArchiveSizeMax values
+- Fix several crashes spotted by AddressSanitizer
+- Fix several places where the Goodix MOC plugin could crash
+- Include the PCR0 to the report metadata
+- Install the UX data into an optional subpacakge
+- Report the lockdown status from UEFI and SuperIO plugins
+- Show a console warning if the system clock is not set
+
 * Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.5.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
