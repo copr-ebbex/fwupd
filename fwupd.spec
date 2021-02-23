@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.6
+Version:   1.5.7
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -125,6 +125,7 @@ Provides: dbxtool
 
 # optional, but a really good idea
 Recommends: udisks2
+Recommends: bluez
 
 %if 0%{?have_modem_manager}
 Recommends: %{name}-plugin-modem-manager
@@ -214,18 +215,16 @@ or server machines.
 %if 0%{?have_uefi}
     -Dplugin_uefi_capsule=true \
     -Dplugin_uefi_pk=true \
-%ifarch x86_64
     -Defi_sbat_distro_id="fedora" \
     -Defi_sbat_distro_summary="The Fedora Project" \
     -Defi_sbat_distro_pkgname="%{name}" \
     -Defi_sbat_distro_version="%{version}" \
     -Defi_sbat_distro_url="https://src.fedoraproject.org/rpms/%{name}" \
-%endif
-    -Dtpm=true \
+    -Dplugin_tpm=true \
 %else
     -Dplugin_uefi_capsule=false \
     -Dplugin_uefi_pk=false \
-    -Dtpm=false \
+    -Dplugin_tpm=false \
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=true \
@@ -240,6 +239,7 @@ or server machines.
     -Dplugin_modem_manager=false \
 %endif
     -Dman=true \
+    -Dbluez=true \
     -Dsupported_build=true
 
 %meson_build
@@ -391,7 +391,6 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_cros_ec.so
-%{_libdir}/fwupd-plugins-3/libfu_plugin_csr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_cpu.so
 %if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell.so
@@ -399,6 +398,7 @@ done
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dell_dock.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_dfu.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_dfu_csr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ebitdo.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_elantp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_emmc.so
@@ -436,6 +436,7 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_system76_launch.so
 %if 0%{?enable_dummy}
 %{_libdir}/fwupd-plugins-3/libfu_plugin_test.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_test_ble.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_invalid.so
 %endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_thelio_io.so
@@ -494,6 +495,16 @@ done
 %endif
 
 %changelog
+* Tue Feb 23 2021 Richard Hughes <richard@hughsie.com> 1.5.7-1
+- New upstream release
+- Add initial support for Bluez bluetooth devices
+- Add more supported pixart devices
+- Add support for the RTD21xx HDMI converter
+- Convert MBR types to GPT GUIDs to help find the ESP
+- Drop unused heap pages after startup has completed
+- Ensure SBAT metadata is added correctly
+- Only allow verify-update for plugins that support CAN_VERIFY
+
 * Tue Feb 16 2021 Richard Hughes <richard@hughsie.com> 1.5.6-1
 - New upstream release
 - Add SBAT metadata to the fwupd EFI binary
