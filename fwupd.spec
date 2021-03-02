@@ -44,7 +44,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.5.7
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -494,6 +494,10 @@ done
 %endif
 
 %changelog
+* Tue Mar 02 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 1.5.7-2
+- Rebuilt for updated systemd-rpm-macros
+  See https://pagure.io/fesco/issue/2583.
+
 * Tue Feb 23 2021 Richard Hughes <richard@hughsie.com> 1.5.7-1
 - New upstream release
 - Add initial support for Bluez bluetooth devices
