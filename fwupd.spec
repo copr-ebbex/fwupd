@@ -275,7 +275,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %find_lang %{name}
 
 %post
-%systemd_post fwupd.service
+%systemd_post fwupd.service pesign.service
 
 # change vendor-installed remotes to use the default keyring type
 for fn in /etc/fwupd/remotes.d/*.conf; do
@@ -285,11 +285,10 @@ for fn in /etc/fwupd/remotes.d/*.conf; do
 done
 
 %preun
-%systemd_preun fwupd.service
+%systemd_preun fwupd.service pesign.service
 
 %postun
-%systemd_postun_with_restart fwupd.service
-%systemd_postun_with_restart pesign.service
+%systemd_postun_with_restart fwupd.service pesign.service
 
 %files -f %{name}.lang
 %doc README.md AUTHORS
