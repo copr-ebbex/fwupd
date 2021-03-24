@@ -43,8 +43,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.7
-Release:   2%{?dist}
+Version:   1.5.8
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -494,6 +494,31 @@ done
 %endif
 
 %changelog
+* Wed Mar 24 2021 Richard Hughes <richard@hughsie.com> 1.5.8-1
+- New upstream release
+- Add D501 Baklava device support
+- Allow enabling plugins only matching a specific HwId
+- Check pixart firmware compatibility with hardware before flashing
+- Correct a thunderbolt assertion if kernel failed FW read
+- Correctly erase STM32 devices when transfer size is less than sector size
+- Detect SREC overflow to avoid adding ~4GB of 0xFF padding
+- Do not show a critical error when flashing footer-less binary files
+- Don't allow device updates while needing activation
+- Fix a regression in the elantp defined IAP start address
+- Fix a regression where activate stopped working
+- Fix firmware update of pointing device on Lenovo ThinkPad Nano
+- Fix the HSI plugin 'Disabled' state
+- Fix the quirk key name for the Lenovo HDMI with power
+- Fix writing to the GD32VF103 bootloader
+- Only call elantp->detach() when writing a firmware blob
+- Prompt for unlock keypress if reset command is blocked
+- Remove the Hughski public key
+- Show a warning when parsing invalid quirk files
+- Support for GATT characteristic signals/notifications
+- Support more than one protocol for a given device
+- Updated StarLabs GUIDs
+- Wait a few ms for the Logitech hardware to settle after detach
+
 * Tue Mar 02 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 1.5.7-2
 - Rebuilt for updated systemd-rpm-macros
   See https://pagure.io/fesco/issue/2583.
