@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.8
+Version:   1.5.9
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -494,6 +494,20 @@ done
 %endif
 
 %changelog
+* Tue Apr 13 2021 Richard Hughes <richard@hughsie.com> 1.5.9-1
+- New upstream release
+- Avoid runtime warning in dfu-tool
+- Detect address overflow when parsing invalid Intel HEX files
+- Do not timeout when bluez fails to start
+- Fix a crash when checking if the dbx update is safe to apply
+- Fix a possible crash if the user set WacomI2cFlashBlockSize manually
+- Fix array access when using fwupmgr verify-update
+- Include crt0 for arm and aarch64 that add a SBAT section
+- Retry the request to fix enumeration failure of Synaptics CXAudio
+- Set device activation requirement correctly in all cases
+- Set dual-bank property on more Lenovo display hardware
+- Tweak the SBAT output for a vendor string
+
 * Wed Mar 24 2021 Richard Hughes <richard@hughsie.com> 1.5.8-1
 - New upstream release
 - Add D501 Baklava device support
