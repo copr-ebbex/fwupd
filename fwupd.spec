@@ -44,10 +44,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.5.9
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1949491
+Patch0:        3144.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -494,6 +497,9 @@ done
 %endif
 
 %changelog
+* Wed Apr 14 2021 Andrew Thurman <ajtbecool@gmail.com> 1.5.9-2
+- Backport https://github.com/fwupd/fwupd/pull/3144 to fix https://bugzilla.redhat.com/show_bug.cgi?id=1949491
+
 * Tue Apr 13 2021 Richard Hughes <richard@hughsie.com> 1.5.9-1
 - New upstream release
 - Avoid runtime warning in dfu-tool
