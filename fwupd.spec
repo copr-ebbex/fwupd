@@ -43,14 +43,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.5.9
-Release:   2%{?dist}
+Version:   1.6.0
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1949491
-Patch0:        3144.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -76,7 +73,6 @@ BuildRequires: gtk-doc
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
-BuildRequires: help2man
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
 BuildRequires: bash-completion
@@ -92,15 +88,13 @@ BuildRequires: libqmi-devel >= 1.22.0
 
 %if 0%{?have_uefi}
 BuildRequires: efivar-devel >= 33
-BuildRequires: python3 python3-cairo python3-gobject python3-pillow
+BuildRequires: python3 python3-cairo python3-gobject
 BuildRequires: pango-devel
 BuildRequires: cairo-devel cairo-gobject-devel
 BuildRequires: freetype
 BuildRequires: fontconfig
 BuildRequires: google-noto-sans-cjk-ttc-fonts
-BuildRequires: gnu-efi-devel
 BuildRequires: tpm2-tss-devel >= 2.2.3
-BuildRequires: pesign
 %endif
 
 %if 0%{?have_dell}
@@ -137,6 +131,7 @@ Recommends: %{name}-plugin-modem-manager
 Recommends: %{name}-plugin-flashrom
 %endif
 %if 0%{?have_uefi}
+Recommends: %{name}-efi
 Recommends: %{name}-plugin-uefi-capsule-data
 %endif
 
@@ -218,12 +213,8 @@ or server machines.
 %if 0%{?have_uefi}
     -Dplugin_uefi_capsule=true \
     -Dplugin_uefi_pk=true \
-    -Defi_sbat_distro_id="fedora" \
-    -Defi_sbat_distro_summary="The Fedora Project" \
-    -Defi_sbat_distro_pkgname="%{name}" \
-    -Defi_sbat_distro_version="%{version}" \
-    -Defi_sbat_distro_url="https://src.fedoraproject.org/rpms/%{name}" \
     -Dplugin_tpm=true \
+    -Defi_binary=false \
 %else
     -Dplugin_uefi_capsule=false \
     -Dplugin_uefi_pk=false \
@@ -255,21 +246,6 @@ or server machines.
 %install
 %meson_install
 
-# sign fwupd.efi loader
-%if 0%{?have_uefi}
-%ifarch x86_64
-%global efiarch x64
-%endif
-%ifarch aarch64
-%global efiarch aa64
-%endif
-%global fwup_efi_fn $RPM_BUILD_ROOT%{_libexecdir}/fwupd/efi/fwupd%{efiarch}.efi
-%pesign -s -i %{fwup_efi_fn} -o %{fwup_efi_fn}.tmp
-%define __pesign_client_cert fwupd-signer
-%pesign -s -i %{fwup_efi_fn}.tmp -o %{fwup_efi_fn}.signed
-rm -vf %{fwup_efi_fn}.tmp
-%endif
-
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
 # workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1757948
@@ -278,7 +254,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %find_lang %{name}
 
 %post
-%systemd_post fwupd.service pesign.service
+%systemd_post fwupd.service
 
 # change vendor-installed remotes to use the default keyring type
 for fn in /etc/fwupd/remotes.d/*.conf; do
@@ -288,10 +264,10 @@ for fn in /etc/fwupd/remotes.d/*.conf; do
 done
 
 %preun
-%systemd_preun fwupd.service pesign.service
+%systemd_preun fwupd.service
 
 %postun
-%systemd_postun_with_restart fwupd.service pesign.service
+%systemd_postun_with_restart fwupd.service
 
 %files -f %{name}.lang
 %doc README.md AUTHORS
@@ -310,8 +286,6 @@ done
 %endif
 %{_libexecdir}/fwupd/fwupdoffline
 %if 0%{?have_uefi}
-%{_libexecdir}/fwupd/efi/*.efi
-%{_libexecdir}/fwupd/efi/*.efi.signed
 %{_bindir}/fwupdate
 %{_bindir}/fwupdtpmevlog
 %endif
@@ -388,6 +362,7 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_facp.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_analogix.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_bcm57xx.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_ccgx.so
@@ -497,6 +472,9 @@ done
 %endif
 
 %changelog
+* Wed Apr 28 2021 Richard Hughes <richard@hughsie.com> 1.6.0-1
+- New upstream release
+
 * Wed Apr 14 2021 Andrew Thurman <ajtbecool@gmail.com> 1.5.9-2
 - Backport https://github.com/fwupd/fwupd/pull/3144 to fix https://bugzilla.redhat.com/show_bug.cgi?id=1949491
 
