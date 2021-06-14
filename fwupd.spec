@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.6.0
+Version:   1.6.1
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -188,7 +188,7 @@ or server machines.
 %build
 
 %meson \
-    -Dgtkdoc=true \
+    -Ddocs=gtkdoc \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
@@ -360,6 +360,7 @@ done
 %dir %{_libdir}/fwupd-plugins-3
 %{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_dmar.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_facp.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_acpi_phat.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_analogix.so
@@ -472,6 +473,29 @@ done
 %endif
 
 %changelog
+* Mon Jun 14 2021 Richard Hughes <richard@hughsie.com> 1.6.1-1
+- New upstream release
+- Add generic ModemManager support for PCI based modems
+- Add initial support for USB4 module in the Dell dock
+- Add support for sibling requirements
+- Add support for the ACPI PHAT table
+- Ask the user to confirm all CLI actions
+- Do not prevent firmware updates on desktop hardware
+- Do not show an invalid DFU warning on attach
+- Fall back to binary files when flashing STM32 hardware
+- Fix a critical warning when downloading files
+- Fix a regression in updating the WD19TB dock
+- Fix GUID generation on pixart hardware
+- Fix the VLI i2c device enumeration, e.g. MSP430
+- Follow HTTP 3XX redirects when downloading files
+- Force the device locker to close() an aborted open()
+- Only lock fwupdtool when loading the engine
+- Read current Wacom firmware index before finding image to write
+- Support binary artifact resources in cabinet archives
+- Support mirroring the detach and update images
+- Switch lock directory from /var/run to /run/lock
+- Use GProxyResolver to get the system proxy setting for a given URL
+
 * Wed Apr 28 2021 Richard Hughes <richard@hughsie.com> 1.6.0-1
 - New upstream release
 
