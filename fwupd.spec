@@ -44,7 +44,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.6.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -473,6 +473,9 @@ done
 %endif
 
 %changelog
+* Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.6.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
 * Mon Jun 14 2021 Richard Hughes <richard@hughsie.com> 1.6.1-1
 - New upstream release
 - Add generic ModemManager support for PCI based modems
