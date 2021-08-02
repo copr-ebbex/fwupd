@@ -43,8 +43,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.6.1
-Release:   2%{?dist}
+Version:   1.6.2
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -84,6 +84,7 @@ BuildRequires: flashrom-devel >= 1.2-2
 %if 0%{?have_modem_manager}
 BuildRequires: ModemManager-glib-devel >= 1.10.0
 BuildRequires: libqmi-devel >= 1.22.0
+BuildRequires: libmbim-devel
 %endif
 
 %if 0%{?have_uefi}
@@ -273,7 +274,6 @@ done
 %doc README.md AUTHORS
 %license COPYING
 %config(noreplace)%{_sysconfdir}/fwupd/daemon.conf
-%config(noreplace)%{_sysconfdir}/fwupd/upower.conf
 %if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/fwupd/uefi_capsule.conf
 %endif
@@ -351,7 +351,10 @@ done
 %dir %{_localstatedir}/cache/fwupd
 %dir %{_datadir}/fwupd/quirks.d
 %{_datadir}/fwupd/quirks.d/*.quirk
-%{_localstatedir}/lib/fwupd/builder/README.md
+%{_datadir}/doc/fwupd/builder/README.md
+%if 0%{?have_uefi}
+%{_sysconfdir}/grub.d/35_fwupd
+%endif
 %{_libdir}/libfwupd*.so.*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
 %{_libdir}/girepository-1.0/FwupdPlugin-1.0.typelib
@@ -386,6 +389,9 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_hailuck.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_iommu.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_jabra.so
+%if 0%{?have_uefi}
+%{_libdir}/fwupd-plugins-3/libfu_plugin_lenovo_thinklmi.so
+%endif
 %{_libdir}/fwupd-plugins-3/libfu_plugin_linux_lockdown.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_linux_sleep.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_linux_swap.so
@@ -396,9 +402,12 @@ done
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nitrokey.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_nvme.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_optionrom.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_parade_lspcon.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pci_mei.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_pixart_rf.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_powerd.so
+%{_libdir}/fwupd-plugins-3/libfu_plugin_realtek_mst.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-3/libfu_plugin_rts54hub.so
@@ -473,6 +482,20 @@ done
 %endif
 
 %changelog
+* Mon Aug 02 2021 Richard Hughes <richard@hughsie.com> 1.6.2-1
+- New upstream release
+- Add a plugin to check Lenovo firmware settings
+- Add support for CapsuleOnDisk and installing UEFI updates from GRUB
+- Automatically connect the BMC network interface at startup
+- Disable all UX capsules for Lenovo hardware
+- Do not assume the metainfo file is NUL-terminated
+- Do not save invalid files on LVFS server error
+- Fix a VLI regression when installing VL820Q7 firmware
+- Fix enumeration of the Synaptics Prometheus config child
+- Fix version number for legacy Wacom Bluetooth modules
+- Show the user how to switch out of Wacom tablet Android-mode
+- Work around a XCC-ism on Lenovo hardware
+
 * Wed Jul 21 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.6.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
