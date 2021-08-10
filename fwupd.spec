@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.6.2
+Version:   1.6.3
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -482,6 +482,13 @@ done
 %endif
 
 %changelog
+* Tue Aug 10 2021 Richard Hughes <richard@hughsie.com> 1.6.3-1
+- New upstream release
+- Disable the uefi_capsule plugin if Redfish coldplug succeeded
+- Fix an elantp crash when starting the daemon
+- Fix detection of 8Bitdo wireless usb adapter
+- Fix writing large redfish firmware files
+
 * Mon Aug 02 2021 Richard Hughes <richard@hughsie.com> 1.6.2-1
 - New upstream release
 - Add a plugin to check Lenovo firmware settings
