@@ -43,7 +43,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.6.3
+Version:   1.6.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -482,6 +482,14 @@ done
 %endif
 
 %changelog
+* Fri Sep 24 2021 Richard Hughes <richard@hughsie.com> 1.6.4-1
+- New upstream release
+- Abort on invalid SREC files early to avoid a fuzzing timeout
+- Allow overriding the quirks directory at runtime
+- Fix a regression in flashing the Dell dock
+- Fix probing the Dell TPM
+- Show HSiLevel=0 attributes in JSON security output
+
 * Tue Aug 10 2021 Richard Hughes <richard@hughsie.com> 1.6.3-1
 - New upstream release
 - Disable the uefi_capsule plugin if Redfish coldplug succeeded
