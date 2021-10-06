@@ -50,6 +50,9 @@ License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
+# backported from upstream
+Patch0:    0001-Fix-build-error-when-sys-io.h-is-ot-available.patch
+
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
