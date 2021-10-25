@@ -45,7 +45,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.7.0
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -493,6 +493,9 @@ done
 %endif
 
 %changelog
+* Mon Oct 25 2021 Adrian Reber <adrian@lisas.de> - 1.7.0-2
+- Rebuilt for protobuf 3.18.1
+
 * Wed Oct 06 2021 Richard Hughes <richard@hughsie.com> 1.7.0-1
 - New upstream release
 - Add more supported PixArt and StarBook coreboot devices
