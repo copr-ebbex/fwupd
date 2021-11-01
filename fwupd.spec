@@ -44,14 +44,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.0
-Release:   2%{?dist}
+Version:   1.7.1
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-# backported from upstream
-Patch0:    0001-Fix-build-error-when-sys-io.h-is-ot-available.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -377,6 +374,7 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_bcm57xx.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ccgx.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cfu.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cros_ec.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cpu.so
@@ -482,6 +480,7 @@ done
 %files tests
 %if 0%{?enable_tests}
 %dir %{_datadir}/installed-tests/fwupd
+%{_datadir}/installed-tests/fwupd/tests/*
 %{_datadir}/installed-tests/fwupd/fwupd-tests.xml
 %{_datadir}/installed-tests/fwupd/*.test
 %{_datadir}/installed-tests/fwupd/*.cab
@@ -493,6 +492,24 @@ done
 %endif
 
 %changelog
+* Mon Nov 01 2021 Richard Hughes <richard@hughsie.com> 1.7.1-1
+- New upstream release
+- Allow specifying 'fwupdmgr device-test foo --json' for unattended testing
+- Show changes in HSI attributes when using 'fwupdmgr security'
+- Show the user a warning if updating may affect full-disk-encryption
+- Show translated firmware release notes when provided
+- Support loading remotes from /var/lib/fwupd/remotes.d
+- Fix a CCGX regression when loading firmware
+- Fix a potential crash when dumping Parade devices
+- Fix the CSME CVE detection for new generations
+- Handle EPERM when running the self tests on systems with IPMI
+- Mark as SUPPORTED even if on battery power
+- Only save the HSI attributes to the database if different
+- Raise the client timeout value from 25 seconds to fix Redfish startup
+- Redirect the old HSI links to the correct place
+- Set device time and timezone for logitech bulkcontroller devices
+- Set the verfmt of the returned device when the daemon device is unset
+
 * Mon Oct 25 2021 Adrian Reber <adrian@lisas.de> - 1.7.0-2
 - Rebuilt for protobuf 3.18.1
 
