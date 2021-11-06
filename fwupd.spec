@@ -45,7 +45,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.7.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -492,6 +492,9 @@ done
 %endif
 
 %changelog
+* Sat Nov 06 2021 Adrian Reber <adrian@lisas.de> - 1.7.1-2
+- Rebuilt for protobuf 3.19.0
+
 * Mon Nov 01 2021 Richard Hughes <richard@hughsie.com> 1.7.1-1
 - New upstream release
 - Allow specifying 'fwupdmgr device-test foo --json' for unattended testing
