@@ -5,7 +5,7 @@
 %global libjcat_version 0.1.0
 %global systemd_version 231
 %global json_glib_version 1.1.1
-%global fwupdplugin_version 4
+%global fwupdplugin_version 5
 
 # although we ship a few tiny python files these are utilities that 99.99%
 # of users do not need -- use this to avoid dragging python onto CoreOS
@@ -44,8 +44,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.1
-Release:   2%{?dist}
+Version:   1.7.2
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -70,7 +70,6 @@ BuildRequires: gcab
 BuildRequires: valgrind
 BuildRequires: valgrind-devel
 %endif
-BuildRequires: elfutils-libelf-devel
 BuildRequires: gtk-doc
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
@@ -152,6 +151,7 @@ Files for development with %{name}.
 
 %package tests
 Summary: Data files for installed tests
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description tests
 Data files for installed tests.
@@ -159,6 +159,7 @@ Data files for installed tests.
 %if 0%{?have_modem_manager}
 %package plugin-modem-manager
 Summary: fwupd plugin using ModemManger
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-modem-manager
 This provides the optional package which is only required on hardware that
@@ -168,6 +169,7 @@ might have mobile broadband hardware. It is probably not required on servers.
 %if 0%{?have_flashrom}
 %package plugin-flashrom
 Summary: fwupd plugin using flashrom
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-flashrom
 This provides the optional package which is only required on hardware that
@@ -177,6 +179,7 @@ can be flashed using flashrom. It is probably not required on servers.
 %if 0%{?have_uefi}
 %package plugin-uefi-capsule-data
 Summary: Localized data for the UEFI UX capsule
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description plugin-uefi-capsule-data
 This provides the pregenerated BMP artwork for the UX capsule, which allows the
@@ -289,7 +292,6 @@ done
 %{_libexecdir}/fwupd/fwupdoffline
 %if 0%{?have_uefi}
 %{_bindir}/fwupdate
-%{_bindir}/fwupdtpmevlog
 %endif
 %{_bindir}/dfu-tool
 %if 0%{?have_uefi}
@@ -336,7 +338,6 @@ done
 %{_mandir}/man1/fwupdmgr.1*
 %if 0%{?have_uefi}
 %{_mandir}/man1/fwupdate.1*
-%{_mandir}/man1/fwupdtpmevlog.1*
 %endif
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
 %{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
@@ -368,7 +369,6 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_dmar.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_facp.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_phat.so
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_altos.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_analogix.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ata.so
@@ -405,6 +405,7 @@ done
 %if 0%{?have_msr}
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_msr.so
 %endif
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_mtd.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nitrokey.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nvme.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_optionrom.so
@@ -417,7 +418,6 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_rts54hub.so
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_solokey.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_superio.so
 %if 0%{?have_dell}
@@ -437,7 +437,6 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_thunderbolt.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_tpm.so
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_tpm_eventlog.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_bios.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uefi_capsule.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uefi_dbx.so
@@ -485,6 +484,7 @@ done
 %{_datadir}/installed-tests/fwupd/*.test
 %{_datadir}/installed-tests/fwupd/*.cab
 %{_datadir}/installed-tests/fwupd/*.sh
+%{_datadir}/installed-tests/fwupd/efi
 %{_datadir}/fwupd/device-tests/*.json
 %{_libexecdir}/installed-tests/fwupd/*
 %dir %{_sysconfdir}/fwupd/remotes.d
@@ -492,6 +492,20 @@ done
 %endif
 
 %changelog
+* Fri Nov 19 2021 Richard Hughes <richard@hughsie.com> 1.7.2-1
+- New upstream release
+- Add a new HSI check that PCR registers 0-7 are not empty
+- Add support for exported MTD block devices
+- Export the component release ID over DBus
+- Fix a DFU crash if the attach failed due to a hardware fault
+- Fix a Redfish crash when specifying a URL without a port
+- Fix CLI downloads when using fwupdmgr --ipfs
+- Inhibit thunderbolt devices to correctly use UPDATABLE_HIDDEN
+- Remove support for the SoloKey and ChaosKey devices
+- Set SSL_VERIFYHOST=0 when using Redfish to fix OpenBMC auth
+- Skip UEFI devices that fail coldplug
+- Speed up the daemon startup by ~40% by doing less at startup
+
 * Sat Nov 06 2021 Adrian Reber <adrian@lisas.de> - 1.7.1-2
 - Rebuilt for protobuf 3.19.0
 
