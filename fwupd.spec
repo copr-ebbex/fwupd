@@ -44,7 +44,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.2
+Version:   1.7.3
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -240,6 +240,7 @@ or server machines.
 %endif
     -Dman=true \
     -Dbluez=true \
+    -Dplugin_powerd=false \
     -Dsupported_build=true
 
 %meson_build
@@ -374,7 +375,6 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_bcm57xx.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ccgx.so
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cfu.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_colorhug.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cros_ec.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cpu.so
@@ -407,13 +407,13 @@ done
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_mtd.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nitrokey.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nordic_hid.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nvme.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_optionrom.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_parade_lspcon.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_pci_bcr.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_pci_mei.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_pixart_rf.so
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_powerd.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_realtek_mst.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_rts54hid.so
@@ -494,6 +494,20 @@ done
 %endif
 
 %changelog
+* Mon Dec 13 2021 Richard Hughes <richard@hughsie.com> 1.7.3-1
+- New upstream release
+- Add a sync-bkc subcommand to ensure a known set of firmware versions
+- Add support for most Nordic Semiconductor nRF Secure devices
+- Add the CFI JEDEC instance ID if using the vendor-extended version
+- Do not wait for a USB runtime if will-disappear is set
+- Enable the MOTD integration when using pam_motd
+- Fix DFU regression when merging the FuProgress work
+- Fix VLI VL820Q7 detection to fix flashing of the Lenovo TBT3 dock
+- Ignore a USB error for STM32 attach when the device goes away
+- Make the plugin startup order deterministic
+- Set Thunderbolt ports offline on host controller
+- Wait for the System76 Launch device to come back from DFU mode
+
 * Fri Nov 19 2021 Richard Hughes <richard@hughsie.com> 1.7.2-1
 - New upstream release
 - Add a new HSI check that PCR registers 0-7 are not empty
