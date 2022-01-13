@@ -44,7 +44,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.3
+Version:   1.7.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -443,9 +443,11 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uefi_pk.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uefi_recovery.so
 %endif
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_usi_dock.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logind.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logitech_bulkcontroller.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logitech_hidpp.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uf2.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_upower.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_vli.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_wacom_raw.so
@@ -494,6 +496,18 @@ done
 %endif
 
 %changelog
+* Thu Jan 13 2022 Richard Hughes <richard@hughsie.com> 1.7.4-1
+- New upstream release
+- Add firmware branch support for ModemManager devices
+- Allow fwupdtool to be run as the non-root user in more cases
+- Assign the Logitech bulkcontroller update interface correctly
+- Do not allow UEFI updates when the laptop lid is closed
+- Do not autoload ipmi-si to avoid warning on non-server hardware
+- Do not show a critical warning for a weird TPM event log
+- Fix waiting for USB devices when using Windows
+- Ignore non-PCI NVMe devices
+- Show why more devices are not marked as updatable
+
 * Mon Dec 13 2021 Richard Hughes <richard@hughsie.com> 1.7.3-1
 - New upstream release
 - Add a sync-bkc subcommand to ensure a known set of firmware versions
