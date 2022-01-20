@@ -45,7 +45,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.7.4
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -496,6 +496,9 @@ done
 %endif
 
 %changelog
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.7.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Thu Jan 13 2022 Richard Hughes <richard@hughsie.com> 1.7.4-1
 - New upstream release
 - Add firmware branch support for ModemManager devices
