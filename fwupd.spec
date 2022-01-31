@@ -774,7 +774,7 @@ done
 * Fri Nov 20 2020 Adam Williamson <awilliam@redhat.com> - 1.5.1-2
 - Backport #2605 for #2600, seems to help RHBZ #1896540
 
-* Mon Nov 01 2020 Richard Hughes <richard@hughsie.com> 1.5.1-1
+* Mon Nov 02 2020 Richard Hughes <richard@hughsie.com> 1.5.1-1
 - New upstream release
 - Delete unused EFI variables when deploying firmware
 - Fix probe warning for the Logitech Unifying device
