@@ -44,8 +44,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.4
-Release:   2%{?dist}
+Version:   1.7.5
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -125,6 +125,7 @@ Provides: dbxtool
 # optional, but a really good idea
 Recommends: udisks2
 Recommends: bluez
+Recommends: jq
 
 %if 0%{?have_modem_manager}
 Recommends: %{name}-plugin-modem-manager
@@ -496,6 +497,21 @@ done
 %endif
 
 %changelog
+* Mon Feb 07 2022 Richard Hughes <richard@hughsie.com> 1.7.5-1
+- New upstream release
+- Add a flag to indicate the firmware is not provided by the vendor
+- Allow marking a device as End-of-Life by the OEM vendor
+- Be more robust by retrying IPMI transactions on servers
+- Change the expired Redfish password when required
+- Fall back to the ARM Device Tree 'compatible' data when required
+- Fix a ModemManager segfault on startup for some MBIM-QDU devices
+- Fix a possible dell-dock segfault at startup
+- Fix compiling with new versions of efivar
+- Fix the Nordic bootloader type detection
+- Fix USB4 retimer enumeration
+- Show results when calling get-details if failing requirements
+- Uninhibit the modem using ModemManager after upgrade
+
 * Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.7.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
