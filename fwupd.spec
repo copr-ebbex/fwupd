@@ -23,6 +23,11 @@
 %global have_uefi 1
 %endif
 
+# gpio.h is only available on these arches
+%ifarch x86_64 aarch64
+%global have_gpio 1
+%endif
+
 # flashrom is only available on these arches
 %ifarch i686 x86_64 armv7hl aarch64 ppc64le
 %global have_flashrom 1
@@ -44,7 +49,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.5
+Version:   1.7.6
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -216,6 +221,11 @@ or server machines.
 %else
     -Dplugin_msr=false \
 %endif
+%if 0%{?have_gpio}
+    -Dplugin_gpio=true \
+%else
+    -Dplugin_gpio=false \
+%endif
     -Dplugin_thunderbolt=true \
 %if 0%{?have_uefi}
     -Dplugin_uefi_capsule=true \
@@ -315,6 +325,7 @@ done
 %{_sysconfdir}/pki/fwupd-metadata
 %if 0%{?have_msr}
 /usr/lib/modules-load.d/fwupd-msr.conf
+%config(noreplace)%{_sysconfdir}/fwupd/msr.conf
 %endif
 /usr/lib/modules-load.d/fwupd-redfish.conf
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
@@ -393,6 +404,10 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ep963x.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_fastboot.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_fresco_pd.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_genesys.so
+%if 0%{?have_gpio}
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_gpio.so
+%endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_hailuck.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_iommu.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_jabra.so
@@ -419,6 +434,7 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_redfish.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_rts54hid.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_rts54hub.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_scsi.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_superio.so
 %if 0%{?have_dell}
@@ -497,6 +513,25 @@ done
 %endif
 
 %changelog
+* Fri Feb 25 2022 Richard Hughes <richard@hughsie.com> 1.7.6-1
+- New upstream release
+- Add a flag to indicate the device has a signed or unsigned payload
+- Add a simple plugin to enumerate (but not update) SCSI hardware
+- Allow assigning issues to devices for known high priority problems
+- Do not run fwupd-refresh automatically in containers
+- Do not show a warning if the TPM eventlog does not exist
+- Do not show TSS2 warning messages by default
+- Fix a critical warning when loading an empty TPM eventlog item
+- Fix a logic error when adding the community warning in fwupdmgr
+- Fix loading flashrom devices in coreboot mode
+- Fix the error handling when updating USB4 retimers
+- Modify the AT retry behavior to fix getting the firmware branch
+- Parse the MTD firmware version using the defined GType
+- Show the user when devices are not updatable due to inhibits
+- Skip probing the Dell DA300 device to avoid a warning
+- Try harder to convert to a version into a correct semver
+- Use multiple checksums when there are no provided artifacts
+
 * Mon Feb 07 2022 Richard Hughes <richard@hughsie.com> 1.7.5-1
 - New upstream release
 - Add a flag to indicate the firmware is not provided by the vendor
