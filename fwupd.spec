@@ -49,7 +49,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.6
+Version:   1.7.7
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -513,6 +513,20 @@ done
 %endif
 
 %changelog
+* Tue Apr 05 2022 Richard Hughes <richard@hughsie.com> 1.7.7-1
+- New upstream release
+- Add signed and unsigned payload metadata to more devices
+- Allow overriding the detected machine type
+- Allow quirking the flashrom flash size
+- Do not add the backup BMC device as it shares the same GUIDs
+- Do not allow the DBX update for broken firmware versions
+- Don't export USB4 host controllers if they do not have unique GUIDs
+- Fix the TPM eventlog replay for Intel TXT machines
+- Never send the DeviceChanged signal with invalid data
+- Return the correct error when there is no GPIO device to open
+- Show the update message and update image in front end tools
+- Support the new PENDING upower device states
+
 * Fri Feb 25 2022 Richard Hughes <richard@hughsie.com> 1.7.6-1
 - New upstream release
 - Add a flag to indicate the device has a signed or unsigned payload
