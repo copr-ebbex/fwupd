@@ -5,7 +5,7 @@
 %global libjcat_version 0.1.0
 %global systemd_version 231
 %global json_glib_version 1.1.1
-%global fwupdplugin_version 5
+%global fwupdplugin_version 6
 
 # although we ship a few tiny python files these are utilities that 99.99%
 # of users do not need -- use this to avoid dragging python onto CoreOS
@@ -42,6 +42,11 @@
 %global have_dell 1
 %endif
 
+# AMD PSP is only available on x86
+%ifarch x86_64
+%global have_pci_psp 1
+%endif
+
 # only available recently
 %if 0%{?fedora} >= 30
 %global have_modem_manager 1
@@ -49,7 +54,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.7.7
+Version:   1.8.0
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -69,6 +74,7 @@ BuildRequires: sqlite-devel
 BuildRequires: systemd >= %{systemd_version}
 BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
+BuildRequires: libcbor-devel
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
 %ifarch %{valgrind_arches}
@@ -212,47 +218,47 @@ or server machines.
     -Dplugin_dummy=false \
 %endif
 %if 0%{?have_flashrom}
-    -Dplugin_flashrom=true \
+    -Dplugin_flashrom=enabled \
 %else
-    -Dplugin_flashrom=false \
+    -Dplugin_flashrom=disabled \
 %endif
 %if 0%{?have_msr}
-    -Dplugin_msr=true \
+    -Dplugin_msr=enabled \
 %else
-    -Dplugin_msr=false \
+    -Dplugin_msr=disabled \
 %endif
 %if 0%{?have_gpio}
-    -Dplugin_gpio=true \
+    -Dplugin_gpio=enabled \
 %else
-    -Dplugin_gpio=false \
+    -Dplugin_gpio=disabled \
 %endif
-    -Dplugin_thunderbolt=true \
+    -Dplugin_thunderbolt=enabled \
 %if 0%{?have_uefi}
-    -Dplugin_uefi_capsule=true \
-    -Dplugin_uefi_pk=true \
-    -Dplugin_tpm=true \
+    -Dplugin_uefi_capsule=enabled \
+    -Dplugin_uefi_pk=enabled \
+    -Dplugin_tpm=enabled \
     -Defi_binary=false \
 %else
-    -Dplugin_uefi_capsule=false \
-    -Dplugin_uefi_pk=false \
-    -Dplugin_tpm=false \
+    -Dplugin_uefi_capsule=disabled \
+    -Dplugin_uefi_pk=disabled \
+    -Dplugin_tpm=disabled \
 %endif
 %if 0%{?have_dell}
-    -Dplugin_dell=true \
-    -Dplugin_synaptics_mst=true \
+    -Dplugin_dell=enabled \
+    -Dplugin_synaptics_mst=enabled \
 %else
-    -Dplugin_dell=false \
-    -Dplugin_synaptics_mst=false \
+    -Dplugin_dell=disabled \
+    -Dplugin_synaptics_mst=disabled \
 %endif
 %if 0%{?have_modem_manager}
-    -Dplugin_modem_manager=true \
+    -Dplugin_modem_manager=enabled \
 %else
-    -Dplugin_modem_manager=false \
+    -Dplugin_modem_manager=disabled \
 %endif
     -Dman=true \
-    -Dbluez=true \
-    -Dplugin_powerd=false \
-    -Dsupported_build=true
+    -Dbluez=enabled \
+    -Dplugin_powerd=disabled \
+    -Dsupported_build=enabled
 
 %meson_build
 
@@ -379,15 +385,17 @@ done
 /usr/lib/udev/rules.d/*.rules
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-plugins-%{fwupdplugin_version}
-%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_dmar.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_facp.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_phat.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_analogix.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ata.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_bcm57xx.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cfu.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ccgx.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_ch341a.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_colorhug.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_corsair.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cros_ec.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_cpu.so
 %if 0%{?have_dell}
@@ -419,7 +427,12 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_swap.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_tainted.so
 %if 0%{?have_msr}
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_dmar.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_ivrs.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_msr.so
+%endif
+%if 0%{?have_pci_psp}
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_pci_psp.so
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_mtd.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_nitrokey.so
@@ -513,6 +526,39 @@ done
 %endif
 
 %changelog
+* Thu Apr 28 2022 Richard Hughes <richard@hughsie.com> 1.8.0-1
+- New upstream release
+- Add coSWID and uSWID parsers to libfwupdplugin for initial SBoM support
+- Add new HSI attributes for the AMD PSP and various other system protections
+- Add support for Corsair Sabre RGB PRO and Slipstream USB receiver
+- Add support for FlatFrog devices
+- Add support for Genesys GL3521 and GL3590 hubs
+- Add support for Google Servo Dock
+- Add support for Logitech M550, M650 and K650
+- Add support for more ELAN fingerprint readers
+- Add support for more integrated Wacom panels
+- Add support for more NovaCustom machines
+- Add support for more StaLabs StarLite machines
+- Add support for more Tuxedo laptops
+- Add support for System76 launch_lite_1
+- Add support for the Quectel EM05
+- Add the runtime fwupd-efi version as a firmware requirement
+- Allow Capsule-on-Disk to work in more cases
+- Allow 'fwupdmgr install' to install a specified firmware version
+- Check the update protocol exists when checking requirements
+- Correctly probe USB-2 hubs with more than 7 ports
+- Do not add the Windows compatibility ID to capsule devices
+- Do not throw away the TPM eventlog when uploading to the LVFS
+- Export the version_lowest_raw value correctly
+- Fix several small memory leaks
+- Mark the ME region device locked if it is read only
+- Only show the CLI time remaining for predictable status phases
+- Respect the NO_COLOR env variable
+- Restart the BMC after installing BCM updates
+- Show the device serial number and instance IDs by default
+- Support dumping the MTD image to a firmware blob
+- Use the correct icon automatically for more hardware
+
 * Tue Apr 05 2022 Richard Hughes <richard@hughsie.com> 1.7.7-1
 - New upstream release
 - Add signed and unsigned payload metadata to more devices
