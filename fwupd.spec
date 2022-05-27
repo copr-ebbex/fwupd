@@ -54,7 +54,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.8.0
+Version:   1.8.1
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -526,6 +526,18 @@ done
 %endif
 
 %changelog
+* Fri May 27 2022 Richard Hughes <richard@hughsie.com> 1.8.1-1
+- New upstream release
+- Accurately return the last-set status to client tools
+- Add X-UsbReceiver as an update category with icon usb-receiver
+- Allow clients to opt-in to showing updates with user-solvable problems
+- Be more resilient when restarting the Redfish BMC
+- Do not mark all Redfish updates as UPDATABLE
+- Export the system and device battery levels on the D-Bus interface
+- Fix a critical warning on failed modem update
+- Fix regression when probing PS175 devices
+- And, many more devices supported
+
 * Thu Apr 28 2022 Richard Hughes <richard@hughsie.com> 1.8.0-1
 - New upstream release
 - Add coSWID and uSWID parsers to libfwupdplugin for initial SBoM support
