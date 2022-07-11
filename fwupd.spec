@@ -5,7 +5,7 @@
 %global libjcat_version 0.1.0
 %global systemd_version 231
 %global json_glib_version 1.1.1
-%global fwupdplugin_version 6
+%global fwupdplugin_version 7
 
 # although we ship a few tiny python files these are utilities that 99.99%
 # of users do not need -- use this to avoid dragging python onto CoreOS
@@ -54,7 +54,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.8.1
+Version:   1.8.2
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -81,7 +81,7 @@ BuildRequires: gcab
 BuildRequires: valgrind
 BuildRequires: valgrind-devel
 %endif
-BuildRequires: gtk-doc
+BuildRequires: gi-docgen
 BuildRequires: gnutls-devel
 BuildRequires: gnutls-utils
 BuildRequires: meson
@@ -206,7 +206,7 @@ or server machines.
 %build
 
 %meson \
-    -Ddocs=gtkdoc \
+    -Ddocs=enabled \
 %if 0%{?enable_tests}
     -Dtests=true \
 %else
@@ -232,7 +232,6 @@ or server machines.
 %else
     -Dplugin_gpio=disabled \
 %endif
-    -Dplugin_thunderbolt=enabled \
 %if 0%{?have_uefi}
     -Dplugin_uefi_capsule=enabled \
     -Dplugin_uefi_pk=enabled \
@@ -245,10 +244,8 @@ or server machines.
 %endif
 %if 0%{?have_dell}
     -Dplugin_dell=enabled \
-    -Dplugin_synaptics_mst=enabled \
 %else
     -Dplugin_dell=disabled \
-    -Dplugin_synaptics_mst=disabled \
 %endif
 %if 0%{?have_modem_manager}
     -Dplugin_modem_manager=enabled \
@@ -258,6 +255,7 @@ or server machines.
     -Dman=true \
     -Dbluez=enabled \
     -Dplugin_powerd=disabled \
+    -Dgresource_quirks=disabled \
     -Dsupported_build=enabled
 
 %meson_build
@@ -333,7 +331,6 @@ done
 /usr/lib/modules-load.d/fwupd-msr.conf
 %config(noreplace)%{_sysconfdir}/fwupd/msr.conf
 %endif
-/usr/lib/modules-load.d/fwupd-redfish.conf
 %{_datadir}/dbus-1/system.d/org.freedesktop.fwupd.conf
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
@@ -450,9 +447,7 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_scsi.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_steelseries.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_superio.so
-%if 0%{?have_dell}
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_synaptics_mst.so
-%endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_synaptics_cape.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_synaptics_cxaudio.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_synaptics_prometheus.so
@@ -474,6 +469,7 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_uefi_recovery.so
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_usi_dock.so
+%{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_vbe.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logind.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logitech_bulkcontroller.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_logitech_hidpp.so
@@ -501,7 +497,8 @@ done
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
 %{_datadir}/gir-1.0/FwupdPlugin-1.0.gir
-%{_datadir}/gtk-doc/html/fwupd
+%{_datadir}/doc/libfwupdplugin
+%{_datadir}/doc/libfwupd
 %{_datadir}/vala/vapi
 %{_includedir}/fwupd-1
 %{_libdir}/libfwupd*.so
@@ -526,6 +523,19 @@ done
 %endif
 
 %changelog
+* Mon Jul 11 2022 Richard Hughes <richard@hughsie.com> 1.8.2-1
+- New upstream release
+- Allow front-end clients to read the percentage property
+- Autoconnect the Redfish network device when rebooting the BMC
+- Copy the instance ID strings when incorporating devices
+- Do not generate a capsule header for the FMP GUID
+- Fix a regression for devices using the Atmel FLIP Bootloader
+- Show the get-details output when the device requirements fail
+- Simply quirk matching for i2c devices to speed up daemon startup
+- Use force-detach to bypass the DFU streaming check for camera devices
+- Wait for the System76 launch device to re-enumerate if already unlocked
+- And, many more devices supported
+
 * Fri May 27 2022 Richard Hughes <richard@hughsie.com> 1.8.1-1
 - New upstream release
 - Accurately return the last-set status to client tools
