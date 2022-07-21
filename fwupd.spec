@@ -55,7 +55,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.8.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -523,6 +523,9 @@ done
 %endif
 
 %changelog
+* Thu Jul 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Mon Jul 11 2022 Richard Hughes <richard@hughsie.com> 1.8.2-1
 - New upstream release
 - Allow front-end clients to read the percentage property
