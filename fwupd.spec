@@ -374,7 +374,6 @@ done
 %{_datadir}/fwupd/quirks.d/*.quirk
 %{_datadir}/doc/fwupd/builder/README.md
 %{_datadir}/doc/fwupd/*.html
-%{_datadir}/fwupd/host-emulate.d/*.json.gz
 %if 0%{?have_uefi}
 %{_sysconfdir}/grub.d/35_fwupd
 %endif
@@ -520,6 +519,7 @@ done
 %{_datadir}/installed-tests/fwupd/efi
 %endif
 %{_datadir}/fwupd/device-tests/*.json
+%{_datadir}/fwupd/host-emulate.d/*.json.gz
 %{_libexecdir}/installed-tests/fwupd/*
 %dir %{_sysconfdir}/fwupd/remotes.d
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/fwupd-tests.conf
