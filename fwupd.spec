@@ -54,8 +54,8 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.8.2
-Release:   2%{?dist}
+Version:   1.8.3
+Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -372,6 +372,8 @@ done
 %dir %{_datadir}/fwupd/quirks.d
 %{_datadir}/fwupd/quirks.d/*.quirk
 %{_datadir}/doc/fwupd/builder/README.md
+%{_datadir}/doc/fwupd/*.html
+%{_datadir}/fwupd/host-emulate.d/*.json.gz
 %if 0%{?have_uefi}
 %{_sysconfdir}/grub.d/35_fwupd
 %endif
@@ -523,6 +525,21 @@ done
 %endif
 
 %changelog
+* Fri Jul 22 2022 Richard Hughes <richard@hughsie.com> 1.8.3-1
+- New upstream release
+- Add resolution flags to each security attribute failures for the user
+- Allow loading in emulated host profiles for debugging
+- Check if Intel TME has been disabled by the firmware or platform
+- Do not use CoD even when advertized on non-aarch64 platforms
+- Fix a crash when updating the Logitech Bolt radio device
+- Fix a critical warning when parsing an invalid PHAT record
+- Fix a critical warning when parsing invalid FDT firmware
+- Fix fwupdmgr security when plugins are added to the blocklist
+- Fix parsing SMBIOS data to correct the device hardware IDs
+- Fix uploading signed reports by sending the correct checksum
+- Use the correct protocol attribute name when exporting to JSON
+- Wait for the system to acquiesce after doing each update
+
 * Thu Jul 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.8.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
