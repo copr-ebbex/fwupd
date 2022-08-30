@@ -42,11 +42,6 @@
 %global have_dell 1
 %endif
 
-# AMD PSP is only available on x86
-%ifarch x86_64
-%global have_pci_psp 1
-%endif
-
 # only available recently
 %if 0%{?fedora} >= 30
 %global have_modem_manager 1
@@ -436,7 +431,7 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_ivrs.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_msr.so
 %endif
-%if 0%{?have_pci_psp}
+%ifarch i686 x86_64
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_pci_psp.so
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_mtd.so
