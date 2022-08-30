@@ -50,7 +50,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.8.4
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -262,6 +262,12 @@ or server machines.
 
 %install
 %meson_install
+
+# move the symlink out of the way
+rm -f $RPM_BUILD_ROOT%{_datadir}/doc/libfwupdplugin
+rm -f $RPM_BUILD_ROOT%{_datadir}/doc/libfwupd
+mv $RPM_BUILD_ROOT%{_datadir}/doc/fwupd/libfwupdplugin $RPM_BUILD_ROOT%{_datadir}/doc/
+mv $RPM_BUILD_ROOT%{_datadir}/doc/fwupd/libfwupd $RPM_BUILD_ROOT%{_datadir}/doc/
 
 mkdir -p --mode=0700 $RPM_BUILD_ROOT%{_localstatedir}/lib/fwupd/gnupg
 
@@ -500,8 +506,6 @@ done
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
 %{_datadir}/gir-1.0/FwupdPlugin-1.0.gir
-%{_datadir}/doc/fwupd/libfwupdplugin
-%{_datadir}/doc/fwupd/libfwupd
 %{_datadir}/doc/libfwupdplugin
 %{_datadir}/doc/libfwupd
 %{_datadir}/vala/vapi
@@ -529,6 +533,9 @@ done
 %endif
 
 %changelog
+* Tue Aug 30 2022 Richard Hughes <richard@hughsie.com> 1.8.4-2
+- Fix fwupd-devel upgrade issue.
+
 * Tue Aug 30 2022 Richard Hughes <richard@hughsie.com> 1.8.4-1
 - New upstream release
 - Add a translated title and long description for HSI security attributes
