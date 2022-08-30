@@ -54,7 +54,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.8.3
+Version:   1.8.4
 Release:   1%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
@@ -123,7 +123,6 @@ Requires(postun): systemd
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libxmlb%{?_isa} >= %{libxmlb_version}
 Requires: libgusb%{?_isa} >= %{libgusb_version}
-Requires: bubblewrap
 Requires: shared-mime-info
 
 Obsoletes: fwupd-sign < 0.1.6
@@ -318,6 +317,8 @@ done
 %{_bindir}/fwupdtool
 %{_bindir}/fwupdagent
 %dir %{_sysconfdir}/fwupd
+%dir %{_sysconfdir}/fwupd/bios-settings.d
+%config%(noreplace)%{_sysconfdir}/fwupd/bios-settings.d/README.md
 %dir %{_sysconfdir}/fwupd/remotes.d
 %if 0%{?have_dell}
 %config(noreplace)%{_sysconfdir}/fwupd/remotes.d/dell-esrt.conf
@@ -372,7 +373,6 @@ done
 %dir %{_localstatedir}/cache/fwupd
 %dir %{_datadir}/fwupd/quirks.d
 %{_datadir}/fwupd/quirks.d/*.quirk
-%{_datadir}/doc/fwupd/builder/README.md
 %{_datadir}/doc/fwupd/*.html
 %if 0%{?have_uefi}
 %{_sysconfdir}/grub.d/35_fwupd
@@ -384,7 +384,9 @@ done
 /usr/lib/udev/rules.d/*.rules
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-plugins-%{fwupdplugin_version}
+%ifarch i686 x86_64
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_facp.so
+%endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_acpi_phat.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_amt.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_analogix.so
@@ -416,13 +418,17 @@ done
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_gpio.so
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_hailuck.so
+%ifarch i686 x86_64
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_iommu.so
+%endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_jabra.so
 %if 0%{?have_uefi}
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_lenovo_thinklmi.so
 %endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_lockdown.so
+%ifarch i686 x86_64
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_sleep.so
+%endif
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_swap.so
 %{_libdir}/fwupd-plugins-%{fwupdplugin_version}/libfu_plugin_linux_tainted.so
 %if 0%{?have_msr}
@@ -499,6 +505,8 @@ done
 %files devel
 %{_datadir}/gir-1.0/Fwupd-2.0.gir
 %{_datadir}/gir-1.0/FwupdPlugin-1.0.gir
+%{_datadir}/doc/fwupd/libfwupdplugin
+%{_datadir}/doc/fwupd/libfwupd
 %{_datadir}/doc/libfwupdplugin
 %{_datadir}/doc/libfwupd
 %{_datadir}/vala/vapi
@@ -526,6 +534,20 @@ done
 %endif
 
 %changelog
+* Tue Aug 30 2022 Richard Hughes <richard@hughsie.com> 1.8.4-1
+- New upstream release
+- Add a translated title and long description for HSI security attributes
+- Add support for reading and writing BIOS settings
+- Correctly detect CET IBT
+- Do not require UEFI capsule updates for checking TPM PCR0
+- Do not show HSI events where we changed the spec result value
+- Fix applying the latest DBX update
+- Include vfat in the list of possible BDP partition types
+- Install all devices with the same composite id in fwupdtool
+- Only fail the kernel HSI test for specific taint reasons
+- Only show changed events in fwupdmgr security
+- Update vulnerable CMSE versions from CSMEVDT data
+
 * Fri Jul 22 2022 Richard Hughes <richard@hughsie.com> 1.8.3-1
 - New upstream release
 - Add resolution flags to each security attribute failures for the user
