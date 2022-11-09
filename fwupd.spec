@@ -59,6 +59,8 @@ License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
+Patch0:    0001-trivial-Fix-the-tests-on-s390x.patch
+
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
