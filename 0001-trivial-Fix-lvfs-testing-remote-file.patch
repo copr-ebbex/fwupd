@@ -1,0 +1,40 @@
+From 73a63b89a051dda3c149b16ffc0f4759e1611715 Mon Sep 17 00:00:00 2001
+From: Richard Hughes <richard@hughsie.com>
+Date: Wed, 9 Nov 2022 15:51:27 +0000
+Subject: [PATCH] trivial: Fix lvfs-testing remote file
+
+---
+ data/remotes.d/meson.build | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/data/remotes.d/meson.build b/data/remotes.d/meson.build
+index 4ef0266f0..c20a1a05e 100644
+--- a/data/remotes.d/meson.build
++++ b/data/remotes.d/meson.build
+@@ -1,9 +1,4 @@
+ if build_standalone and get_option('lvfs') != 'false'
+-  install_data([
+-      'lvfs-testing.conf',
+-    ],
+-    install_dir: join_paths(sysconfdir, 'fwupd', 'remotes.d')
+-  )
+   con3 = configuration_data()
+   if get_option('lvfs') == 'disabled'
+     con3.set('enabled', 'false')
+@@ -22,6 +17,13 @@ if build_standalone and get_option('lvfs') != 'false'
+     install: true,
+     install_dir: join_paths(sysconfdir, 'fwupd', 'remotes.d'),
+   )
++  configure_file(
++    input: 'lvfs-testing.conf',
++    output: 'lvfs-testing.conf',
++    configuration: con3,
++    install: true,
++    install_dir: join_paths(sysconfdir, 'fwupd', 'remotes.d'),
++  )
+   i18n.merge_file(
+     input: 'lvfs.metainfo.xml',
+     output: 'org.freedesktop.fwupd.remotes.lvfs.metainfo.xml',
+-- 
+2.37.3
+

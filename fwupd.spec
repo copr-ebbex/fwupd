@@ -54,12 +54,13 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.8.7
-Release:   1%{?dist}
+Release:   2%{?dist}
 License:   LGPLv2+
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-Patch0:    0001-trivial-Fix-the-tests-on-s390x.patch
+Patch1:    0001-trivial-Fix-the-tests-on-s390x.patch
+Patch2:    0001-trivial-Fix-lvfs-testing-remote-file.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -430,6 +431,9 @@ done
 %endif
 
 %changelog
+* Wed Nov 09 2022 Richard Hughes <richard@hughsie.com> 1.8.7-2
+- Fix the lvfs-testing remote
+
 * Wed Nov 09 2022 Richard Hughes <richard@hughsie.com> 1.8.7-1
 - New upstream release
 - Add a new HSI check for the leaked Lenovo 'Key Manifest' hashes
