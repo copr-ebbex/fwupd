@@ -1,23 +1,15 @@
-From bb7cdac5efee331a65194ef33cc6bac6138338e8 Mon Sep 17 00:00:00 2001
+From 26e42c59eb529d24ca80c6e9f08e2e6edd7185bf Mon Sep 17 00:00:00 2001
 From: Richard Hughes <richard@hughsie.com>
 Date: Tue, 3 Jan 2023 17:59:44 +0000
 Subject: [PATCH] mtd: Use dummy SMBIOS data to fix self test on s390x
 
 ---
- plugins/mtd/dmi            | 1 +
  plugins/mtd/fu-self-test.c | 1 +
  plugins/mtd/meson.build    | 5 ++++-
+ plugins/mtd/tests/dmi      | 1 +
  3 files changed, 6 insertions(+), 1 deletion(-)
- create mode 120000 plugins/mtd/dmi
+ create mode 120000 plugins/mtd/tests/dmi
 
-diff --git a/plugins/mtd/dmi b/plugins/mtd/dmi
-new file mode 120000
-index 000000000..f9a592bbc
---- /dev/null
-+++ b/plugins/mtd/dmi
-@@ -0,0 +1 @@
-+../../libfwupdplugin/tests/dmi/
-\ No newline at end of file
 diff --git a/plugins/mtd/fu-self-test.c b/plugins/mtd/fu-self-test.c
 index 73b8ed6df..c06f4f087 100644
 --- a/plugins/mtd/fu-self-test.c
@@ -52,6 +44,14 @@ index 316948e85..442f5f3da 100644
 +  test('mtd-self-test', e, env: env)  # added to installed-tests
  endif
  endif
+diff --git a/plugins/mtd/tests/dmi b/plugins/mtd/tests/dmi
+new file mode 120000
+index 000000000..545fadeaf
+--- /dev/null
++++ b/plugins/mtd/tests/dmi
+@@ -0,0 +1 @@
++../../../libfwupdplugin/tests/dmi/
+\ No newline at end of file
 -- 
 2.38.1
 
