@@ -1,0 +1,57 @@
+From bb7cdac5efee331a65194ef33cc6bac6138338e8 Mon Sep 17 00:00:00 2001
+From: Richard Hughes <richard@hughsie.com>
+Date: Tue, 3 Jan 2023 17:59:44 +0000
+Subject: [PATCH] mtd: Use dummy SMBIOS data to fix self test on s390x
+
+---
+ plugins/mtd/dmi            | 1 +
+ plugins/mtd/fu-self-test.c | 1 +
+ plugins/mtd/meson.build    | 5 ++++-
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+ create mode 120000 plugins/mtd/dmi
+
+diff --git a/plugins/mtd/dmi b/plugins/mtd/dmi
+new file mode 120000
+index 000000000..f9a592bbc
+--- /dev/null
++++ b/plugins/mtd/dmi
+@@ -0,0 +1 @@
++../../libfwupdplugin/tests/dmi/
+\ No newline at end of file
+diff --git a/plugins/mtd/fu-self-test.c b/plugins/mtd/fu-self-test.c
+index 73b8ed6df..c06f4f087 100644
+--- a/plugins/mtd/fu-self-test.c
++++ b/plugins/mtd/fu-self-test.c
+@@ -103,6 +103,7 @@ main(int argc, char **argv)
+ 	g_test_init(&argc, &argv, NULL);
+ 	(void)g_setenv("FWUPD_MTD_VERBOSE", "1", TRUE);
+ 	testdatadir = g_test_build_filename(G_TEST_DIST, "tests", NULL);
++	(void)g_setenv("FWUPD_SYSFSFWDIR", testdatadir, TRUE);
+ 	(void)g_setenv("FWUPD_SYSFSFWATTRIBDIR", testdatadir, TRUE);
+ 
+ 	g_log_set_fatal_mask(NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
+diff --git a/plugins/mtd/meson.build b/plugins/mtd/meson.build
+index 316948e85..442f5f3da 100644
+--- a/plugins/mtd/meson.build
++++ b/plugins/mtd/meson.build
+@@ -15,6 +15,9 @@ plugin_builtin_mtd = static_library('fu_plugin_mtd',
+ plugin_builtins += plugin_builtin_mtd
+ 
+ if get_option('tests')
++  env = environment()
++  env.set('G_TEST_SRCDIR', meson.current_source_dir())
++  env.set('G_TEST_BUILDDIR', meson.current_build_dir())
+   e = executable(
+     'mtd-self-test',
+     sources: [
+@@ -31,6 +34,6 @@ if get_option('tests')
+     install_rpath: libdir_pkg,
+     install_dir: installed_test_bindir,
+   )
+-  test('mtd-self-test', e)  # added to installed-tests
++  test('mtd-self-test', e, env: env)  # added to installed-tests
+ endif
+ endif
+-- 
+2.38.1
+
