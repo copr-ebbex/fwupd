@@ -70,6 +70,9 @@ BuildRequires: systemd >= %{systemd_version}
 BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
 BuildRequires: libcbor-devel
+%if 0%{?rhel} >= 10 || 0%{?fedora} >= 28
+BuildRequires: passim-devel
+%endif
 BuildRequires: gobject-introspection-devel
 BuildRequires: gcab
 %ifarch %{valgrind_arches}
@@ -120,6 +123,9 @@ Provides: dbxtool
 Recommends: udisks2
 Recommends: bluez
 Recommends: jq
+%if 0%{?rhel} >= 10 || 0%{?fedora} >= 28
+Recommends: passim
+%endif
 
 %if 0%{?have_modem_manager}
 Recommends: %{name}-plugin-modem-manager
