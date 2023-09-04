@@ -48,7 +48,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.9.4
+Version:   1.9.5
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -254,7 +254,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %find_lang %{name}
 
 %post
-%systemd_post fwupd.service
+%systemd_post fwupd.service fwupd-refresh.timer
 
 # change vendor-installed remotes to use the default keyring type
 for fn in /etc/fwupd/remotes.d/*.conf; do
@@ -264,10 +264,10 @@ for fn in /etc/fwupd/remotes.d/*.conf; do
 done
 
 %preun
-%systemd_preun fwupd.service
+%systemd_preun fwupd.service fwupd-refresh.timer
 
 %postun
-%systemd_postun_with_restart fwupd.service
+%systemd_postun_with_restart fwupd.service fwupd-refresh.timer
 
 %files -f %{name}.lang
 %doc README.md
@@ -320,7 +320,6 @@ done
 %{_unitdir}/fwupd.service
 %{_unitdir}/fwupd-refresh.service
 %{_unitdir}/fwupd-refresh.timer
-%{_presetdir}/fwupd-refresh.preset
 %{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %dir %{_localstatedir}/cache/fwupd
