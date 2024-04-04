@@ -18,7 +18,7 @@
 %global enable_dummy 1
 
 # fwupd.efi is only available on these arches
-%ifarch x86_64 aarch64
+%ifarch x86_64 aarch64 riscv64
 %global have_uefi 1
 %endif
 
@@ -28,7 +28,7 @@
 %endif
 
 # flashrom is only available on these arches
-%ifarch i686 x86_64 armv7hl aarch64 ppc64le
+%ifarch i686 x86_64 armv7hl aarch64 ppc64le riscv64
 %global have_flashrom 1
 %endif
 
