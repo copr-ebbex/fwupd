@@ -48,7 +48,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.9.19
+Version:   1.9.20
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -84,11 +84,7 @@ BuildRequires: gnutls-utils
 BuildRequires: meson
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: vala
-%if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
-BuildRequires: bash-completion-devel
-%else
-BuildRequires: bash-completion
-%endif
+BuildRequires: pkgconfig(bash-completion)
 BuildRequires: git-core
 %if 0%{?have_flashrom}
 BuildRequires: flashrom-devel >= 1.2-2
