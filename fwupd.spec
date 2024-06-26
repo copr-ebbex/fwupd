@@ -46,6 +46,10 @@
 %global have_modem_manager 1
 %endif
 
+%if 0%{?fedora}
+%global have_passim 1
+%endif
+
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   1.9.21
@@ -70,7 +74,7 @@ BuildRequires: systemd >= %{systemd_version}
 BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
 BuildRequires: libcbor-devel
-%if 0%{?rhel} >= 10 || 0%{?fedora} >= 28
+%if 0%{?have_passim}
 BuildRequires: passim-devel
 %endif
 BuildRequires: gobject-introspection-devel
@@ -123,7 +127,7 @@ Provides: dbxtool
 Recommends: udisks2
 Recommends: bluez
 Recommends: jq
-%if 0%{?rhel} >= 10 || 0%{?fedora} >= 28
+%if 0%{?have_passim}
 Recommends: passim
 %endif
 
@@ -230,6 +234,11 @@ or server machines.
     -Dplugin_modem_manager=enabled \
 %else
     -Dplugin_modem_manager=disabled \
+%endif
+%if 0%{?have_passim}
+    -Dpassim=enabled \
+%else
+    -Dpassim=disabled \
 %endif
     -Dman=true \
     -Dsystemd_unit_user="" \
