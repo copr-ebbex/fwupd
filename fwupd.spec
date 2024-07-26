@@ -52,7 +52,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.9.21
+Version:   1.9.22
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -313,7 +313,12 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %{_datadir}/bash-completion/completions/fwupdmgr
 %{_datadir}/bash-completion/completions/fwupdtool
 %{_datadir}/fish/vendor_completions.d/fwupdmgr.fish
+%dir %{_datadir}/fwupd
+%dir %{_datadir}/fwupd/metainfo
 %{_datadir}/fwupd/metainfo/org.freedesktop.fwupd*.metainfo.xml
+%dir %{_datadir}/fwupd/remotes.d
+%dir %{_datadir}/fwupd/remotes.d/vendor
+%dir %{_datadir}/fwupd/remotes.d/vendor/firmware
 %{_datadir}/fwupd/remotes.d/vendor/firmware/README.md
 %{_datadir}/dbus-1/interfaces/org.freedesktop.fwupd.xml
 %{_datadir}/polkit-1/actions/org.freedesktop.fwupd.policy
