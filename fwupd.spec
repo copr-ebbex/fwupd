@@ -283,7 +283,7 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %config(noreplace)%{_sysconfdir}/fwupd/fwupd.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
-%ifarch i686 x86_64
+%ifarch x86_64
 %{_libexecdir}/fwupd/fwupd-detect-cet
 %endif
 %{_bindir}/dbxtool
