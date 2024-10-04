@@ -1,9 +1,9 @@
 %global glib2_version 2.45.8
 %global libxmlb_version 0.1.3
-%global libgusb_version 0.3.5
+%global libusb_version 1.0.9
 %global libcurl_version 7.62.0
 %global libjcat_version 0.1.0
-%global systemd_version 231
+%global systemd_version 249
 %global json_glib_version 1.1.1
 
 # although we ship a few tiny python files these are utilities that 99.99%
@@ -52,7 +52,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   1.9.25
+Version:   2.0.0
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -61,8 +61,7 @@ Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: libxmlb-devel >= %{libxmlb_version}
-BuildRequires: libgudev1-devel
-BuildRequires: libgusb-devel >= %{libgusb_version}
+BuildRequires: libusb1-devel >= %{libusb_version}
 BuildRequires: libcurl-devel >= %{libcurl_version}
 BuildRequires: libjcat-devel >= %{libjcat_version}
 BuildRequires: polkit-devel >= 0.103
@@ -117,7 +116,7 @@ Requires(postun): systemd
 
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: libxmlb%{?_isa} >= %{libxmlb_version}
-Requires: libgusb%{?_isa} >= %{libgusb_version}
+Requires: libusb1%{?_isa} >= %{libusb_version}
 Requires: shared-mime-info
 
 Obsoletes: dbxtool < 9
@@ -199,6 +198,7 @@ or server machines.
 %build
 
 %meson \
+    -Dumockdev_tests=disabled \
     -Ddocs=enabled \
 %if 0%{?enable_tests}
     -Dtests=true \
@@ -267,13 +267,6 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/cache/fwupd
 %post
 %systemd_post fwupd.service fwupd-refresh.timer
 
-# change vendor-installed remotes to use the default keyring type
-for fn in /etc/fwupd/remotes.d/*.conf; do
-    if grep -q "Keyring=gpg" "$fn"; then
-        sed -i 's/Keyring=gpg/#Keyring=pkcs/g' "$fn";
-    fi
-done
-
 %preun
 %systemd_preun fwupd.service fwupd-refresh.timer
 
@@ -290,10 +283,9 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %config(noreplace)%{_sysconfdir}/fwupd/fwupd.conf
 %dir %{_libexecdir}/fwupd
 %{_libexecdir}/fwupd/fwupd
-%ifarch x86_64
+%ifarch i686 x86_64
 %{_libexecdir}/fwupd/fwupd-detect-cet
 %endif
-%{_libexecdir}/fwupd/fwupdoffline
 %{_bindir}/dbxtool
 %{_bindir}/fwupdmgr
 %{_bindir}/fwupdtool
@@ -335,11 +327,9 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %{_datadir}/fwupd/simple_client.py
 %{_datadir}/fwupd/add_capsule_header.py
 %{_datadir}/fwupd/install_dell_bios_exe.py
-%{_unitdir}/fwupd-offline-update.service
 %{_unitdir}/fwupd.service
 %{_unitdir}/fwupd-refresh.service
 %{_unitdir}/fwupd-refresh.timer
-%{_unitdir}/system-update.target.wants/
 %dir %{_localstatedir}/lib/fwupd
 %dir %{_localstatedir}/cache/fwupd
 %dir %{_datadir}/fwupd/quirks.d
@@ -348,9 +338,8 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/grub.d/35_fwupd
 %endif
-%{_libdir}/libfwupd.so.2*
+%{_libdir}/libfwupd.so.3*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
-/usr/lib/udev/rules.d/*.rules
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
 %dir %{_libdir}/fwupd-%{version}
 %{_libdir}/fwupd-%{version}/libfwupd*.so
@@ -376,33 +365,19 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %{_datadir}/doc/libfwupdplugin
 %{_datadir}/doc/libfwupd
 %{_datadir}/vala/vapi
-%{_includedir}/fwupd-1
+%{_includedir}/fwupd-3
 %{_libdir}/libfwupd*.so
 %{_libdir}/pkgconfig/fwupd.pc
 
 %files tests
 %if 0%{?enable_tests}
 %{_datadir}/fwupd/host-emulate.d/*.json.gz
-%dir %{_datadir}/installed-tests/fwupd
-%{_datadir}/installed-tests/fwupd/tests/*
-%{_datadir}/installed-tests/fwupd/fwupd-tests.xml
-%{_datadir}/installed-tests/fwupd/*.test
-%{_datadir}/installed-tests/fwupd/*.cab
-%{_datadir}/installed-tests/fwupd/fakedevice124.jcat
-%{_datadir}/installed-tests/fwupd/fakedevice124.bin
-%{_datadir}/installed-tests/fwupd/fakedevice124.metainfo.xml
-%{_datadir}/installed-tests/fwupd/*.sh
-%{_datadir}/installed-tests/fwupd/*.zip
-%if 0%{?have_uefi}
-%{_datadir}/installed-tests/fwupd/efi
-%endif
-%{_datadir}/installed-tests/fwupd/chassis_type
-%{_datadir}/installed-tests/fwupd/sys_vendor
+%{_datadir}/installed-tests/fwupd
 # libgusb >= 0.4.5
 %if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
 %{_datadir}/fwupd/device-tests/*.json
 %endif
-%{_libexecdir}/installed-tests/fwupd/*
+%{_libexecdir}/installed-tests/fwupd
 %{_datadir}/fwupd/remotes.d/fwupd-tests.conf
 %endif
 
