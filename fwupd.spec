@@ -52,13 +52,11 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   2.0.0
+Version:   2.0.1
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-
-Patch:     0001-trivial-Fix-the-self-test-failure-on-s390x.patch
 
 BuildRequires: gettext
 BuildRequires: glib2-devel >= %{glib2_version}
@@ -324,7 +322,7 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_datadir}/metainfo/org.freedesktop.fwupd.metainfo.xml
-%{_datadir}/icons/hicolor/scalable/apps/org.freedesktop.fwupd.svg
+%{_datadir}/icons/hicolor/*/apps/org.freedesktop.fwupd.*
 %{_datadir}/fwupd/firmware_packager.py
 %{_datadir}/fwupd/simple_client.py
 %{_datadir}/fwupd/add_capsule_header.py
