@@ -52,7 +52,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   2.0.1
+Version:   2.0.2
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -73,6 +73,7 @@ BuildRequires: systemd >= %{systemd_version}
 BuildRequires: systemd-devel
 BuildRequires: libarchive-devel
 BuildRequires: libcbor-devel
+BuildRequires: libblkid-devel
 %if 0%{?have_passim}
 BuildRequires: passim-devel
 %endif
@@ -373,10 +374,6 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %if 0%{?enable_tests}
 %{_datadir}/fwupd/host-emulate.d/*.json.gz
 %{_datadir}/installed-tests/fwupd
-# libgusb >= 0.4.5
-%if 0%{?fedora} >= 37 || 0%{?rhel} >= 10
-%{_datadir}/fwupd/device-tests/*.json
-%endif
 %{_libexecdir}/installed-tests/fwupd
 %{_datadir}/fwupd/remotes.d/fwupd-tests.conf
 %endif
