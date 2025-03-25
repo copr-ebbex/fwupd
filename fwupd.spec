@@ -206,6 +206,11 @@ or server machines.
 %else
     -Dplugin_flashrom=disabled \
 %endif
+%if 0%{?have_uefi}
+    -Dplugin_uefi_capsule_splash=enabled \
+%else
+    -Dplugin_uefi_capsule_splash=disabled \
+%endif
 %if 0%{?have_modem_manager}
     -Dplugin_modem_manager=enabled \
 %else
