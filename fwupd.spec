@@ -314,9 +314,7 @@ systemctl --no-reload preset fwupd-refresh.timer &>/dev/null || :
 %dir %{_datadir}/fwupd/quirks.d
 %{_datadir}/fwupd/quirks.d/builtin.quirk.gz
 %{_datadir}/doc/fwupd/*.html
-%if 0%{?have_uefi}
 %config(noreplace)%{_sysconfdir}/grub.d/35_fwupd
-%endif
 %{_libdir}/libfwupd.so.3*
 %{_libdir}/girepository-1.0/Fwupd-2.0.typelib
 /usr/lib/systemd/system-shutdown/fwupd.shutdown
