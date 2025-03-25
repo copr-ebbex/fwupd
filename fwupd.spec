@@ -22,11 +22,6 @@
 %global have_uefi 1
 %endif
 
-# gpio.h is only available on these arches
-%ifarch x86_64 aarch64
-%global have_gpio 1
-%endif
-
 # flashrom is only available on these arches
 %ifarch i686 x86_64 armv7hl aarch64 ppc64le riscv64
 %global have_flashrom 1
@@ -52,7 +47,7 @@
 
 Summary:   Firmware update daemon
 Name:      fwupd
-Version:   2.0.6
+Version:   2.0.7
 Release:   %autorelease
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
@@ -211,26 +206,6 @@ or server machines.
 %else
     -Dplugin_flashrom=disabled \
 %endif
-%if 0%{?have_msr}
-    -Dplugin_msr=enabled \
-%else
-    -Dplugin_msr=disabled \
-%endif
-%if 0%{?have_gpio}
-    -Dplugin_gpio=enabled \
-%else
-    -Dplugin_gpio=disabled \
-%endif
-%if 0%{?have_uefi}
-    -Dplugin_uefi_capsule=enabled \
-    -Dplugin_uefi_pk=enabled \
-    -Dplugin_tpm=enabled \
-    -Defi_binary=false \
-%else
-    -Dplugin_uefi_capsule=disabled \
-    -Dplugin_uefi_pk=disabled \
-    -Dplugin_tpm=disabled \
-%endif
 %if 0%{?have_modem_manager}
     -Dplugin_modem_manager=enabled \
 %else
@@ -244,8 +219,6 @@ or server machines.
     -Dman=true \
     -Dsystemd_unit_user="" \
     -Dbluez=enabled \
-    -Dplugin_powerd=disabled \
-    -Dlaunchd=disabled \
     -Dsupported_build=enabled
 
 %meson_build
