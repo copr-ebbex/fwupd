@@ -207,9 +207,9 @@ or server machines.
     -Dplugin_flashrom=disabled \
 %endif
 %if 0%{?have_uefi}
-    -Dplugin_uefi_capsule_splash=enabled \
+    -Dplugin_uefi_capsule_splash=true \
 %else
-    -Dplugin_uefi_capsule_splash=disabled \
+    -Dplugin_uefi_capsule_splash=false \
 %endif
 %if 0%{?have_modem_manager}
     -Dplugin_modem_manager=enabled \
