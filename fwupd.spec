@@ -18,7 +18,7 @@
 %global enable_dummy 1
 
 # fwupd.efi is only available on these arches
-%ifarch x86_64 aarch64 riscv64
+%ifarch i686 x86_64 aarch64 riscv64
 %global have_uefi 1
 %endif
 
