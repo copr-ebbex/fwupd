@@ -211,6 +211,11 @@ or server machines.
 %else
     -Dpassim=disabled \
 %endif
+%ifarch i686 x86_64
+    -Dhsi=enabled \
+%else
+    -Dhsi=disabled \
+%endif
     -Dman=true \
     -Dsystemd_unit_user="" \
     -Dbluez=enabled \
