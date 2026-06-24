@@ -190,6 +190,11 @@ or server machines.
 %else
     -Dhsi=disabled \
 %endif
+%ifarch %{valgrind_arches}
+    -Dvalgrind=enabled \
+%else
+    -Dvalgrind=disabled \
+%endif
     -Dman=true \
     -Dsystemd_unit_user="" \
     -Dbluez=enabled \
