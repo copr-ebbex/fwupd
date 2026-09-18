@@ -1,0 +1,105 @@
+From c8157b702ab1366cb3ad0bb60339ca6c5623c345 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Fri, 18 Sep 2026 12:15:26 +0200
+Subject: [PATCH 6/9] intel-gsc: Do not expect a reply from UpdateEnd when
+ updating OPROM
+
+igsc never reads a reply to END for any payload type and the Intel documentation
+for DG2 says there is none, so the read after an OPROM update on DG2 would only
+time out. Write END without reading, and for the GFX firmware also tolerate the
+write itself failing, as the device resets on receipt and the acknowledgement
+can be lost. Battlemage firmware does reply, so the connection is dropped
+afterwards rather than leaving that message queued for the next command.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ plugins/intel-gsc/fu-igsc-device.c | 42 ++++++++++++++----------------
+ plugins/intel-gsc/fu-igsc.rs       | 10 -------
+ 2 files changed, 20 insertions(+), 32 deletions(-)
+
+diff --git a/plugins/intel-gsc/fu-igsc-device.c b/plugins/intel-gsc/fu-igsc-device.c
+index ab62210ba..7fdf59274 100644
+--- a/plugins/intel-gsc/fu-igsc-device.c
++++ b/plugins/intel-gsc/fu-igsc-device.c
+@@ -522,9 +522,8 @@ fu_igsc_device_check_firmware(FuDevice *device,
+ static gboolean
+ fu_igsc_device_update_end(FuIgscDevice *self, FuIgscFwuHeciPayloadType payload_type, GError **error)
+ {
+-	guint8 res_buf[FU_IGSC_FWU_HECI_END_RES_SIZE] = {0};
+ 	g_autoptr(FuIgscFwuHeciEndReq) st_req = fu_igsc_fwu_heci_end_req_new();
+-	g_autoptr(FuIgscFwuHeciEndRes) st_res = NULL;
++	g_autoptr(GError) error_local = NULL;
+ 
+ 	/* connect to interface */
+ 	if (!fu_mei_device_connect(FU_MEI_DEVICE(self), FU_HECI_DEVICE_UUID_FWUPDATE, 0, error)) {
+@@ -532,27 +531,26 @@ fu_igsc_device_update_end(FuIgscDevice *self, FuIgscFwuHeciPayloadType payload_t
+ 		return FALSE;
+ 	}
+ 
+-	/* we are not expecting a reply */
+-	if (payload_type == FU_IGSC_FWU_HECI_PAYLOAD_TYPE_GFX_FW ||
+-	    payload_type == FU_IGSC_FWU_HECI_PAYLOAD_TYPE_FWDATA) {
+-		fu_dump_raw(G_LOG_DOMAIN, "MEI-write", st_req->buf->data, st_req->buf->len);
+-		return fu_mei_device_write(FU_MEI_DEVICE(self),
+-					   st_req->buf->data,
+-					   st_req->buf->len,
+-					   FU_IGSC_DEVICE_MEI_WRITE_TIMEOUT,
+-					   error);
++	/* igsc never reads a reply to END, and for the GFX firmware the device resets on
++	 * receipt so even the write can fail */
++	fu_dump_raw(G_LOG_DOMAIN, "MEI-write", st_req->buf->data, st_req->buf->len);
++	if (!fu_mei_device_write(FU_MEI_DEVICE(self),
++				 st_req->buf->data,
++				 st_req->buf->len,
++				 FU_IGSC_DEVICE_MEI_WRITE_TIMEOUT,
++				 &error_local)) {
++		if (payload_type != FU_IGSC_FWU_HECI_PAYLOAD_TYPE_GFX_FW) {
++			g_propagate_error(error, g_steal_pointer(&error_local));
++			return FALSE;
++		}
++		g_debug("ignoring failure to write end: %s", error_local->message);
+ 	}
+-	if (!fu_igsc_device_command(self,
+-				    st_req->buf->data,
+-				    st_req->buf->len,
+-				    res_buf,
+-				    sizeof(res_buf),
+-				    error))
+-		return FALSE;
+-	st_res = fu_igsc_fwu_heci_end_res_parse(res_buf, sizeof(res_buf), 0x0, error);
+-	if (st_res == NULL)
+-		return FALSE;
+-	return fu_igsc_heci_check_status(fu_igsc_fwu_heci_end_res_get_status(st_res), error);
++
++	/* some firmware does reply, so drop the connection rather than leave a stale message for
++	 * the next command; the GFX firmware path reconnects anyway */
++	if (payload_type != FU_IGSC_FWU_HECI_PAYLOAD_TYPE_GFX_FW)
++		fu_mei_device_disconnect(FU_MEI_DEVICE(self));
++	return TRUE;
+ }
+ 
+ static gboolean
+diff --git a/plugins/intel-gsc/fu-igsc.rs b/plugins/intel-gsc/fu-igsc.rs
+index 623a6b599..875901fec 100644
+--- a/plugins/intel-gsc/fu-igsc.rs
++++ b/plugins/intel-gsc/fu-igsc.rs
+@@ -270,16 +270,6 @@ struct FuIgscFwuHeciEndReq {
+     _reserved: u32le,
+ }
+ 
+-#[derive(Parse, Default)]
+-#[repr(C, packed)]
+-struct FuIgscFwuHeciEndRes {
+-    command_id: FuIgscFwuHeciCommandId == End,
+-    hdr_flags: FuIgscFwuHeciHdrFlags == IsResponse,
+-    _hdr_reserved: [u8; 2],
+-    status: FuIgscFwuHeciStatus,
+-    _status_reserved: u32le,
+-}
+-
+ // Data
+ #[derive(New, Default)]
+ #[repr(C, packed)]
+-- 
+2.55.0
+

@@ -1,0 +1,52 @@
+From 930e5d5edbf4e91c4803f06bb2db794387cac9eb Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Fri, 18 Sep 2026 14:01:56 +0200
+Subject: [PATCH 1/9] libfwupdplugin: Save udev read events with the offset the
+ replay expects
+
+Since 2.1.2 an emulated device looks up read events by length and offset, but a
+device being recorded has no emulation version set and so still saved them by
+length alone. Every recording of a udev read made since then fails to replay
+with "no event with ID". Track the offset on real seeks too, so the saved ID
+matches what the same fwupd version will look for.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ libfwupdplugin/fu-udev-device.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/libfwupdplugin/fu-udev-device.c b/libfwupdplugin/fu-udev-device.c
+index 0f7f63ee6..47c259284 100644
+--- a/libfwupdplugin/fu-udev-device.c
++++ b/libfwupdplugin/fu-udev-device.c
+@@ -1410,11 +1410,10 @@ fu_udev_device_seek(FuUdevDevice *self, goffset offset, GError **error)
+ 	g_return_val_if_fail(FU_IS_UDEV_DEVICE(self), FALSE);
+ 	g_return_val_if_fail(error == NULL || *error == NULL, FALSE);
+ 
+-	/* emulated */
+-	if (fu_device_has_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_EMULATED)) {
+-		priv->emulated_offset = offset;
++	/* the read event IDs include this, both when saving and when emulated */
++	priv->emulated_offset = offset;
++	if (fu_device_has_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_EMULATED))
+ 		return TRUE;
+-	}
+ 
+ 	/* not open! */
+ 	if (priv->io_channel == NULL) {
+@@ -1575,8 +1574,10 @@ fu_udev_device_read(FuUdevDevice *self,
+ 	if (fu_device_has_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_EMULATED) ||
+ 	    fu_context_has_flag(fu_device_get_context(FU_DEVICE(self)),
+ 				FU_CONTEXT_FLAG_SAVE_EVENTS)) {
+-		/* the created value is 2025-10-24T15:32:39.198922Z i.e. just bnr-dp-0.13.zip */
+-		if (fu_device_check_fwupd_version(FU_DEVICE(self), "2.1.2") ||
++		/* recordings made before 2.1.2 have no offset, and the created value is
++		 * 2025-10-24T15:32:39.198922Z i.e. just bnr-dp-0.13.zip */
++		if (!fu_device_has_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_EMULATED) ||
++		    fu_device_check_fwupd_version(FU_DEVICE(self), "2.1.2") ||
+ 		    fu_device_get_created(FU_DEVICE(self)) == 0x68FB9C17) {
+ 			event_id = g_strdup_printf("Read:Length=0x%x,Offset=0x%x",
+ 						   (guint)bufsz,
+-- 
+2.55.0
+
