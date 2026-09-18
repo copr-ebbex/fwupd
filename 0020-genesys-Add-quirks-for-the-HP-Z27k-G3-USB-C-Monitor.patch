@@ -1,0 +1,65 @@
+From 19840f59682145ac47a8a1026140a060cb443c71 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Thu, 17 Sep 2026 01:24:17 +0200
+Subject: [PATCH 20/21] genesys: Add quirks for the HP Z27k G3 USB-C Monitor
+
+The monitor presents two cascaded GL3523 hubs that share a public key,
+with the MStar MST9U scaler behind the second one. The scaler is a level
+1 part, so it has no public key and is matched on its panel type.
+
+The scaler needs pause-r2-cpu, which no existing entry uses, and leaving
+ISP mode resets it, so it also gets replug-on-attach.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/README.md     |  1 +
+ plugins/genesys/genesys.quirk | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/plugins/genesys/README.md b/plugins/genesys/README.md
+index c51a7e519..22ca29de3 100644
+--- a/plugins/genesys/README.md
++++ b/plugins/genesys/README.md
+@@ -164,6 +164,7 @@ CFI Flash Id.
+ 
+ * HP M24fd USB-C Monitor: `0xC22016`
+ * HP M27fd USB-C Monitor: `0xC84016`
++* HP Z27k G3 USB-C Monitor: `0xC22016`
+ 
+ The plugin does not read the flash ID from the scaler, because this requires ISP mode and blanks
+ the monitor. If this quirk is missing, the scaler is enumerated, but updates are inhibited.
+diff --git a/plugins/genesys/genesys.quirk b/plugins/genesys/genesys.quirk
+index 43314cdf6..6d6047e35 100644
+--- a/plugins/genesys/genesys.quirk
++++ b/plugins/genesys/genesys.quirk
+@@ -55,6 +55,14 @@ GenesysUsbhubSwitchRequest = 0xA1
+ GenesysUsbhubReadRequest = 0xA2
+ GenesysUsbhubWriteRequest = 0xA3
+ 
++# two cascaded GL3523 hubs share this key; the scaler is behind the second one
++[USB\VID_03F0&PID_0610&PUBKEY_7C0AECF4-B476-5945-B324-B145E6AAEF2F]
++Name = HP Z27k G3 USB-C Hub
++Flags = dual-image,has-public-key,has-mstar-scaler
++GenesysUsbhubSwitchRequest = 0xA1
++GenesysUsbhubReadRequest = 0xA2
++GenesysUsbhubWriteRequest = 0xA3
++
+ # scaler
+ [GENESYS_SCALER\MSTAR_TSUM_G&PUBKEY_B335BDCE-7073-5D0E-9BD3-9B69C1A6899F&PANELREV_RIM101]
+ Name = HP M24fd USB-C Monitor
+@@ -79,3 +87,12 @@ GenesysScalerGpioOutputRegister = 0x0426
+ GenesysScalerGpioEnableRegister = 0x0428
+ GenesysScalerGpioValue = 0x01
+ GenesysScalerCfiFlashId = 0xC84016
++
++# MST9U, level 1 so no public-key; each panel variant has its own type and needs its own entry
++[GENESYS_SCALER\VID_03F0&PID_0610&MSTAR_TSUM_G&PANELTYPE_EIM1]
++Name = HP Z27k G3 USB-C Monitor
++Flags = use-i2c-ch0,pause-r2-cpu,replug-on-attach
++GenesysScalerGpioOutputRegister = 0x0426
++GenesysScalerGpioEnableRegister = 0x0428
++GenesysScalerGpioValue = 0x01
++GenesysScalerCfiFlashId = 0xC22016
+-- 
+2.55.0
+

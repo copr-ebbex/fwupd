@@ -1,7 +1,7 @@
 From a1df4e9da1c83949bdadba9d2857e4b78bddab48 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:13:50 +0200
-Subject: [PATCH 03/10] intel-gsc: Convert the GetConfig SKU index with the
+Subject: [PATCH 03/21] intel-gsc: Convert the GetConfig SKU index with the
  same table as igsc
 
 GetConfig returns an index, not a bit position: SOC1 is index 0 but bit 2 in the
