@@ -1,0 +1,99 @@
+From 74662127611f72da7b04990599bb9c0554a93472 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Wed, 16 Sep 2026 19:46:29 +0200
+Subject: [PATCH 14/21] genesys: Inhibit the scaler when
+ GenesysScalerCfiFlashId is unset
+
+Reading the flash ID requires ISP mode, which blanks the monitor, so
+setup() does not read it. Without the quirk there is no CFI device and
+setup() failed, which removed the panel entirely.
+
+Inhibit the device instead, so it still enumerates and reports why it
+cannot be updated, and guard the two paths that need the CFI device.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/README.md                  |  3 +++
+ plugins/genesys/fu-genesys-scaler-device.c | 31 +++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/genesys/README.md b/plugins/genesys/README.md
+index 6b772de35..2dcea3ebf 100644
+--- a/plugins/genesys/README.md
++++ b/plugins/genesys/README.md
+@@ -139,6 +139,9 @@ CFI Flash Id.
+ * HP M24fd USB-C Monitor: `0xC22016`
+ * HP M27fd USB-C Monitor: `0xC84016`
+ 
++The plugin does not read the flash ID from the scaler, because this requires ISP mode and blanks
++the monitor. If this quirk is missing, the scaler is enumerated, but updates are inhibited.
++
+ Since 1.8.2.
+ 
+ ## Firmware Bank Quirk Use
+diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
+index 0c02ef636..b134c4e02 100644
+--- a/plugins/genesys/fu-genesys-scaler-device.c
++++ b/plugins/genesys/fu-genesys-scaler-device.c
+@@ -1675,6 +1675,15 @@ fu_genesys_scaler_device_setup(FuDevice *device, GError **error)
+ 	guint32 page_size;
+ 	g_autofree gchar *flash_id = NULL;
+ 
++	/* the flash ID can only be read in ISP mode, which blanks the panel, so it has to come
++	 * from a quirk */
++	if (self->cfi_flash_id == 0x0) {
++		fu_device_inhibit(device,
++				  "no-cfi-flash-id",
++				  "No GenesysScalerCfiFlashId quirk for this panel");
++		return TRUE;
++	}
++
+ 	flash_id = g_strdup_printf("%06X", self->cfi_flash_id);
+ 	self->cfi_device = fu_cfi_device_new(FU_DEVICE(self), flash_id);
+ 	if (!fu_device_setup(FU_DEVICE(self->cfi_device), error))
+@@ -1705,14 +1714,31 @@ fu_genesys_scaler_device_setup(FuDevice *device, GError **error)
+ 	return TRUE;
+ }
+ 
++static gboolean
++fu_genesys_scaler_device_ensure_cfi_device(FuGenesysScalerDevice *self, GError **error)
++{
++	if (self->cfi_device == NULL) {
++		g_set_error_literal(error,
++				    FWUPD_ERROR,
++				    FWUPD_ERROR_NOT_SUPPORTED,
++				    "no CFI device, missing GenesysScalerCfiFlashId quirk");
++		return FALSE;
++	}
++	return TRUE;
++}
++
+ static GBytes *
+ fu_genesys_scaler_device_dump_firmware(FuDevice *device, FuProgress *progress, GError **error)
+ {
+ 	FuGenesysScalerDevice *self = FU_GENESYS_SCALER_DEVICE(device);
+-	gsize size = fu_cfi_device_get_size(self->cfi_device);
++	gsize size;
+ 	g_autofree guint8 *buf = NULL;
+ 	g_autoptr(FuDeviceLocker) locker = NULL;
+ 
++	if (!fu_genesys_scaler_device_ensure_cfi_device(self, error))
++		return NULL;
++	size = fu_cfi_device_get_size(self->cfi_device);
++
+ 	/* progress */
+ 	fu_progress_set_id(progress, G_STRLOC);
+ 	fu_progress_add_step(progress, FWUPD_STATUS_DEVICE_BUSY, 1, "detach");
+@@ -1804,6 +1830,9 @@ fu_genesys_scaler_device_write_firmware(FuDevice *device,
+ 	g_autoptr(FuFirmware) payload = NULL;
+ 	g_autoptr(GBytes) fw_payload = NULL;
+ 
++	if (!fu_genesys_scaler_device_ensure_cfi_device(self, error))
++		return FALSE;
++
+ 	fu_progress_set_id(progress, G_STRLOC);
+ 	fu_progress_add_step(progress, FWUPD_STATUS_DEVICE_ERASE, 4, NULL);
+ 	fu_progress_add_step(progress, FWUPD_STATUS_DEVICE_WRITE, 54, NULL);
+-- 
+2.55.0
+
