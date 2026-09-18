@@ -41,8 +41,9 @@ License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
-# intel-gsc: Intel Arc DG2 (A770) GSC/OPROM update fixes, rebased on 2.1.7.
-# Same series as the upstream PR branch (eb4x/fwupd intel-gsc-dg2).
+# 0001-0010 intel-gsc: Intel Arc DG2 (A770) GSC/OPROM update fixes.
+# 0011-0021 genesys: HP Z27k G3 (MStar scaler) support.
+# Exported from the local combined-2.1.7 branch (tag 2.1.7 + both series).
 Patch0001: 0001-libfwupdplugin-Save-udev-read-events-with-the-offset.patch
 Patch0002: 0002-intel-gsc-Treat-an-unsupported-ARB-SVN-query-as-no-S.patch
 Patch0003: 0003-intel-gsc-Convert-the-GetConfig-SKU-index-with-the-s.patch
@@ -53,6 +54,17 @@ Patch0007: 0007-intel-gsc-Wait-for-FWSTS1-to-report-idle-after-Updat.patch
 Patch0008: 0008-intel-gsc-Do-not-fail-the-update-when-the-reset-was-.patch
 Patch0009: 0009-intel-gsc-Also-bind-GSC-devices-exposed-by-the-i915-.patch
 Patch0010: 0010-intel-gsc-Add-enumeration-data-for-the-Intel-Arc-A77.patch
+Patch0011: 0011-genesys-Use-the-hub-proxy-for-the-outgoing-DDC-CI-co.patch
+Patch0012: 0012-trivial-Fix-a-unit-comment-and-the-DDC-CI-spelling-i.patch
+Patch0013: 0013-genesys-Do-not-hide-the-USB-hub-when-the-MStar-scale.patch
+Patch0014: 0014-genesys-Inhibit-the-scaler-when-GenesysScalerCfiFlas.patch
+Patch0015: 0015-genesys-Use-a-fixed-authentication-window-when-recor.patch
+Patch0016: 0016-genesys-Add-a-quirk-flag-for-scalers-that-replug-on-.patch
+Patch0017: 0017-genesys-Fall-back-to-the-firmware-ID-when-a-scaler-h.patch
+Patch0018: 0018-genesys-Add-a-firmware-parser-for-MStar-scaler-image.patch
+Patch0019: 0019-genesys-Support-level-1-MStar-scalers-with-no-public.patch
+Patch0020: 0020-genesys-Add-quirks-for-the-HP-Z27k-G3-USB-C-Monitor.patch
+Patch0021: 0021-genesys-Add-an-emulation-test-for-the-HP-Z27k-G3.patch
 
 BuildRequires: gettext
 BuildRequires: hwdata
