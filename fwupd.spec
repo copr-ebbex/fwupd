@@ -41,6 +41,18 @@ License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
 
+# intel-gsc: Intel Arc DG2 (A770) GSC/OPROM update fixes, rebased on 2.1.7.
+# Same series as the upstream PR branch (eb4x/fwupd intel-gsc-dg2).
+Patch0001: 0001-libfwupdplugin-Save-udev-read-events-with-the-offset.patch
+Patch0002: 0002-intel-gsc-Treat-an-unsupported-ARB-SVN-query-as-no-S.patch
+Patch0003: 0003-intel-gsc-Convert-the-GetConfig-SKU-index-with-the-s.patch
+Patch0004: 0004-intel-gsc-Accept-firmware-that-lists-more-than-one-S.patch
+Patch0005: 0005-intel-gsc-Only-send-the-selected-part-of-a-combined-.patch
+Patch0006: 0006-intel-gsc-Do-not-expect-a-reply-from-UpdateEnd-when-.patch
+Patch0007: 0007-intel-gsc-Wait-for-FWSTS1-to-report-idle-after-Updat.patch
+Patch0008: 0008-intel-gsc-Also-bind-GSC-devices-exposed-by-the-i915-.patch
+Patch0009: 0009-intel-gsc-Add-enumeration-data-for-the-Intel-Arc-A77.patch
+
 BuildRequires: gettext
 BuildRequires: hwdata
 BuildRequires: glib2-devel >= %{glib2_version}
