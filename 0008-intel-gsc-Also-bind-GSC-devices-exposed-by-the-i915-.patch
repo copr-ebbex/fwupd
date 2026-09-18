@@ -1,0 +1,30 @@
+From 0b27e65939c93d8c194bc7641a00b3f878b106be Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Fri, 18 Sep 2026 12:16:22 +0200
+Subject: [PATCH 8/9] intel-gsc: Also bind GSC devices exposed by the i915
+ driver
+
+The DG2 discrete cards are still driven by i915 by default, and the xe driver only
+claims them with force_probe. The i915.mei-gscfi auxiliary device looks the same
+under both drivers, so match on either.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ plugins/intel-gsc/igsc.quirk | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/plugins/intel-gsc/igsc.quirk b/plugins/intel-gsc/igsc.quirk
+index 9c418e225..044fbf286 100644
+--- a/plugins/intel-gsc/igsc.quirk
++++ b/plugins/intel-gsc/igsc.quirk
+@@ -1,5 +1,7 @@
+ [PCI\DRIVER_xe]
+ Plugin = igsc
++[PCI\DRIVER_i915]
++Plugin = igsc
+ 
+ [PCI\VEN_8086&DEV_4905]
+ Name = DG1
+-- 
+2.55.0
+

@@ -1,0 +1,32 @@
+From 1bd2caa5203ec5e4a5de480fda7bf3cc90a2ad9d Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Fri, 18 Sep 2026 12:13:58 +0200
+Subject: [PATCH 4/9] intel-gsc: Accept firmware that lists more than one SKU
+
+The IMGI partition is a bitmask of every SKU the image supports, so require an
+intersection with the device SKU rather than equality, which is what igsc does.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+---
+ plugins/intel-gsc/fu-igsc-device.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/plugins/intel-gsc/fu-igsc-device.c b/plugins/intel-gsc/fu-igsc-device.c
+index 8d916d86a..ab62210ba 100644
+--- a/plugins/intel-gsc/fu-igsc-device.c
++++ b/plugins/intel-gsc/fu-igsc-device.c
+@@ -481,9 +481,9 @@ fu_igsc_device_check_firmware(FuDevice *device,
+ 		return FALSE;
+ 	}
+ 
+-	/* check SKU */
++	/* the image lists every SKU it supports, and both being zero means no restriction */
+ 	fw_hw_sku = fu_igsc_code_firmware_get_hw_sku(FU_IGSC_CODE_FIRMWARE(firmware));
+-	if (self->hw_sku != fw_hw_sku) {
++	if ((self->hw_sku | fw_hw_sku) != 0 && (self->hw_sku & fw_hw_sku) == 0) {
+ 		g_set_error(error,
+ 			    FWUPD_ERROR,
+ 			    FWUPD_ERROR_NOT_SUPPORTED,
+-- 
+2.55.0
+
