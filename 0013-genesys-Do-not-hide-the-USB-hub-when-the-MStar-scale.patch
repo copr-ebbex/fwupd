@@ -1,0 +1,47 @@
+From 078641a4a7eb18b012f6992321a8a87f6f13e519 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Wed, 16 Sep 2026 19:46:09 +0200
+Subject: [PATCH 13/21] genesys: Do not hide the USB hub when the MStar scaler
+ fails to set up
+
+A hub quirked with has-mstar-scaler may have no scaler behind it, for
+instance when two cascaded hubs share a public key and only the second
+one drives a panel. Setting up the child from the hub setup path meant
+any failure there propagated out and removed the hub itself.
+
+Set the child up before adding it, and keep the hub when that fails. A
+scaler that does not identify itself is expected and only logged, but
+anything else is still warned about so a real communication failure is
+not silently swallowed.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/fu-genesys-usbhub-device.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/plugins/genesys/fu-genesys-usbhub-device.c b/plugins/genesys/fu-genesys-usbhub-device.c
+index 68144ddd2..5a686cccf 100644
+--- a/plugins/genesys/fu-genesys-usbhub-device.c
++++ b/plugins/genesys/fu-genesys-usbhub-device.c
+@@ -205,7 +205,18 @@ fu_genesys_usbhub_device_mstar_scaler_setup(FuGenesysUsbhubDevice *self, GError
+ {
+ 	g_autoptr(FuGenesysScalerDevice) scaler_device =
+ 	    fu_genesys_scaler_device_new(FU_DEVICE(self));
++	g_autoptr(GError) error_local = NULL;
+ 
++	/* a hub tier without a scaler reports SIGNATURE_INVALID; any other failure also keeps the
++	 * hub, because the hub can be updated without the scaler */
++	if (!fu_device_setup(FU_DEVICE(scaler_device), &error_local)) {
++		if (g_error_matches(error_local, FWUPD_ERROR, FWUPD_ERROR_SIGNATURE_INVALID)) {
++			g_debug("ignoring MStar scaler: %s", error_local->message);
++		} else {
++			g_warning("MStar scaler failed to set up: %s", error_local->message);
++		}
++		return TRUE;
++	}
+ 	fu_device_add_child(FU_DEVICE(self), FU_DEVICE(scaler_device));
+ 
+ 	/* success */
+-- 
+2.55.0
+
