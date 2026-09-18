@@ -1,7 +1,8 @@
-From 71f5e353141688a7a98c79d1d5a398459e98d463 Mon Sep 17 00:00:00 2001
+From 926731fcf4b59addd422038d247729650facc238 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:16:04 +0200
-Subject: [PATCH 7/9] intel-gsc: Wait for FWSTS1 to report idle after UpdateEnd
+Subject: [PATCH 07/10] intel-gsc: Wait for FWSTS1 to report idle after
+ UpdateEnd
 
 The firmware applies the update after END, and until now only the GFX firmware
 path waited for anything afterwards. Poll FWSTS1 until the initialization
