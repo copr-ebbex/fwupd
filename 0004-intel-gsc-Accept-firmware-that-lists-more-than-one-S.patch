@@ -1,7 +1,7 @@
-From 1bd2caa5203ec5e4a5de480fda7bf3cc90a2ad9d Mon Sep 17 00:00:00 2001
+From d30cef99e003d1fe513c856512bbe05475ffbb08 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:13:58 +0200
-Subject: [PATCH 4/9] intel-gsc: Accept firmware that lists more than one SKU
+Subject: [PATCH 04/10] intel-gsc: Accept firmware that lists more than one SKU
 
 The IMGI partition is a bitmask of every SKU the image supports, so require an
 intersection with the device SKU rather than equality, which is what igsc does.

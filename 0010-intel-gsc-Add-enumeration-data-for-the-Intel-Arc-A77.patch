@@ -1,7 +1,7 @@
-From 4a0db4e8e7a5db031f0e88bc96e686c840de539c Mon Sep 17 00:00:00 2001
+From 72a1709ee2d571cfb66945fd9195640317af3d98 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 14:01:56 +0200
-Subject: [PATCH 9/9] intel-gsc: Add enumeration data for the Intel Arc A770
+Subject: [PATCH 10/10] intel-gsc: Add enumeration data for the Intel Arc A770
 
 Recorded on an Intel Limited Edition Arc A770 (8086:56A0, subsystem 8086:1020)
 using the i915 driver.
