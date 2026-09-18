@@ -1,7 +1,7 @@
 From 6486d131f1a185d0b467ac8f632cab9d00a48863 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:12:54 +0200
-Subject: [PATCH 02/10] intel-gsc: Treat an unsupported ARB SVN query as no SVN
+Subject: [PATCH 02/21] intel-gsc: Treat an unsupported ARB SVN query as no SVN
  restriction
 
 The DG2 firmware answers ARBH_SVN_GET_INFO with result 0x0b, which made setup

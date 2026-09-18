@@ -1,0 +1,62 @@
+From 0853b7eed1e1afe98daaf86e228c7d69be442603 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Thu, 17 Sep 2026 01:09:26 +0200
+Subject: [PATCH 12/21] trivial: Fix a unit comment and the DDC/CI spelling in
+ genesys
+
+The sleep is 100ms, and every other call site in the file says ms. Four
+error messages spelled DDC/CI as dddci.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/fu-genesys-scaler-device.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
+index a26ffdde2..0c02ef636 100644
+--- a/plugins/genesys/fu-genesys-scaler-device.c
++++ b/plugins/genesys/fu-genesys-scaler-device.c
+@@ -1502,11 +1502,11 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
+ 					    GENESYS_SCALER_USB_TIMEOUT,
+ 					    NULL,
+ 					    error)) {
+-		g_prefix_error_literal(error, "error setting dddci data: ");
++		g_prefix_error_literal(error, "error setting ddcci data: ");
+ 		return FALSE;
+ 	}
+ 
+-	fu_device_sleep(FU_DEVICE(self), 100); /* 1ms */
++	fu_device_sleep(FU_DEVICE(self), 100); /* ms */
+ 
+ 	if (!fu_usb_device_control_transfer(FU_USB_DEVICE(proxy),
+ 					    FU_USB_DIRECTION_DEVICE_TO_HOST,
+@@ -1521,7 +1521,7 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
+ 					    GENESYS_SCALER_USB_TIMEOUT,
+ 					    NULL,
+ 					    error)) {
+-		g_prefix_error_literal(error, "error getting dddci data: ");
++		g_prefix_error_literal(error, "error getting ddcci data: ");
+ 		return FALSE;
+ 	}
+ 
+@@ -1556,7 +1556,7 @@ fu_genesys_scaler_device_get_firmware_packet_version(FuGenesysScalerDevice *self
+ 			g_set_error(error,
+ 				    FWUPD_ERROR,
+ 				    FWUPD_ERROR_INTERNAL,
+-				    "error dddci length too large, got 0x%x, expected <= 0x%zx",
++				    "error ddcci length too large, got 0x%x, expected <= 0x%zx",
+ 				    (guint)len,
+ 				    sizeof(buf));
+ 			return FALSE;
+@@ -1571,7 +1571,7 @@ fu_genesys_scaler_device_get_firmware_packet_version(FuGenesysScalerDevice *self
+ 			g_set_error(error,
+ 				    FWUPD_ERROR,
+ 				    FWUPD_ERROR_INTERNAL,
+-				    "error dddci checksum mismatch, got 0x%02x, expected 0x%02x",
++				    "error ddcci checksum mismatch, got 0x%02x, expected 0x%02x",
+ 				    checksum_tmp,
+ 				    checksum);
+ 			return FALSE;
+-- 
+2.55.0
+

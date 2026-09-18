@@ -1,0 +1,97 @@
+From ce9d4b0a05966f41de4b9d02fe87f63443277ddc Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Thu, 17 Sep 2026 14:49:16 +0200
+Subject: [PATCH 17/21] genesys: Fall back to the firmware ID when a scaler has
+ no packet version
+
+A level 1 scaler does not answer the firmware packet version info
+index: its DDC/CI reply sets a nonzero flag byte and carries no version
+data, so reading a version from that reply gives garbage.
+
+Report a nonzero flag as not supported and use the firmware ID as the
+version instead. The flag is only checked for level 1, so the version
+that level 0 scalers report does not change.
+
+Level 1 scalers are still rejected for having no public key, which a
+following commit addresses.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/fu-genesys-scaler-device.c | 39 ++++++++++++++++++++--
+ 1 file changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
+index fdbabf15d..31235b92a 100644
+--- a/plugins/genesys/fu-genesys-scaler-device.c
++++ b/plugins/genesys/fu-genesys-scaler-device.c
+@@ -24,6 +24,7 @@
+ #define GENESYS_SCALER_MSTAR_DATA_IN  0x7f
+ 
+ #define GENESYS_SCALER_CMD_DDCCI_FIRMWARE_PACKET_VERSION 0x06
++#define GENESYS_SCALER_DDCCI_REPLY_FLAG_OFFSET		 0x05
+ 
+ #define GENESYS_SCALER_CMD_DATA_WRITE 0x10
+ #define GENESYS_SCALER_CMD_DATA_READ  0x11
+@@ -1608,6 +1609,27 @@ fu_genesys_scaler_device_get_firmware_packet_version(FuGenesysScalerDevice *self
+ 			return FALSE;
+ 		}
+ 
++		/* reply is [6F 6E 8n] CD 02 <flag> <idx> <data...>, a nonzero flag means the
++		 * scaler did not answer this info index; only checked for level 1 so the version
++		 * reported by level 0 parts cannot change */
++		if (self->level == 1) {
++			guint8 flag = 0;
++			if (!fu_memread_uint8_safe(buf,
++						   sizeof(buf),
++						   GENESYS_SCALER_DDCCI_REPLY_FLAG_OFFSET,
++						   &flag,
++						   error))
++				return FALSE;
++			if (flag != 0x0) {
++				g_set_error(error,
++					    FWUPD_ERROR,
++					    FWUPD_ERROR_NOT_SUPPORTED,
++					    "packet version not supported, got flag 0x%02x",
++					    flag);
++				return FALSE;
++			}
++		}
++
+ 		offset = 7;
+ 	}
+ 
+@@ -1629,6 +1651,7 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+ 	g_autofree gchar *guid = NULL;
+ 	g_autofree gchar *version = NULL;
+ 	g_autofree gchar *panelrev = NULL;
++	g_autoptr(GError) error_local = NULL;
+ 
+ 	if (!fu_genesys_scaler_device_get_level(self, &self->level, error))
+ 		return FALSE;
+@@ -1660,10 +1683,20 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+ 	panelrev = fu_memstrsafe(buf, sizeof(buf), 0x1, 6, error);
+ 	if (panelrev == NULL)
+ 		return FALSE;
+-	if (!fu_genesys_scaler_device_get_firmware_packet_version(self, &ver, error))
+-		return FALSE;
+ 
+-	version = g_strdup_printf("%d.%d.%d.%d", ver.stage, ver.model, ver.major, ver.minor);
++	/* not every scaler answers the packet version, so fall back to the reported ID; PLAIN
++	 * versions compare as strings, which orders correctly as the release is always two digits
++	 */
++	if (fu_genesys_scaler_device_get_firmware_packet_version(self, &ver, &error_local)) {
++		version =
++		    g_strdup_printf("%d.%d.%d.%d", ver.stage, ver.model, ver.major, ver.minor);
++	} else if (g_error_matches(error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED)) {
++		g_info("no firmware packet version, using firmware ID: %s", error_local->message);
++		version = g_strdup(panelrev);
++	} else {
++		g_propagate_error(error, g_steal_pointer(&error_local));
++		return FALSE;
++	}
+ 	fu_device_set_version(device, version);
+ 	fu_device_set_version_format(device, FWUPD_VERSION_FORMAT_PLAIN);
+ 	fu_device_set_logical_id(device, "scaler");
+-- 
+2.55.0
+
