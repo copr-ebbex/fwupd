@@ -1,7 +1,7 @@
-From c8157b702ab1366cb3ad0bb60339ca6c5623c345 Mon Sep 17 00:00:00 2001
+From 13e280799eb3a28a16148765338a31c5c7095ed4 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:15:26 +0200
-Subject: [PATCH 6/9] intel-gsc: Do not expect a reply from UpdateEnd when
+Subject: [PATCH 06/10] intel-gsc: Do not expect a reply from UpdateEnd when
  updating OPROM
 
 igsc never reads a reply to END for any payload type and the Intel documentation
