@@ -1,7 +1,7 @@
-From 0b27e65939c93d8c194bc7641a00b3f878b106be Mon Sep 17 00:00:00 2001
+From 0a5d3e6d06f8e12532b08ee8c9a2f5ace1ec6fa7 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:16:22 +0200
-Subject: [PATCH 8/9] intel-gsc: Also bind GSC devices exposed by the i915
+Subject: [PATCH 09/10] intel-gsc: Also bind GSC devices exposed by the i915
  driver
 
 The DG2 discrete cards are still driven by i915 by default, and the xe driver only
