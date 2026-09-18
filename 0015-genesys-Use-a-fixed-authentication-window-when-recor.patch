@@ -1,0 +1,57 @@
+From 66d49057da59cedb258d03025bf269d085d5e7b6 Mon Sep 17 00:00:00 2001
+From: Erik Berg <fwupd@slipsprogrammor.no>
+Date: Thu, 17 Sep 2026 00:29:47 +0200
+Subject: [PATCH 15/21] genesys: Use a fixed authentication window when
+ recording or replaying
+
+The challenge window sent to the hub is chosen at random, and it forms
+part of the control transfer value, which is part of the emulation event
+ID. A recording therefore asked a question that could never be asked
+again, and replay failed with no matching event. No hub quirked with
+has-public-key could be emulated at all.
+
+Use the ends of the region instead whenever events are being recorded or
+replayed. This cannot use FWUPD_DEVICE_FLAG_EMULATION_TAG, as other
+plugins do, because that flag is not set until fu_engine_add_device(),
+long after authenticate() has run as part of setup(); the context flag is
+set before coldplug and is the same one fu_usb_device_control_transfer()
+uses to decide whether to record.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+---
+ plugins/genesys/fu-genesys-usbhub-device.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/plugins/genesys/fu-genesys-usbhub-device.c b/plugins/genesys/fu-genesys-usbhub-device.c
+index 5a686cccf..666abd598 100644
+--- a/plugins/genesys/fu-genesys-usbhub-device.c
++++ b/plugins/genesys/fu-genesys-usbhub-device.c
+@@ -682,10 +682,21 @@ fu_genesys_usbhub_device_authenticate(FuGenesysUsbhubDevice *self, GError **erro
+ 	high_byte = (release & 0xff00) >> 8;
+ 	temp_byte = low_byte ^ high_byte;
+ 
+-	offset_start = g_random_int_range(GENESYS_USBHUB_ENCRYPT_REGION_START, /* nocheck:blocked */
+-					  GENESYS_USBHUB_ENCRYPT_REGION_END - 1);
+-	offset_end = g_random_int_range(offset_start + 1, /* nocheck:blocked */
+-					GENESYS_USBHUB_ENCRYPT_REGION_END);
++	/* the window is normally random, but recording and replay must send the same request;
++	 * the context flag applies to the whole process, so every hub uses the fixed window while
++	 * recording */
++	if (fu_device_has_flag(FU_DEVICE(self), FWUPD_DEVICE_FLAG_EMULATED) ||
++	    fu_context_has_flag(fu_device_get_context(FU_DEVICE(self)),
++				FU_CONTEXT_FLAG_SAVE_EVENTS)) {
++		offset_start = GENESYS_USBHUB_ENCRYPT_REGION_START;
++		offset_end = GENESYS_USBHUB_ENCRYPT_REGION_END - 1;
++	} else {
++		offset_start =
++		    g_random_int_range(GENESYS_USBHUB_ENCRYPT_REGION_START, /* nocheck:blocked */
++				       GENESYS_USBHUB_ENCRYPT_REGION_END - 1);
++		offset_end = g_random_int_range(offset_start + 1, /* nocheck:blocked */
++						GENESYS_USBHUB_ENCRYPT_REGION_END);
++	}
+ 	if (!fu_xor8_safe(self->st_fwinfo_ts->buf->data,
+ 			  self->st_fwinfo_ts->buf->len,
+ 			  offset_start,
+-- 
+2.55.0
+
