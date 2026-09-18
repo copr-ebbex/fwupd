@@ -50,8 +50,9 @@ Patch0004: 0004-intel-gsc-Accept-firmware-that-lists-more-than-one-S.patch
 Patch0005: 0005-intel-gsc-Only-send-the-selected-part-of-a-combined-.patch
 Patch0006: 0006-intel-gsc-Do-not-expect-a-reply-from-UpdateEnd-when-.patch
 Patch0007: 0007-intel-gsc-Wait-for-FWSTS1-to-report-idle-after-Updat.patch
-Patch0008: 0008-intel-gsc-Also-bind-GSC-devices-exposed-by-the-i915-.patch
-Patch0009: 0009-intel-gsc-Add-enumeration-data-for-the-Intel-Arc-A77.patch
+Patch0008: 0008-intel-gsc-Do-not-fail-the-update-when-the-reset-was-.patch
+Patch0009: 0009-intel-gsc-Also-bind-GSC-devices-exposed-by-the-i915-.patch
+Patch0010: 0010-intel-gsc-Add-enumeration-data-for-the-Intel-Arc-A77.patch
 
 BuildRequires: gettext
 BuildRequires: hwdata
