@@ -1,4 +1,4 @@
-From 4e847727a5275a85bee34f7785f1f264d3bca17c Mon Sep 17 00:00:00 2001
+From db8fb3de8610c1e420ac9e090f01d9d17d90fea9 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 01:09:13 +0200
 Subject: [PATCH 11/21] genesys: Use the hub proxy for the outgoing DDC/CI
@@ -19,10 +19,10 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
-index 03e232143..a26ffdde2 100644
+index d451345e2..65c5f70c4 100644
 --- a/plugins/genesys/fu-genesys-scaler-device.c
 +++ b/plugins/genesys/fu-genesys-scaler-device.c
-@@ -1485,7 +1485,11 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
+@@ -1450,7 +1450,11 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
  	data[5] = cmd;
  	data[6] = fu_xor8(data, sizeof(data) - 1);
  
@@ -35,7 +35,7 @@ index 03e232143..a26ffdde2 100644
  					    FU_USB_DIRECTION_HOST_TO_DEVICE,
  					    FU_USB_REQUEST_TYPE_VENDOR,
  					    FU_USB_RECIPIENT_DEVICE,
-@@ -1504,9 +1508,6 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
+@@ -1468,9 +1472,6 @@ fu_genesys_scaler_device_get_ddcci_data(FuGenesysScalerDevice *self,
  
  	fu_device_sleep(FU_DEVICE(self), 100); /* 1ms */
  

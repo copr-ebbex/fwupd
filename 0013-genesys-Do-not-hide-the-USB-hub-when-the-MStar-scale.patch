@@ -1,4 +1,4 @@
-From 078641a4a7eb18b012f6992321a8a87f6f13e519 Mon Sep 17 00:00:00 2001
+From b743a5d731ed197a645aaa348456fa92cdb419dc Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Wed, 16 Sep 2026 19:46:09 +0200
 Subject: [PATCH 13/21] genesys: Do not hide the USB hub when the MStar scaler
@@ -20,10 +20,10 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
  1 file changed, 11 insertions(+)
 
 diff --git a/plugins/genesys/fu-genesys-usbhub-device.c b/plugins/genesys/fu-genesys-usbhub-device.c
-index 68144ddd2..5a686cccf 100644
+index f88f10667..3ec03fe8e 100644
 --- a/plugins/genesys/fu-genesys-usbhub-device.c
 +++ b/plugins/genesys/fu-genesys-usbhub-device.c
-@@ -205,7 +205,18 @@ fu_genesys_usbhub_device_mstar_scaler_setup(FuGenesysUsbhubDevice *self, GError
+@@ -203,7 +203,18 @@ fu_genesys_usbhub_device_mstar_scaler_setup(FuGenesysUsbhubDevice *self, GError
  {
  	g_autoptr(FuGenesysScalerDevice) scaler_device =
  	    fu_genesys_scaler_device_new(FU_DEVICE(self));

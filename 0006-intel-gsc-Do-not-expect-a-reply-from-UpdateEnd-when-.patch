@@ -1,4 +1,4 @@
-From 13e280799eb3a28a16148765338a31c5c7095ed4 Mon Sep 17 00:00:00 2001
+From ac0ac6760e148ef639c921a14e358fc5b9a5fdae Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:15:26 +0200
 Subject: [PATCH 06/21] intel-gsc: Do not expect a reply from UpdateEnd when
