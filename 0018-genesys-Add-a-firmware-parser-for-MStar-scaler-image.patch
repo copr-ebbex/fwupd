@@ -1,4 +1,4 @@
-From 7fd515d62055e67c65fd904d8b32f05dba19223a Mon Sep 17 00:00:00 2001
+From c83732c5f4151393004c497164fe5989af739fdc Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 01:23:43 +0200
 Subject: [PATCH 18/21] genesys: Add a firmware parser for MStar scaler images

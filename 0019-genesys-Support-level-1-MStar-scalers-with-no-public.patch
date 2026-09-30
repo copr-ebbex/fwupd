@@ -1,4 +1,4 @@
-From f4d8aee8f7e71f7a0d216d57cd2ede70a6536e92 Mon Sep 17 00:00:00 2001
+From e6963408c538928ddbb01ef57c81e51192d167a9 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 14:48:54 +0200
 Subject: [PATCH 19/21] genesys: Support level 1 MStar scalers with no public
@@ -95,7 +95,7 @@ index 0350ccac2..c51a7e519 100644
  
  The HP Mxfd FHD Monitors must be connected to host via the USB-C cable to apply an update. The devices remain functional during the update; the Scaler update is ~10 minute long.
 diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
-index 31235b92a..820dd94c9 100644
+index 19d4a0856..192da1a0c 100644
 --- a/plugins/genesys/fu-genesys-scaler-device.c
 +++ b/plugins/genesys/fu-genesys-scaler-device.c
 @@ -7,6 +7,7 @@
@@ -122,7 +122,7 @@ index 31235b92a..820dd94c9 100644
  	FuGenesysPublicKey public_key;
  	guint32 cfi_flash_id;
  	FuCfiDevice *cfi_device;
-@@ -1661,8 +1664,21 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1624,8 +1627,21 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  						     sizeof(self->public_key),
  						     error))
  		return FALSE;
@@ -146,7 +146,7 @@ index 31235b92a..820dd94c9 100644
  		fu_dump_raw(G_LOG_DOMAIN,
  			    "PublicKey",
  			    (const guint8 *)&self->public_key,
-@@ -1673,9 +1689,6 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1636,9 +1652,6 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  				    "invalid public-key");
  		return FALSE;
  	}
@@ -156,7 +156,7 @@ index 31235b92a..820dd94c9 100644
  
  	if (!fu_genesys_scaler_device_get_version(self, buf, sizeof(buf), error))
  		return FALSE;
-@@ -1703,18 +1716,47 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1666,18 +1679,47 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  
  	/* add instance ID */
  	fu_device_add_instance_str(device, "MSTAR", "TSUM_G");
@@ -215,7 +215,7 @@ index 31235b92a..820dd94c9 100644
  
  	fu_device_add_flag(device, FWUPD_DEVICE_FLAG_UPDATABLE);
  
-@@ -1797,24 +1839,22 @@ fu_genesys_scaler_device_ensure_cfi_device(FuGenesysScalerDevice *self, GError *
+@@ -1760,24 +1802,22 @@ fu_genesys_scaler_device_ensure_cfi_device(FuGenesysScalerDevice *self, GError *
  }
  
  static GBytes *
@@ -246,7 +246,7 @@ index 31235b92a..820dd94c9 100644
  					   (FuDeviceLockerFunc)fu_device_detach,
  					   (FuDeviceLockerFunc)fu_device_attach,
  					   error);
-@@ -1824,7 +1864,7 @@ fu_genesys_scaler_device_dump_firmware(FuDevice *device, FuProgress *progress, G
+@@ -1787,7 +1827,7 @@ fu_genesys_scaler_device_dump_firmware(FuDevice *device, FuProgress *progress, G
  
  	buf = g_malloc0(size);
  	if (!fu_genesys_scaler_device_read_flash(self,
@@ -255,7 +255,7 @@ index 31235b92a..820dd94c9 100644
  						 buf,
  						 size,
  						 fu_progress_get_child(progress),
-@@ -1836,6 +1876,65 @@ fu_genesys_scaler_device_dump_firmware(FuDevice *device, FuProgress *progress, G
+@@ -1799,6 +1839,65 @@ fu_genesys_scaler_device_dump_firmware(FuDevice *device, FuProgress *progress, G
  	return g_bytes_new_take(g_steal_pointer(&buf), size);
  }
  
@@ -321,7 +321,7 @@ index 31235b92a..820dd94c9 100644
  static gboolean
  fu_genesys_scaler_device_check_firmware(FuDevice *device,
  					FuFirmware *firmware,
-@@ -1844,30 +1943,48 @@ fu_genesys_scaler_device_check_firmware(FuDevice *device,
+@@ -1807,30 +1906,48 @@ fu_genesys_scaler_device_check_firmware(FuDevice *device,
  {
  	FuGenesysScalerDevice *self = FU_GENESYS_SCALER_DEVICE(device);
  	g_autoptr(GBytes) blob_payload = NULL;
@@ -388,7 +388,7 @@ index 31235b92a..820dd94c9 100644
  	if (blob_payload == NULL)
  		return FALSE;
  	if (g_bytes_get_size(blob_payload) > fu_device_get_firmware_size_max(device)) {
-@@ -1896,7 +2013,6 @@ fu_genesys_scaler_device_write_firmware(FuDevice *device,
+@@ -1859,7 +1976,6 @@ fu_genesys_scaler_device_write_firmware(FuDevice *device,
  	gsize size;
  	const guint8 *data;
  	g_autofree guint8 *buf = NULL;
@@ -396,7 +396,7 @@ index 31235b92a..820dd94c9 100644
  	g_autoptr(GBytes) fw_payload = NULL;
  
  	if (!fu_genesys_scaler_device_ensure_cfi_device(self, error))
-@@ -1910,10 +2026,7 @@ fu_genesys_scaler_device_write_firmware(FuDevice *device,
+@@ -1873,10 +1989,7 @@ fu_genesys_scaler_device_write_firmware(FuDevice *device,
  	if (fu_device_has_flag(device, FWUPD_DEVICE_FLAG_DUAL_IMAGE))
  		addr = GENESYS_SCALER_BANK_SIZE;
  
@@ -408,7 +408,7 @@ index 31235b92a..820dd94c9 100644
  	if (fw_payload == NULL)
  		return FALSE;
  	data = g_bytes_get_data(fw_payload, &size);
-@@ -1974,29 +2087,33 @@ fu_genesys_scaler_device_to_string(FuDevice *device, guint idt, GString *str)
+@@ -1937,29 +2050,33 @@ fu_genesys_scaler_device_to_string(FuDevice *device, guint idt, GString *str)
  	g_autoptr(GError) error_local_n = NULL;
  
  	fwupd_codec_string_append_hex(str, idt, "Level", self->level);
@@ -465,7 +465,7 @@ index 31235b92a..820dd94c9 100644
  	}
  	fwupd_codec_string_append_hex(str, idt, "ReadRequestRead", self->vc.req_read);
  	fwupd_codec_string_append_hex(str, idt, "WriteRequest", self->vc.req_write);
-@@ -2107,6 +2224,7 @@ fu_genesys_scaler_device_class_init(FuGenesysScalerDeviceClass *klass)
+@@ -2070,6 +2187,7 @@ fu_genesys_scaler_device_class_init(FuGenesysScalerDeviceClass *klass)
  	device_class->probe = fu_genesys_scaler_device_probe;
  	device_class->setup = fu_genesys_scaler_device_setup;
  	device_class->dump_firmware = fu_genesys_scaler_device_dump_firmware;
