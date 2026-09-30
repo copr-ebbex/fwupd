@@ -1,4 +1,4 @@
-From 926731fcf4b59addd422038d247729650facc238 Mon Sep 17 00:00:00 2001
+From bf86544a67d9eaabc02a7c6f449303e7db652891 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Fri, 18 Sep 2026 12:16:04 +0200
 Subject: [PATCH 07/21] intel-gsc: Wait for FWSTS1 to report idle after

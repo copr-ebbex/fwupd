@@ -1,4 +1,4 @@
-From ce9d4b0a05966f41de4b9d02fe87f63443277ddc Mon Sep 17 00:00:00 2001
+From ddf4427a391b0bea2c5e43cad7ce2eec0085335e Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 14:49:16 +0200
 Subject: [PATCH 17/21] genesys: Fall back to the firmware ID when a scaler has
@@ -21,7 +21,7 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
  1 file changed, 36 insertions(+), 3 deletions(-)
 
 diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
-index fdbabf15d..31235b92a 100644
+index 1f1b90a89..19d4a0856 100644
 --- a/plugins/genesys/fu-genesys-scaler-device.c
 +++ b/plugins/genesys/fu-genesys-scaler-device.c
 @@ -24,6 +24,7 @@
@@ -32,7 +32,7 @@ index fdbabf15d..31235b92a 100644
  
  #define GENESYS_SCALER_CMD_DATA_WRITE 0x10
  #define GENESYS_SCALER_CMD_DATA_READ  0x11
-@@ -1608,6 +1609,27 @@ fu_genesys_scaler_device_get_firmware_packet_version(FuGenesysScalerDevice *self
+@@ -1571,6 +1572,27 @@ fu_genesys_scaler_device_get_firmware_packet_version(FuGenesysScalerDevice *self
  			return FALSE;
  		}
  
@@ -60,7 +60,7 @@ index fdbabf15d..31235b92a 100644
  		offset = 7;
  	}
  
-@@ -1629,6 +1651,7 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1592,6 +1614,7 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  	g_autofree gchar *guid = NULL;
  	g_autofree gchar *version = NULL;
  	g_autofree gchar *panelrev = NULL;
@@ -68,7 +68,7 @@ index fdbabf15d..31235b92a 100644
  
  	if (!fu_genesys_scaler_device_get_level(self, &self->level, error))
  		return FALSE;
-@@ -1660,10 +1683,20 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1623,10 +1646,20 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  	panelrev = fu_memstrsafe(buf, sizeof(buf), 0x1, 6, error);
  	if (panelrev == NULL)
  		return FALSE;
