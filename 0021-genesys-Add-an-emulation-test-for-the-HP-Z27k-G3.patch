@@ -1,4 +1,4 @@
-From 0e8485e386ada4d79f90762e57a7cbafeb80fddc Mon Sep 17 00:00:00 2001
+From 582f1056f4b88c730507048963c80d7788b435d1 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 01:24:17 +0200
 Subject: [PATCH 21/21] genesys: Add an emulation test for the HP Z27k G3

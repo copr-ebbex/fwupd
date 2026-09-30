@@ -1,4 +1,4 @@
-From 19840f59682145ac47a8a1026140a060cb443c71 Mon Sep 17 00:00:00 2001
+From ed82ab220fce44fb39d15ae7e8b7d244ad84a2c3 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 01:24:17 +0200
 Subject: [PATCH 20/21] genesys: Add quirks for the HP Z27k G3 USB-C Monitor
