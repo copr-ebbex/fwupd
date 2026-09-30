@@ -1,4 +1,4 @@
-From 8d3d3ef63b98ee34dab5434bd419bf0fab3f0c98 Mon Sep 17 00:00:00 2001
+From 5293bb014ef8753b0e101af017f35e19c1540c59 Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Wed, 16 Sep 2026 19:46:47 +0200
 Subject: [PATCH 16/21] genesys: Add a quirk flag for scalers that replug on
@@ -44,7 +44,7 @@ index 2dcea3ebf..0350ccac2 100644
  
  Use I2C ch0.
 diff --git a/plugins/genesys/fu-genesys-scaler-device.c b/plugins/genesys/fu-genesys-scaler-device.c
-index b134c4e02..fdbabf15d 100644
+index e36a7eb80..1f1b90a89 100644
 --- a/plugins/genesys/fu-genesys-scaler-device.c
 +++ b/plugins/genesys/fu-genesys-scaler-device.c
 @@ -33,8 +33,9 @@
@@ -59,7 +59,7 @@ index b134c4e02..fdbabf15d 100644
  
  typedef struct {
  	guint8 req_read;
-@@ -754,10 +755,8 @@ fu_genesys_scaler_device_detach(FuDevice *device, FuProgress *progress, GError *
+@@ -734,10 +735,8 @@ fu_genesys_scaler_device_detach(FuDevice *device, FuProgress *progress, GError *
  }
  
  static gboolean
@@ -71,7 +71,7 @@ index b134c4e02..fdbabf15d 100644
  	if (!fu_genesys_scaler_device_exit_single_step_mode(self, error))
  		return FALSE;
  
-@@ -771,6 +770,38 @@ fu_genesys_scaler_device_attach(FuDevice *device, FuProgress *progress, GError *
+@@ -751,6 +750,38 @@ fu_genesys_scaler_device_attach(FuDevice *device, FuProgress *progress, GError *
  	return TRUE;
  }
  
@@ -110,7 +110,7 @@ index b134c4e02..fdbabf15d 100644
  static gboolean
  fu_genesys_scaler_device_get_level(FuGenesysScalerDevice *self, guint8 *level, GError **error)
  {
-@@ -1654,6 +1685,11 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
+@@ -1617,6 +1648,11 @@ fu_genesys_scaler_device_probe(FuDevice *device, GError **error)
  
  	fu_device_add_flag(device, FWUPD_DEVICE_FLAG_UPDATABLE);
  
@@ -122,7 +122,7 @@ index b134c4e02..fdbabf15d 100644
  	self->vc.req_read = GENESYS_SCALER_MSTAR_READ;
  	self->vc.req_write = GENESYS_SCALER_MSTAR_WRITE;
  	if (self->level != 1) {
-@@ -2047,6 +2083,7 @@ fu_genesys_scaler_device_class_init(FuGenesysScalerDeviceClass *klass)
+@@ -2010,6 +2046,7 @@ fu_genesys_scaler_device_class_init(FuGenesysScalerDeviceClass *klass)
  	device_class->set_quirk_kv = fu_genesys_scaler_device_set_quirk_kv;
  	fu_device_register_private_flag(device_class, FU_SCALER_FLAG_PAUSE_R2_CPU);
  	fu_device_register_private_flag(device_class, FU_SCALER_FLAG_USE_I2C_CH0);
