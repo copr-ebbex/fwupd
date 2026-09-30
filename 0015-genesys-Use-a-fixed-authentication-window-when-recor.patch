@@ -1,4 +1,4 @@
-From 66d49057da59cedb258d03025bf269d085d5e7b6 Mon Sep 17 00:00:00 2001
+From 01077356f4e3cd887765de0f7f8ad33b8a55c3df Mon Sep 17 00:00:00 2001
 From: Erik Berg <fwupd@slipsprogrammor.no>
 Date: Thu, 17 Sep 2026 00:29:47 +0200
 Subject: [PATCH 15/21] genesys: Use a fixed authentication window when
@@ -23,10 +23,10 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
  1 file changed, 15 insertions(+), 4 deletions(-)
 
 diff --git a/plugins/genesys/fu-genesys-usbhub-device.c b/plugins/genesys/fu-genesys-usbhub-device.c
-index 5a686cccf..666abd598 100644
+index 3ec03fe8e..0b41d87a5 100644
 --- a/plugins/genesys/fu-genesys-usbhub-device.c
 +++ b/plugins/genesys/fu-genesys-usbhub-device.c
-@@ -682,10 +682,21 @@ fu_genesys_usbhub_device_authenticate(FuGenesysUsbhubDevice *self, GError **erro
+@@ -671,10 +671,21 @@ fu_genesys_usbhub_device_authenticate(FuGenesysUsbhubDevice *self, GError **erro
  	high_byte = (release & 0xff00) >> 8;
  	temp_byte = low_byte ^ high_byte;
  
