@@ -36,7 +36,7 @@
 Summary:   Firmware update daemon
 Name:      fwupd
 Version:   2.1.8
-Release:   %autorelease
+Release:   %autorelease -e 1
 License:   LGPL-2.1-or-later
 URL:       https://github.com/fwupd/fwupd
 Source0:   http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
